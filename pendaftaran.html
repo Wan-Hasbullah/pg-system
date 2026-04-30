@@ -211,7 +211,7 @@
     </div>
 
     <div class="field-group">
-      <label class="field-label" for="email">Alamat E-mel <span class="req">*</span></label>
+      <label class="field-label" for="email">Alamat Email <span class="req">*</span></label>
       <input class="field-input" id="email" type="email" placeholder="nama@email.com" autocomplete="email">
     </div>
 
@@ -328,7 +328,7 @@ function validate(){
     {id:'namapenuh',label:'Nama Penuh'},
     {id:'jenisId',label:'Jenis ID'},
     {id:'nomberId',label:'Nombor ID'},
-    {id:'email',label:'E-mel'},
+    {id:'email',label:'Email'},
     {id:'telefon',label:'No Telefon'},
     {id:'tempat',label:'Tempat Tinggal'}
   ];
@@ -343,7 +343,7 @@ function validate(){
   }
   const emailReg=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if(!emailReg.test(document.getElementById('email').value.trim())){
-    showToast('Format e-mel tidak sah',true);return false;
+    showToast('Format email tidak sah',true);return false;
   }
   return true;
 }
@@ -368,7 +368,7 @@ function bukaModal(){
     ['Nama Penuh',d.nama],
     ['Jenis ID',d.jenisId],
     ['Nombor ID',d.nomberId],
-    ['E-mel',d.email],
+    ['Email',d.email],
     ['No Telefon',d.telefon],
     ['Tempat Tinggal',d.tempat],
     ['Referrer',d.referrer],
