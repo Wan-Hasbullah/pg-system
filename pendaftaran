@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pendaftaran | Public Gold Network</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --gold:#C9A84C;--gold-light:#F0D78C;--gold-dark:#8B6914;
+    --bg:#0B0D12;--bg2:#111420;--bg3:#181C2A;
+    --surface:#1A1F2E;--surface2:#212638;
+    --text:#F0EDE8;--text2:#9B9EA8;--text3:#5C6070;
+    --border:#2A2F42;--border2:#3A4058;
+    --success:#1DB87A;--danger:#E05252;
+    --radius:12px;--radius2:8px;
+  }
+  html{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+  body{min-height:100vh;background:var(--bg);position:relative;overflow-x:hidden}
+
+  body::before{
+    content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(201,168,76,0.12) 0%,transparent 70%);
+    pointer-events:none;z-index:0
+  }
+
+  .page-wrap{max-width:560px;margin:0 auto;padding:40px 20px 80px;position:relative;z-index:1}
+
+  .logo-bar{display:flex;align-items:center;gap:12px;margin-bottom:48px}
+  .logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--gold) 0%,var(--gold-dark) 100%);border-radius:10px;display:flex;align-items:center;justify-content:center}
+  .logo-icon svg{width:22px;height:22px;fill:none;stroke:#0B0D12;stroke-width:2}
+  .logo-text{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;letter-spacing:0.5px;color:var(--text)}
+  .logo-sub{font-size:11px;color:var(--text2);font-weight:400;margin-top:1px;letter-spacing:0.3px}
+
+  .form-header{margin-bottom:36px}
+  .step-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--gold);font-weight:500;margin-bottom:16px;letter-spacing:0.3px}
+  .step-dot{width:6px;height:6px;background:var(--gold);border-radius:50%}
+  .form-title{font-family:'Sora',sans-serif;font-size:28px;font-weight:700;line-height:1.3;margin-bottom:8px}
+  .form-title span{background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .form-desc{font-size:14px;color:var(--text2);line-height:1.7}
+
+  .form-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;margin-bottom:16px}
+
+  .field-group{margin-bottom:22px}
+  .field-label{font-size:13px;font-weight:500;color:var(--text2);margin-bottom:8px;display:block;letter-spacing:0.2px}
+  .field-label span.req{color:var(--gold);margin-left:2px}
+
+  .field-input,.field-select,.field-textarea{
+    width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);
+    color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;
+    padding:12px 16px;outline:none;transition:border-color 0.2s,box-shadow 0.2s;
+    -webkit-appearance:none;appearance:none
+  }
+  .field-input:focus,.field-select:focus,.field-textarea:focus{
+    border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,0.12)
+  }
+  .field-input::placeholder{color:var(--text3)}
+  .field-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239B9EA8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px;cursor:pointer}
+  .field-select option{background:var(--bg3);color:var(--text)}
+
+  .field-row{display:grid;grid-template-columns:180px 1fr;gap:10px;align-items:start}
+  .field-note{font-size:11.5px;color:var(--text3);margin-top:6px;display:flex;align-items:flex-start;gap:5px;line-height:1.5}
+  .field-note::before{content:'ℹ';font-size:11px;color:var(--gold);opacity:0.8;flex-shrink:0;margin-top:1px}
+
+  .section-divider{border:none;border-top:1px solid var(--border);margin:24px 0}
+  .section-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px}
+
+  .id-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}
+
+  .btn-check{
+    width:100%;padding:15px;border-radius:var(--radius);
+    background:linear-gradient(135deg,var(--gold) 0%,var(--gold-dark) 100%);
+    border:none;color:#0B0D12;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;
+    cursor:pointer;transition:opacity 0.2s,transform 0.1s;letter-spacing:0.3px;
+    display:flex;align-items:center;justify-content:center;gap:8px
+  }
+  .btn-check:hover{opacity:0.92}
+  .btn-check:active{transform:scale(0.985)}
+  .btn-check svg{width:18px;height:18px;stroke:#0B0D12;fill:none;stroke-width:2}
+
+  /* Modal */
+  .modal-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;
+    align-items:center;justify-content:center;padding:20px;
+    backdrop-filter:blur(4px)
+  }
+  .modal-overlay.active{display:flex}
+  .modal-box{
+    background:var(--surface);border:1px solid var(--border2);border-radius:20px;
+    width:100%;max-width:480px;max-height:90vh;overflow-y:auto;
+    animation:slideUp 0.25s ease
+  }
+  @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+  .modal-header{padding:24px 24px 0;border-bottom:1px solid var(--border);padding-bottom:20px}
+  .modal-warning{display:flex;align-items:center;gap:10px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:12px 14px;margin-bottom:16px}
+  .modal-warning-icon{font-size:18px;flex-shrink:0}
+  .modal-warning-text{font-size:12.5px;line-height:1.65;color:var(--text2)}
+  .modal-warning-text strong{color:var(--gold);font-weight:600}
+  .modal-title{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px}
+  .modal-sub{font-size:13px;color:var(--text2)}
+
+  .modal-body{padding:20px 24px}
+  .review-row{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);gap:16px}
+  .review-row:last-child{border-bottom:none}
+  .review-key{font-size:12px;color:var(--text3);font-weight:500;flex-shrink:0;padding-top:1px}
+  .review-val{font-size:13px;color:var(--text);text-align:right;font-weight:500;word-break:break-all}
+
+  .modal-footer{padding:0 24px 24px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .btn-edit{
+    padding:13px;border-radius:var(--radius2);background:transparent;border:1px solid var(--border2);
+    color:var(--text2);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;
+    cursor:pointer;transition:all 0.2s
+  }
+  .btn-edit:hover{border-color:var(--text3);color:var(--text)}
+  .btn-submit{
+    padding:13px;border-radius:var(--radius2);
+    background:linear-gradient(135deg,var(--gold) 0%,var(--gold-dark) 100%);
+    border:none;color:#0B0D12;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+    cursor:pointer;transition:opacity 0.2s
+  }
+  .btn-submit:hover{opacity:0.9}
+  .btn-submit:disabled{opacity:0.5;cursor:not-allowed}
+
+  /* Toast */
+  .toast{
+    position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);
+    background:var(--surface2);border:1px solid var(--border2);border-radius:12px;
+    padding:14px 20px;font-size:13px;color:var(--text);
+    display:flex;align-items:center;gap:10px;
+    transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1),opacity 0.35s;
+    opacity:0;z-index:9999;white-space:nowrap;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,0.5)
+  }
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  .toast-dot{width:8px;height:8px;background:var(--success);border-radius:50%;flex-shrink:0}
+  .toast-dot.err{background:var(--danger)}
+
+  /* Success state */
+  .success-card{
+    background:var(--surface);border:1px solid rgba(29,184,122,0.25);border-radius:20px;
+    padding:40px 32px;text-align:center;display:none
+  }
+  .success-icon{width:64px;height:64px;background:rgba(29,184,122,0.12);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+  .success-icon svg{width:28px;height:28px;stroke:var(--success);fill:none;stroke-width:2}
+  .success-title{font-family:'Sora',sans-serif;font-size:22px;font-weight:700;margin-bottom:8px}
+  .success-msg{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:24px}
+  .app-links{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+  .app-btn{
+    display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;
+    background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius2);
+    color:var(--text);text-decoration:none;font-size:13px;font-weight:500;
+    transition:border-color 0.2s,background 0.2s
+  }
+  .app-btn:hover{border-color:var(--gold);background:rgba(201,168,76,0.06)}
+  .app-btn svg{width:20px;height:20px}
+
+  .progress-bar{height:2px;background:var(--border);border-radius:2px;margin-bottom:32px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--gold-dark),var(--gold));border-radius:2px;width:50%;transition:width 0.4s}
+
+  @media(max-width:480px){
+    .id-row{grid-template-columns:1fr}
+    .app-links{grid-template-columns:1fr}
+    .modal-footer{grid-template-columns:1fr;grid-template-rows:auto auto}
+    .field-row{grid-template-columns:1fr;grid-template-rows:auto auto}
+  }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+  <div class="logo-bar">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><polygon points="12,2 15.5,8.5 22,9.5 17,14.5 18,21 12,17.5 6,21 7,14.5 2,9.5 8.5,8.5"/></svg>
+    </div>
+    <div>
+      <div class="logo-text">PUBLIC GOLD NETWORK</div>
+      <div class="logo-sub">Portal Pendaftaran Ahli</div>
+    </div>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="progressBar"></div></div>
+
+  <div class="form-header">
+    <div class="step-badge"><div class="step-dot"></div> Langkah 1 daripada 2</div>
+    <h1 class="form-title">Daftar Sebagai<br><span>Ahli Baru</span></h1>
+    <p class="form-desc">Isikan maklumat peribadi anda dengan tepat. Maklumat ini digunakan untuk pengesahan akaun.</p>
+  </div>
+
+  <div class="form-card" id="mainForm">
+
+    <div class="section-label">Maklumat Peribadi</div>
+
+    <div class="field-group">
+      <label class="field-label" for="namapenuh">Nama Penuh <span class="req">*</span></label>
+      <input class="field-input" id="namapenuh" type="text" placeholder="Seperti dalam MyKad / Pasport" autocomplete="name">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Jenis & Nombor ID <span class="req">*</span></label>
+      <div class="id-row">
+        <select class="field-select" id="jenisId">
+          <option value="">Pilih Jenis ID</option>
+          <option value="No IC">No IC (MyKad)</option>
+          <option value="No Passport / Foreign ID">No Pasport / Foreign ID</option>
+          <option value="ID Askar / Polis">ID Askar / Polis</option>
+        </select>
+        <input class="field-input" id="nomberId" type="text" placeholder="Contoh: 901231011234">
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label" for="email">Alamat E-mel <span class="req">*</span></label>
+      <input class="field-input" id="email" type="email" placeholder="nama@email.com" autocomplete="email">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Nombor Telefon &amp; WhatsApp <span class="req">*</span></label>
+      <div class="field-row">
+        <select class="field-select" id="kodNegara" style="font-size:13px">
+          <option value="+60">🇲🇾 Malaysia (+60)</option>
+          <option value="+65">🇸🇬 Singapura (+65)</option>
+          <option value="+62">🇮🇩 Indonesia (+62)</option>
+          <option value="+66">🇹🇭 Thailand (+66)</option>
+          <option value="+63">🇵🇭 Filipina (+63)</option>
+          <option value="+84">🇻🇳 Vietnam (+84)</option>
+          <option value="+91">🇮🇳 India (+91)</option>
+          <option value="+44">🇬🇧 UK (+44)</option>
+          <option value="+1">🇺🇸 USA (+1)</option>
+          <option value="+61">🇦🇺 Australia (+61)</option>
+          <option value="+966">🇸🇦 Arab Saudi (+966)</option>
+          <option value="+971">🇦🇪 UAE (+971)</option>
+          <option value="+974">🇶🇦 Qatar (+974)</option>
+          <option value="+49">🇩🇪 Jerman (+49)</option>
+          <option value="+33">🇫🇷 Perancis (+33)</option>
+        </select>
+        <input class="field-input" id="telefon" type="tel" placeholder="111234 5678">
+      </div>
+      <p class="field-note">Berikan no telefon &amp; WhatsApp yang aktif untuk pengesahan no TAC</p>
+    </div>
+
+    <hr class="section-divider">
+    <div class="section-label">Maklumat Tambahan</div>
+
+    <div class="field-group">
+      <label class="field-label" for="tempat">Tempat Tinggal <span class="req">*</span></label>
+      <input class="field-input" id="tempat" type="text" placeholder="Contoh: Bangi, Selangor">
+      <p class="field-note">Nama negeri dan daerah sahaja. Contohnya: Bangi, Selangor</p>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label" for="referrer">Nama Referrer</label>
+      <input class="field-input" id="referrer" type="text" placeholder="Nama orang yang memperkenalkan anda">
+      <p class="field-note">Orang yang memperkenalkan anda kepada peluang ini</p>
+    </div>
+
+    <div style="margin-top:28px">
+      <button class="btn-check" onclick="bukaModal()">
+        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        Semak Maklumat
+      </button>
+    </div>
+  </div>
+
+  <!-- Success state -->
+  <div class="success-card" id="successCard">
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+    </div>
+    <div class="success-title">Pendaftaran Berjaya!</div>
+    <p class="success-msg">Terima kasih kerana mendaftar. Maklumat anda telah dihantar.<br><br>
+    Sementara menunggu pengesahan, sila muat turun aplikasi Public Gold:</p>
+    <div class="app-links">
+      <a class="app-btn" href="https://play.google.com/store/apps/details?id=com.pgmapp.publicgold" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3l8 8m0 0l8 8M11 11l8-8M11 11L3 19"/><rect x="2" y="2" width="20" height="20" rx="3" stroke="none" fill="rgba(201,168,76,0.15)"/></svg>
+        Android
+      </a>
+      <a class="app-btn" href="https://apps.apple.com/my/app/public-gold/id1591580964" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8 2 5 6 5 10c0 5 7 12 7 12s7-7 7-12c0-4-3-8-7-8z" stroke="none" fill="rgba(201,168,76,0.15)"/><circle cx="12" cy="10" r="3"/></svg>
+        iOS / iPhone
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Semak Maklumat -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-warning">
+        <span class="modal-warning-icon">⚠️</span>
+        <div class="modal-warning-text">
+          <strong>Sila sahkan maklumat anda sebelum hantar</strong> supaya sistem berjalan lancar.
+          Jika ada detail yang tidak tepat, sistem boleh terganggu dan perlu tunggu sehingga 24 jam.
+          Boleh double check dan sahkan semula.
+        </div>
+      </div>
+      <div class="modal-title">Semakan Maklumat Anda</div>
+      <div class="modal-sub">Pastikan semua maklumat adalah betul sebelum menghantar.</div>
+    </div>
+    <div class="modal-body" id="reviewContent"></div>
+    <div class="modal-footer">
+      <button class="btn-edit" onclick="tutupModal()">✎ &nbsp;Betulkan Maklumat</button>
+      <button class="btn-submit" id="btnDaftar" onclick="hantarDaftar()">Daftar Sekarang →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><div class="toast-dot" id="toastDot"></div><span id="toastMsg"></span></div>
+
+<script>
+// ⬇ Gantikan dengan URL deployment Google Apps Script anda
+const SHEET_URL   = 'https://script.google.com/macros/s/AKfycbyF1qaWFpU-UTYeserR8btuWIVIaXYZhzRywROmQz8N3JnIAkce0VLwxuQVMkMfdyt7xA/exec';
+const WHATSAPP_NO = '601126704897';
+
+function showToast(msg, isErr){
+  const t=document.getElementById('toast');
+  const d=document.getElementById('toastDot');
+  document.getElementById('toastMsg').textContent=msg;
+  d.className='toast-dot'+(isErr?' err':'');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+function validate(){
+  const fields=[
+    {id:'namapenuh',label:'Nama Penuh'},
+    {id:'jenisId',label:'Jenis ID'},
+    {id:'nomberId',label:'Nombor ID'},
+    {id:'email',label:'E-mel'},
+    {id:'telefon',label:'No Telefon'},
+    {id:'tempat',label:'Tempat Tinggal'}
+  ];
+  for(const f of fields){
+    const el=document.getElementById(f.id);
+    if(!el.value.trim()){
+      showToast('Sila isi: '+f.label,true);
+      el.focus();el.style.borderColor='var(--danger)';
+      setTimeout(()=>el.style.borderColor='',2500);
+      return false;
+    }
+  }
+  const emailReg=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!emailReg.test(document.getElementById('email').value.trim())){
+    showToast('Format e-mel tidak sah',true);return false;
+  }
+  return true;
+}
+
+function getData(){
+  return {
+    nama: document.getElementById('namapenuh').value.trim(),
+    jenisId: document.getElementById('jenisId').value,
+    nomberId: document.getElementById('nomberId').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    telefon: document.getElementById('kodNegara').value+document.getElementById('telefon').value.trim(),
+    tempat: document.getElementById('tempat').value.trim(),
+    referrer: document.getElementById('referrer').value.trim()||'-',
+    tarikh: new Date().toLocaleString('ms-MY',{timeZone:'Asia/Kuala_Lumpur'})
+  };
+}
+
+function bukaModal(){
+  if(!validate())return;
+  const d=getData();
+  const rows=[
+    ['Nama Penuh',d.nama],
+    ['Jenis ID',d.jenisId],
+    ['Nombor ID',d.nomberId],
+    ['E-mel',d.email],
+    ['No Telefon',d.telefon],
+    ['Tempat Tinggal',d.tempat],
+    ['Referrer',d.referrer],
+    ['Tarikh Daftar',d.tarikh]
+  ];
+  document.getElementById('reviewContent').innerHTML=rows.map(([k,v])=>`
+    <div class="review-row">
+      <span class="review-key">${k}</span>
+      <span class="review-val">${v}</span>
+    </div>`).join('');
+  document.getElementById('modalOverlay').classList.add('active');
+  document.getElementById('progressBar').style.width='100%';
+}
+
+function tutupModal(){
+  document.getElementById('modalOverlay').classList.remove('active');
+  document.getElementById('progressBar').style.width='50%';
+}
+
+async function hantarDaftar(){
+  const btn=document.getElementById('btnDaftar');
+  btn.disabled=true;btn.textContent='Menghantar...';
+  const d=getData();
+
+  // Hantar ke Google Sheet melalui Apps Script
+  try{
+    const payload={action:'register',...d};
+    const res=await fetch(SHEET_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    const json=await res.json();
+    if(!json.ok){
+      showToast('Ralat: '+json.msg,true);
+      btn.disabled=false;btn.textContent='Daftar Sekarang →';
+      return;
+    }
+  }catch(e){
+    // no-cors fallback
+    try{
+      await fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register',...d})});
+    }catch(_){}
+  }
+
+  // Buka WhatsApp
+  const skrip=`*🔔 Pendaftaran Terbaru*\n\n👤 *Nama:* ${d.nama}\n👥 *Referrer:* ${d.referrer}\n\nSementara menunggu, boleh download app Public Gold di bawah dulu :-\n\n● Android\nhttps://play.google.com/store/apps/details?id=com.pgmapp.publicgold\n\n● iOS/iPhone\nhttps://apps.apple.com/my/app/public-gold/id1591580964`;
+  const url='https://api.whatsapp.com/send?phone='+WHATSAPP_NO+'&text='+encodeURIComponent(skrip);
+  const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';document.body.appendChild(a);a.click();document.body.removeChild(a);
+
+  tutupModal();
+  document.getElementById('mainForm').style.display='none';
+  document.getElementById('successCard').style.display='block';
+  document.querySelector('.form-header').style.display='none';
+  showToast('Pendaftaran berjaya dihantar!');
+}
+
+// Prevent all popups / ads
+window.open_orig=window.open;
+const allowedOpens=[];
+</script>
+</body>
+</html>
