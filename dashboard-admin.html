@@ -423,17 +423,10 @@ function tutupModal(){
 
 function copyAll(){
   const r=DB[currentDetailIdx];
-  const txt=`ID Rekod: ${r.id}
-Nama Penuh: ${r.nama}
-Jenis ID: ${r.jenisId}
-Nombor ID: ${r.nomberId}
-Email: ${r.email}
-No Telefon: ${r.telefon}
-Tempat Tinggal: ${r.tempat}
-Referrer: ${r.referrer}
-Tarikh Daftar: ${r.tarikh}
-Status Daftar: ${r.statusDaftar}
-Status Bayar: ${r.statusBayar}`;
+  const txt=`Nama: ${r.nama||'-'}
+IC: ${r.nomberId||'-'}
+Email: ${r.email||'-'}
+Mobile: ${r.telefon||'-'}`;
   navigator.clipboard.writeText(txt).then(()=>showToast('Maklumat disalin!')).catch(()=>{
     const ta=document.createElement('textarea');
     ta.value=txt;document.body.appendChild(ta);ta.select();
