@@ -1,0 +1,569 @@
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --primary: #0A2342;
+  --primary-mid: #1B3E6E;
+  --accent: #00B4D8;
+  --accent-light: #90E0EF;
+  --accent-glow: rgba(0,180,216,0.15);
+  --gold: #F4A800;
+  --surface: #F0F4FA;
+  --surface2: #E4EAF5;
+  --bubble-bot: #FFFFFF;
+  --bubble-user: linear-gradient(135deg, #00B4D8 0%, #0077B6 100%);
+  --text: #0A1628;
+  --text-muted: #5A6B85;
+  --text-light: #9AAEC4;
+  --border: rgba(0,60,120,0.1);
+  --border-accent: rgba(0,180,216,0.25);
+}
+
+#wh-chat-app {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 9999;
+  display: flex; flex-direction: column;
+  background: var(--surface);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: var(--text);
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+#wh-chat-app .wh-header {
+  flex-shrink: 0; height: 72px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%);
+  display: flex; align-items: center;
+  padding: 0 1.25rem; gap: 14px;
+  z-index: 10; position: relative;
+  box-shadow: 0 2px 20px rgba(10,35,66,0.2);
+}
+#wh-chat-app .wh-header::after {
+  content: ''; position: absolute;
+  bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,180,216,0.4), transparent);
+}
+#wh-chat-app .wh-avatar-wrap { position: relative; flex-shrink: 0; }
+#wh-chat-app .wh-avatar {
+  width: 46px; height: 46px; border-radius: 50%;
+  object-fit: cover; border: 2.5px solid var(--accent-light); display: block;
+}
+#wh-chat-app .wh-status-dot {
+  position: absolute; bottom: 1px; right: 1px;
+  width: 11px; height: 11px; background: #2ECC71;
+  border: 2px solid var(--primary); border-radius: 50%;
+}
+#wh-chat-app .wh-header-info { flex: 1; }
+#wh-chat-app .wh-header-name {
+  font-family: 'Sora', sans-serif; font-size: 15px;
+  font-weight: 600; color: white; letter-spacing: -0.01em;
+}
+#wh-chat-app .wh-header-status {
+  font-size: 12px; color: rgba(255,255,255,0.6);
+  margin-top: 1px; display: flex; align-items: center; gap: 5px;
+}
+#wh-chat-app .wh-header-status::before {
+  content: ''; width: 6px; height: 6px;
+  background: #2ECC71; border-radius: 50%; display: inline-block;
+}
+#wh-chat-app .wh-header-actions { display: flex; gap: 8px; }
+#wh-chat-app .wh-header-btn {
+  width: 38px; height: 38px; background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s; text-decoration: none;
+}
+#wh-chat-app .wh-header-btn:hover { background: rgba(255,255,255,0.18); }
+#wh-chat-app .wh-header-btn svg { width: 18px; height: 18px; }
+
+#wh-chat-app .wh-messages {
+  flex: 1; overflow-y: auto; padding: 1.25rem;
+  display: flex; flex-direction: column; gap: 10px;
+  scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
+}
+#wh-chat-app .wh-messages::-webkit-scrollbar { width: 4px; }
+#wh-chat-app .wh-messages::-webkit-scrollbar-track { background: transparent; }
+#wh-chat-app .wh-messages::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 2px; }
+
+#wh-chat-app .wh-date-divider {
+  text-align: center; font-size: 11px; color: var(--text-light);
+  font-weight: 500; letter-spacing: 0.05em; padding: 4px 0;
+  display: flex; align-items: center; gap: 10px;
+}
+#wh-chat-app .wh-date-divider::before,
+#wh-chat-app .wh-date-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+#wh-chat-app .wh-msg-row {
+  display: flex; align-items: flex-end; gap: 8px;
+  animation: whMsgIn 0.25s ease forwards;
+  opacity: 0; transform: translateY(8px);
+}
+@keyframes whMsgIn { to { opacity: 1; transform: translateY(0); } }
+#wh-chat-app .wh-msg-row.bot { justify-content: flex-start; }
+#wh-chat-app .wh-msg-row.user { justify-content: flex-end; }
+
+#wh-chat-app .wh-msg-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  object-fit: cover; border: 1.5px solid var(--border-accent);
+  flex-shrink: 0; margin-bottom: 2px;
+}
+#wh-chat-app .wh-msg-avatar.hidden { opacity: 0; pointer-events: none; }
+#wh-chat-app .wh-bubble-wrap { display: flex; flex-direction: column; max-width: 75%; }
+#wh-chat-app .wh-msg-row.user .wh-bubble-wrap { align-items: flex-end; }
+
+#wh-chat-app .wh-bubble {
+  padding: 0.75rem 1rem; border-radius: 18px;
+  font-size: 14.5px; line-height: 1.65;
+  position: relative; word-break: break-word;
+}
+#wh-chat-app .wh-bubble.bot {
+  background: var(--bubble-bot); color: var(--text);
+  border: 1px solid var(--border); border-bottom-left-radius: 6px;
+  box-shadow: 0 2px 10px rgba(10,35,66,0.06);
+}
+#wh-chat-app .wh-bubble.user {
+  background: var(--bubble-user); color: white;
+  border-bottom-right-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0,119,182,0.3);
+}
+#wh-chat-app .wh-bubble.bot .wh-sender {
+  font-size: 11px; font-weight: 600; color: var(--accent);
+  display: block; margin-bottom: 4px;
+  letter-spacing: 0.03em; text-transform: uppercase;
+}
+#wh-chat-app .wh-bubble .wh-time {
+  font-size: 10.5px; color: var(--text-light);
+  margin-top: 4px; display: block; text-align: right;
+}
+#wh-chat-app .wh-bubble.user .wh-time { color: rgba(255,255,255,0.6); }
+
+/* ─── FAQ CARD ─── */
+#wh-chat-app .wh-faq-card {
+  background: white; border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 14px; border-top-left-radius: 6px;
+  padding: 0.875rem 1rem; max-width: 78%;
+  box-shadow: 0 2px 12px rgba(10,35,66,0.06);
+  animation: whMsgIn 0.25s ease forwards;
+  opacity: 0; transform: translateY(8px);
+}
+#wh-chat-app .wh-faq-card-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+  color: var(--accent); text-transform: uppercase; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 5px;
+}
+#wh-chat-app .wh-faq-card-label::before {
+  content: ''; width: 5px; height: 5px;
+  background: var(--accent); border-radius: 50%;
+}
+#wh-chat-app .wh-faq-card-title {
+  font-family: 'Sora', sans-serif; font-size: 13.5px;
+  font-weight: 600; color: var(--primary); margin-bottom: 6px; line-height: 1.4;
+}
+#wh-chat-app .wh-faq-card-body {
+  font-size: 13.5px; color: var(--text-muted); line-height: 1.65;
+}
+
+/* ─── KEYWORD HIGHLIGHT ─── */
+#wh-chat-app .wh-faq-card-body mark {
+  background: rgba(0,180,216,0.15);
+  color: var(--primary); border-radius: 3px;
+  padding: 0 2px; font-weight: 600;
+}
+
+#wh-chat-app .wh-faq-card-time {
+  font-size: 10px; color: var(--text-light);
+  margin-top: 8px; text-align: right;
+}
+
+/* ─── TYPING ─── */
+#wh-chat-app .wh-typing-indicator {
+  display: flex; align-items: flex-end; gap: 8px;
+  animation: whMsgIn 0.25s ease forwards;
+  opacity: 0; transform: translateY(8px);
+}
+#wh-chat-app .wh-typing-bubble {
+  background: white; border: 1px solid var(--border);
+  border-radius: 18px; border-bottom-left-radius: 6px;
+  padding: 0.875rem 1rem;
+  display: flex; align-items: center; gap: 5px;
+  box-shadow: 0 2px 10px rgba(10,35,66,0.06);
+}
+#wh-chat-app .wh-typing-dot {
+  width: 7px; height: 7px; background: var(--accent-light);
+  border-radius: 50%; animation: whTypingPulse 1.2s ease-in-out infinite;
+}
+#wh-chat-app .wh-typing-dot:nth-child(2) { animation-delay: 0.15s; }
+#wh-chat-app .wh-typing-dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes whTypingPulse {
+  0%,60%,100% { transform:translateY(0); opacity:0.4; }
+  30% { transform:translateY(-5px); opacity:1; }
+}
+
+/* ─── SUGGESTIONS ─── */
+#wh-chat-app .wh-suggestions {
+  padding: 0 1.25rem 0.75rem;
+  display: flex; gap: 8px; overflow-x: auto; flex-shrink: 0;
+}
+#wh-chat-app .wh-suggestions::-webkit-scrollbar { display: none; }
+#wh-chat-app .wh-suggestion-pill {
+  flex-shrink: 0; background: white;
+  border: 1.5px solid var(--border-accent); border-radius: 50px;
+  padding: 6px 14px; font-size: 12.5px; font-weight: 500;
+  color: var(--primary-mid); cursor: pointer;
+  white-space: nowrap; transition: all 0.2s; display: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+#wh-chat-app .wh-suggestion-pill.visible { display: block; }
+#wh-chat-app .wh-suggestion-pill:hover {
+  background: var(--accent-glow); border-color: var(--accent); color: var(--accent);
+}
+
+/* ─── INPUT BAR ─── */
+#wh-chat-app .wh-input-bar {
+  flex-shrink: 0; background: white;
+  border-top: 1px solid var(--border);
+  padding: 0.875rem 1rem;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 -4px 20px rgba(10,35,66,0.05);
+}
+#wh-chat-app .wh-input-wrap {
+  flex: 1; background: var(--surface);
+  border: 1.5px solid var(--border); border-radius: 50px;
+  display: flex; align-items: center;
+  padding: 0 16px; transition: all 0.2s; gap: 8px;
+}
+#wh-chat-app .wh-input-wrap:focus-within {
+  border-color: var(--accent); background: white;
+  box-shadow: 0 0 0 4px var(--accent-glow);
+}
+#wh-chat-app .wh-input-wrap svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--text-light); }
+#wh-chat-app #whUserInput {
+  flex: 1; background: transparent; border: none; outline: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14.5px; color: var(--text); padding: 0.625rem 0; min-width: 0;
+}
+#wh-chat-app #whUserInput::placeholder { color: var(--text-light); }
+#wh-chat-app .wh-send-btn {
+  width: 46px; height: 46px;
+  background: linear-gradient(135deg, var(--accent) 0%, #0077B6 100%);
+  border: none; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(0,180,216,0.3);
+}
+#wh-chat-app .wh-send-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0,180,216,0.4); }
+#wh-chat-app .wh-send-btn:active { transform: scale(0.96); }
+#wh-chat-app .wh-send-btn svg { width: 18px; height: 18px; }
+
+/* ─── NOT FOUND ─── */
+#wh-chat-app .wh-notfound-bubble {
+  background: white; border: 1px solid rgba(244,168,0,0.25);
+  border-left: 3px solid var(--gold);
+  border-radius: 14px; border-top-left-radius: 6px;
+  padding: 0.875rem 1rem; max-width: 78%;
+  box-shadow: 0 2px 12px rgba(10,35,66,0.06);
+  animation: whMsgIn 0.25s ease forwards;
+  opacity: 0; transform: translateY(8px);
+}
+#wh-chat-app .wh-notfound-title {
+  font-size: 13.5px; color: var(--text); line-height: 1.65; margin-bottom: 10px;
+}
+#wh-chat-app .wh-wa-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: #25D366; color: white; border-radius: 8px;
+  padding: 8px 14px; font-size: 13px; font-weight: 600;
+  text-decoration: none; transition: all 0.2s;
+}
+#wh-chat-app .wh-wa-btn:hover { background: #1ebe5a; transform: translateY(-1px); }
+#wh-chat-app .wh-wa-btn svg { width: 16px; height: 16px; }
+#wh-chat-app .wh-notfound-time {
+  font-size: 10px; color: var(--text-light); margin-top: 8px; text-align: right;
+}
+
+@keyframes whBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+</style>
+
+<div id="wh-chat-app">
+  <div class="wh-header">
+    <div class="wh-avatar-wrap">
+      <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjH8kKw3_SWdf96cjqIx_j4exadqr0togYGxXJxWA8D7z40VpkkLeyeyRDrZRCdVXdKPA2LuOtxXZ-eRffWfnM0_UPa6g7KGkCLAx0Br1DoJO3MC3P7jZXg6EZ3FsL0zdiI-RRzcf9ArG87YT4WvpQ5V1PEpe7kCQc0C3SePyxBo5ONOFkmAgYKXDOFTyo=s16000" alt="Avatar" class="wh-avatar">
+      <div class="wh-status-dot"></div>
+    </div>
+    <div class="wh-header-info">
+      <div class="wh-header-name">Pembantu Wan Hasbullah</div>
+      <div class="wh-header-status">Dalam talian sekarang</div>
+    </div>
+    <div class="wh-header-actions">
+      <a href="PAGE_FORM_URL_SINI" class="wh-header-btn" title="Hantar Pertanyaan">
+        <svg fill="none" stroke="rgba(255,255,255,0.8)" viewBox="0 0 24 24" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      </a>
+      <a href="https://wa.me/601126704897" class="wh-header-btn" title="WhatsApp" target="_blank">
+        <svg fill="rgba(255,255,255,0.8)" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="wh-messages" id="whMessages">
+    <div class="wh-date-divider">Hari ini</div>
+  </div>
+
+  <div class="wh-suggestions" id="whSuggestions"></div>
+
+  <div class="wh-input-bar">
+    <div class="wh-input-wrap">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="whUserInput" placeholder="Taip pertanyaan anda di sini..." autocomplete="off" autocorrect="off">
+    </div>
+    <button class="wh-send-btn" onclick="whSendMessage()">
+      <svg fill="none" stroke="white" viewBox="0 0 24 24" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+(function() {
+  const SHEET_URL  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQ2UJnKP6wyu_05ffuPUbuXIT8NImKFyPGX2QWXiaEy4R5Jr1kO6GeVDhs6qDa0r2rSGWoQJFtnHGP/pub?gid=0&single=true&output=csv';
+  const AVATAR     = 'https://blogger.googleusercontent.com/img/a/AVvXsEjH8kKw3_SWdf96cjqIx_j4exadqr0togYGxXJxWA8D7z40VpkkLeyeyRDrZRCdVXdKPA2LuOtxXZ-eRffWfnM0_UPa6g7KGkCLAx0Br1DoJO3MC3P7jZXg6EZ3FsL0zdiI-RRzcf9ArG87YT4WvpQ5V1PEpe7kCQc0C3SePyxBo5ONOFkmAgYKXDOFTyo=s16000';
+
+  // Kata yang diabaikan dalam carian (stop words BM + EN)
+  const STOP_WORDS = new Set([
+    'yang','dan','di','ke','dari','pada','untuk','dengan','ini','itu',
+    'ada','tidak','boleh','saya','anda','encik','puan','cara','macam',
+    'mana','bagaimana','apa','bila','berapa','how','what','where','when',
+    'the','is','are','a','an','in','of','to','for','can','i','you'
+  ]);
+
+  let faqData  = [];
+  let isTyping = false;
+
+  /* ── HELPERS ── */
+  const $ = id => document.getElementById(id);
+  const whNow = () => new Date().toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'});
+  const whEsc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const whScroll = () => setTimeout(()=>$('whMessages').scrollTo({top:$('whMessages').scrollHeight,behavior:'smooth'}),80);
+
+  /* ── CSV PARSER ── */
+  function parseCSV(text) {
+    const rows = [];
+    for (const line of text.trim().split('\n')) {
+      const cols = []; let cur = '', inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (c === '"') { if (inQ && line[i+1]==='"'){cur+='"';i++;} else inQ=!inQ; }
+        else if (c===',' && !inQ) { cols.push(cur.trim()); cur=''; }
+        else cur += c;
+      }
+      cols.push(cur.trim()); rows.push(cols);
+    }
+    return rows;
+  }
+
+  /* ── LOAD FAQ ── */
+  async function whLoadFAQ() {
+    try {
+      const text = await (await fetch(SHEET_URL)).text();
+      faqData = parseCSV(text).slice(1).map(c=>({
+        tajuk:   (c[1]||'').trim(),
+        huraian: (c[2]||'').trim()
+      })).filter(d => d.tajuk && d.huraian);
+      whShowSuggestions();
+    } catch(e){ console.warn('FAQ error:',e); }
+  }
+
+  /* ── SMART SEARCH ──
+     Pecahkan soalan kepada kata-kata, buang stop words,
+     kemudian cari setiap kata dalam tajuk + huraian.
+     Kata pendek (≥2 huruf) turut dicari supaya "GAP","topup" dll berjaya.
+  */
+  function whSearch(query) {
+    if (!query || !faqData.length) return [];
+
+    const clean = query.toLowerCase()
+      .replace(/[^\w\s]/g,'')   // buang tanda baca
+      .replace(/\s+/g,' ').trim();
+
+    // Semua kata dari soalan, termasuk pendek (≥2 huruf), tolak stop words
+    const keywords = clean.split(' ').filter(w => w.length >= 2 && !STOP_WORDS.has(w));
+
+    if (!keywords.length) return [];
+
+    const scored = faqData.map(item => {
+      const hay = (item.tajuk + ' ' + item.huraian).toLowerCase();
+      let score = 0;
+
+      // Padanan tepat keseluruhan frasa → skor tinggi
+      if (hay.includes(clean)) score += 20;
+
+      keywords.forEach(kw => {
+        if (hay.includes(kw)) {
+          // Kata dalam tajuk lebih berat
+          if (item.tajuk.toLowerCase().includes(kw)) score += 6;
+          else score += 3;
+        }
+      });
+
+      return { ...item, score, keywords };
+    }).filter(i => i.score > 0);
+
+    return scored.sort((a,b)=>b.score-a.score).slice(0,3);
+  }
+
+  /* ── HIGHLIGHT kata carian dalam teks ── */
+  function whHighlight(text, keywords) {
+    let safe = whEsc(text);
+    keywords.forEach(kw => {
+      const re = new RegExp('('+kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')', 'gi');
+      safe = safe.replace(re, '<mark>$1</mark>');
+    });
+    return safe;
+  }
+
+  /* ── TYPING INDICATOR ── */
+  function whAddTyping() {
+    whRemoveTyping();
+    const d = document.createElement('div');
+    d.className='wh-typing-indicator'; d.id='whTyping';
+    d.innerHTML=`<img src="${AVATAR}" class="wh-msg-avatar">
+      <div class="wh-typing-bubble">
+        <div class="wh-typing-dot"></div><div class="wh-typing-dot"></div><div class="wh-typing-dot"></div>
+      </div>`;
+    $('whMessages').appendChild(d); whScroll();
+  }
+  function whRemoveTyping(){ const t=$('whTyping'); if(t) t.remove(); }
+
+  /* ── BUBBLES ── */
+  function whAddBotBubble(html) {
+    const msgs=$('whMessages'), row=document.createElement('div');
+    row.className='wh-msg-row bot';
+    row.innerHTML=`<img src="${AVATAR}" class="wh-msg-avatar">
+      <div class="wh-bubble-wrap">
+        <div class="wh-bubble bot">
+          <span class="wh-sender">Pembantu WH</span>${html}
+          <span class="wh-time">${whNow()}</span>
+        </div>
+      </div>`;
+    msgs.appendChild(row); whScroll();
+  }
+
+  function whAddUserBubble(text) {
+    const msgs=$('whMessages'), row=document.createElement('div');
+    row.className='wh-msg-row user';
+    row.innerHTML=`<div class="wh-bubble-wrap">
+      <div class="wh-bubble user">${text}<span class="wh-time">${whNow()} ✓✓</span>
+      </div></div>`;
+    msgs.appendChild(row); whScroll();
+  }
+
+  function whAddFAQCard(item) {
+    const msgs=$('whMessages');
+    const wrap=document.createElement('div');
+    wrap.style.cssText='display:flex;gap:8px;align-items:flex-end';
+    const img=document.createElement('img');
+    img.src=AVATAR; img.className='wh-msg-avatar';
+    const card=document.createElement('div');
+    card.className='wh-faq-card';
+    card.innerHTML=`
+      <div class="wh-faq-card-label">Rekod FAQ Dijumpai</div>
+      <div class="wh-faq-card-title">${whEsc(item.tajuk)}</div>
+      <div class="wh-faq-card-body">${whHighlight(item.huraian, item.keywords)}</div>
+      <div class="wh-faq-card-time">${whNow()}</div>`;
+    wrap.appendChild(img); wrap.appendChild(card);
+    msgs.appendChild(wrap); whScroll();
+  }
+
+  function whAddNotFound(query) {
+    const msgs=$('whMessages');
+    const wrap=document.createElement('div');
+    wrap.style.cssText='display:flex;gap:8px;align-items:flex-end';
+    const img=document.createElement('img');
+    img.src=AVATAR; img.className='wh-msg-avatar';
+    const card=document.createElement('div');
+    card.className='wh-notfound-bubble';
+    card.innerHTML=`
+      <div class="wh-notfound-title">
+        Maaf, tiada rekod berkaitan <strong>"${whEsc(query)}"</strong> dalam simpanan saya.<br>
+        Sila hubungi Encik Wan Hasbullah secara terus:
+      </div>
+      <a href="https://wa.me/601126704897" class="wh-wa-btn" target="_blank">
+        <svg fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp Encik Wan Hasbullah
+      </a>
+      <div class="wh-notfound-time">${whNow()}</div>`;
+    wrap.appendChild(img); wrap.appendChild(card);
+    msgs.appendChild(wrap); whScroll();
+  }
+
+  /* ── SUGGESTIONS ── */
+  function whShowSuggestions() {
+    const c=$('whSuggestions'); c.innerHTML='';
+    faqData.slice(0,4).forEach(item => {
+      const btn=document.createElement('button');
+      btn.className='wh-suggestion-pill visible';
+      btn.textContent=item.tajuk.length>35?item.tajuk.slice(0,35)+'...':item.tajuk;
+      btn.onclick=()=>{ $('whUserInput').value=item.tajuk; whSendMessage(); };
+      c.appendChild(btn);
+    });
+  }
+
+  /* ── SEND ── */
+  window.whSendMessage = async function() {
+    const input=$('whUserInput');
+    const query=input.value.trim();
+    if (!query || isTyping) return;
+    isTyping=true; input.value=''; input.focus();
+
+    whAddUserBubble(whEsc(query));
+    whAddTyping();
+    await new Promise(r=>setTimeout(r, 800+Math.random()*500));
+    whRemoveTyping();
+
+    const results=whSearch(query);
+    if (results.length) {
+      whAddBotBubble(`Saya jumpa <strong>${results.length}</strong> rekod berkaitan pertanyaan anda:`);
+      for (let i=0;i<results.length;i++) {
+        await new Promise(r=>setTimeout(r,i*300));
+        whAddFAQCard(results[i]);
+      }
+    } else {
+      whAddNotFound(query);
+    }
+    isTyping=false;
+  };
+
+  $('whUserInput').addEventListener('keydown', e=>{
+    if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();whSendMessage();}
+  });
+
+  /* ── WELCOME ── */
+  async function whWelcome() {
+    const msg='Assalamualaikum! Saya pembantu Encik Wan Hasbullah. Taip mana-mana perkataan berkaitan soalan anda — saya akan cari maklumat dari rekod kami.';
+    whAddTyping();
+    await new Promise(r=>setTimeout(r,1400));
+    whRemoveTyping();
+
+    const msgs=$('whMessages'), row=document.createElement('div');
+    row.className='wh-msg-row bot';
+    row.innerHTML=`<img src="${AVATAR}" class="wh-msg-avatar">
+      <div class="wh-bubble-wrap"><div class="wh-bubble bot">
+        <span class="wh-sender">Pembantu WH</span>
+        <span id="whWT"></span><span id="whC" style="animation:whBlink 0.8s step-end infinite">▎</span>
+        <span class="wh-time" id="whTM" style="display:none">${whNow()}</span>
+      </div></div>`;
+    msgs.appendChild(row); whScroll();
+
+    const typed=$('whWT'), cur=$('whC');
+    for(let i=0;i<=msg.length;i++){
+      typed.textContent=msg.slice(0,i); whScroll();
+      await new Promise(r=>setTimeout(r,22));
+    }
+    cur.remove(); $('whTM').style.display='block'; whScroll();
+    whLoadFAQ();
+  }
+
+  setTimeout(whWelcome, 600);
+})();
+</script>
