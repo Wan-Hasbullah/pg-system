@@ -95,10 +95,7 @@
       opacity: 0.8;
       margin-bottom: 2px;
     }
-    .banner-info {
-      font-size: clamp(14px, 4vw, 17px);
-      font-weight: 600;
-    }
+    .banner-info { font-size: clamp(14px, 4vw, 17px); font-weight: 600; }
     .banner-juz { margin-left: auto; text-align: center; flex-shrink: 0; }
     .banner-juz-num {
       font-family: 'Amiri', serif;
@@ -290,14 +287,14 @@
     <div class="stat-label">Jumlah Hari</div>
     <div class="stat-number" id="stat-days">—</div>
     <div class="stat-sub">hari</div>
-    <div class="stat-since">Sejak 31 Okt 2016</div>
+    <div class="stat-since">Sejak 25 Okt 2016</div>
   </div>
   <div class="stat-card gold">
-    <span class="stat-icon">📖</span>
-    <div class="stat-label">Jumlah Juzuk</div>
+    <span class="stat-icon">🌙</span>
+    <div class="stat-label">Jumlah Khatam</div>
     <div class="stat-number" id="stat-juz">—</div>
-    <div class="stat-sub">juzuk</div>
-    <div class="stat-since">1 juz sehari</div>
+    <div class="stat-sub">kali khatam</div>
+    <div class="stat-since">Sejak 25 Okt 2016</div>
   </div>
 </div>
 
@@ -372,12 +369,13 @@
     setTimeout(() => todayRow.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
   }
 
-  // Stats: kiraan hari & juz sejak 31 Okt 2016
-  const startDate = new Date(2016, 9, 31);
+  // Stats: kiraan hari & khatam sejak 25 Okt 2016
+  const startDate = new Date(2016, 9, 25); // 25 Oktober 2016
   const today     = new Date();
-  today.setHours(0,0,0,0);
-  startDate.setHours(0,0,0,0);
+  today.setHours(0, 0, 0, 0);
+  startDate.setHours(0, 0, 0, 0);
   const diffDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+  const khatam   = Math.floor(diffDays / 30); // 1 khatam = 30 juz
 
   function animateCount(el, target, duration) {
     const start = performance.now();
@@ -391,7 +389,7 @@
   }
 
   animateCount(document.getElementById('stat-days'), diffDays, 1200);
-  animateCount(document.getElementById('stat-juz'),  diffDays, 1200);
+  animateCount(document.getElementById('stat-juz'),  khatam,   1200);
 </script>
 </body>
 </html>
