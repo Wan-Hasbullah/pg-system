@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pembantu Wan Hasbullah</title>
+<title>Assistant Wan Hasbullah</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
@@ -259,7 +259,7 @@ html, body {
       <div class="wh-status-dot"></div>
     </div>
     <div class="wh-header-info">
-      <div class="wh-header-name">Pembantu Wan Hasbullah</div>
+      <div class="wh-header-name">Assistant Wan Hasbullah</div>
       <div class="wh-header-status">Dalam talian sekarang</div>
     </div>
     <div class="wh-header-actions">
@@ -323,7 +323,7 @@ html, body {
     row.innerHTML = `<img src="${AVATAR}" class="wh-msg-avatar">
       <div class="wh-bubble-wrap">
         <div class="wh-bubble bot">
-          <span class="wh-sender">Pembantu WH</span>${html}
+          <span class="wh-sender">Assistant Encik Wan</span>${html}
           <span class="wh-time">${whNow()}</span>
         </div>
       </div>`;
@@ -382,7 +382,7 @@ html, body {
     row.className = 'wh-msg-row bot';
     row.innerHTML = `<img src="${AVATAR}" class="wh-msg-avatar">
       <div class="wh-bubble-wrap"><div class="wh-bubble bot">
-        <span class="wh-sender">Pembantu WH</span>
+        <span class="wh-sender">Assistant WH</span>
         <span id="whWT"></span><span id="whC" style="animation:whBlink 0.8s step-end infinite">▎</span>
         <span class="wh-time" id="whTM" style="display:none">${whNow()}</span>
       </div></div>`;
@@ -450,8 +450,8 @@ html, body {
     /* Chat 5 – soal boleh sertai saluran */
     await sleep(900);
     await whBotSay(`
-      Pautan ini <a href="https://whatsapp.com/channel/0029VaQTCIN3LdQZhU4O3r3s" target="_blank">
-      https://whatsapp.com/channel/0029VaQTCIN3LdQZhU4O3r3s</a> — boleh klik dan boleh sertai?
+      Pautan ini → <a href="https://whatsapp.com/channel/0029VaQTCIN3LdQZhU4O3r3s" target="_blank">
+      https://whatsapp.com/channel/0029VaQTCIN3LdQZhU4O3r3s</a> boleh klik dan boleh join?
     `, 1000);
 
     whAddQuickReplies([
@@ -465,17 +465,17 @@ html, body {
     /* Chat 1 – SOP & Tutorial */
     await whBotSay(`
       Untuk <strong>SOP Public Gold &amp; Tutorial Transaksi Aplikasi</strong>, boleh rujuk dalam
-      <em>deskripsi</em> kumpulan WhatsApp:<br><br>
+      <em>deskripsi</em> group WhatsApp:<br><br>
       <a href="https://chat.whatsapp.com/IblBPUN5d2sFm8F6r2b2tt" target="_blank">
         https://chat.whatsapp.com/IblBPUN5d2sFm8F6r2b2tt
       </a><br><br>
-      Pada masa akan datang boleh rujuk deskripsi dalam kumpulan tersebut sekiranya ada apa-apa yang berkaitan dengan Public Gold atau aplikasinya.
+      Pada masa akan datang boleh rujuk deskripsi dalam group tersebut sekiranya ada apa-apa yang berkaitan dengan Public Gold atau aplikasinya.
     `, 1000);
 
     /* Chat 2 – simpan nombor */
     await sleep(900);
     await whBotSay(`
-      Dari semasa ke semasa, saya atau team kami akan menghantar WhatsApp secara peribadi untuk mengemaskini tentang Public Gold dan berkongsi ilmu emas.<br><br>
+      Dari semasa ke semasa, Encik Wan Hasbullah atau team kami akan menghantar WhatsApp secara peribadi untuk mengemaskini tentang Public Gold dan berkongsi ilmu emas.<br><br>
       Jadi boleh simpan dahulu nombor WhatsApp team kami supaya tidak terkejut nanti:<br><br>
       <a href="http://www.wasap.my/601126159697" target="_blank">http://www.wasap.my/601126159697</a>
       &nbsp;<strong>(Cik Humairah)</strong>
@@ -484,7 +484,7 @@ html, body {
     /* Chat 3 – video */
     await sleep(900);
     await whBotSay(`
-      Boleh tonton video pendek dalam halaman saya untuk
+      Boleh tonton video pendek dalam page kami untuk
       <strong>mengelakkan kerugian menyimpan emas di Public Gold.</strong><br><br>
       Klik di sini ya: <a href="https://pgolink.com/elakkan-kerugian" target="_blank">https://pgolink.com/elakkan-kerugian</a>
     `, 1200);
@@ -492,7 +492,7 @@ html, body {
     /* Chat 4 – butang WhatsApp */
     await sleep(900);
     await whBotSay(`
-      Sekiranya ada sebarang isu berkaitan Public Gold, boleh WhatsApp Encik Wan Hasbullah ya 👌<br><br>
+      Sekiranya ada isu teknikal berkaitan Public Gold, boleh WhatsApp Encik Wan Hasbullah ya 👌<br><br>
       <a href="https://wa.me/601126704897" target="_blank"
          style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:white;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;text-decoration:none;">
         ${waSvg}&nbsp;WhatsApp Encik Wan Hasbullah
