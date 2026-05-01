@@ -179,10 +179,10 @@
 
     .schedule-item {
       display: grid;
-      grid-template-columns: 90px 1fr;
+      grid-template-columns: 120px 1fr; /* Diubah: Lebarkan kolum masa untuk jarak lebih besar */
       align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
+      gap: 24px; /* Diubah: Tambah jarak (gap) antara masa dan aktiviti */
+      padding: 14px 20px;
       border-radius: 12px;
       border: 1px solid var(--border);
       background: var(--card);
@@ -309,7 +309,11 @@
 
     /* Mobile full table toggle */
     @media (max-width: 600px) {
-      .schedule-item { grid-template-columns: 80px 1fr; gap: 8px; padding: 12px; }
+      .schedule-item { 
+        grid-template-columns: 95px 1fr; /* Lebar masa pada mobile */
+        gap: 16px; /* Jarak masa pada mobile */
+        padding: 12px; 
+      }
       .activity { font-size: 13px; }
       .time-label { font-size: 10px; }
     }
@@ -345,11 +349,8 @@
 
 <script>
 // ── Data ──────────────────────────────────────────────────────────────────────
-// Category: ibadah | education | business | family | rest
 const DAYS = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
 
-// Schedule indexed by day name. JS day: 0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri,6=Sat
-// Map: Ahad=0, Isnin=1, Selasa=2, Rabu=3, Khamis=4, Jumaat=5, Sabtu=6
 const scheduleData = {
   Ahad: [
     { start: '04:30', end: '05:00', label: 'Bangun | Tahajjud', cat: 'ibadah' },
@@ -479,7 +480,6 @@ const scheduleData = {
   ],
 };
 
-// JS: 0=Sun,1=Mon,...,6=Sat → map to our day names
 const JS_DAY_MAP = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
 
 // ── State ─────────────────────────────────────────────────────────────────────
