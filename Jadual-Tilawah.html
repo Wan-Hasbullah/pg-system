@@ -87,10 +87,7 @@
       box-shadow: 0 6px 20px rgba(45,106,79,0.25);
     }
     #today-banner.show { display: flex; }
-    .banner-icon {
-      font-size: 28px;
-      flex-shrink: 0;
-    }
+    .banner-icon { font-size: 28px; flex-shrink: 0; }
     .banner-label {
       font-size: 11px;
       text-transform: uppercase;
@@ -102,11 +99,7 @@
       font-size: clamp(14px, 4vw, 17px);
       font-weight: 600;
     }
-    .banner-juz {
-      margin-left: auto;
-      text-align: center;
-      flex-shrink: 0;
-    }
+    .banner-juz { margin-left: auto; text-align: center; flex-shrink: 0; }
     .banner-juz-num {
       font-family: 'Amiri', serif;
       font-size: clamp(28px, 8vw, 42px);
@@ -120,7 +113,7 @@
       text-transform: uppercase;
     }
 
-    /* ── TABLE WRAPPER ── */
+    /* ── TABLE ── */
     .table-wrap {
       margin: 20px 16px 0;
       background: var(--card-bg);
@@ -128,13 +121,8 @@
       box-shadow: var(--shadow);
       overflow: hidden;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    thead tr {
-      background: var(--green);
-    }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: var(--green); }
     thead th {
       color: #fff;
       font-size: 11px;
@@ -145,49 +133,27 @@
       text-align: left;
     }
     thead th:last-child { text-align: center; }
-
-    tbody tr {
-      border-bottom: 1px solid #f0ece2;
-      transition: background 0.2s;
-    }
+    tbody tr { border-bottom: 1px solid #f0ece2; transition: background 0.2s; }
     tbody tr:last-child { border-bottom: none; }
     tbody tr:hover { background: #faf6ec; }
-
-    td {
-      padding: 12px 16px;
-      font-size: clamp(13px, 3.8vw, 15px);
-    }
-    .td-date {
-      font-weight: 500;
-      white-space: nowrap;
-    }
-    .td-day {
-      color: var(--muted);
-      font-size: clamp(11px, 3vw, 13px);
-      font-weight: 300;
-    }
-    .td-juz {
-      text-align: center;
-    }
+    td { padding: 12px 16px; font-size: clamp(13px, 3.8vw, 15px); }
+    .td-date { font-weight: 500; white-space: nowrap; }
+    .td-day { color: var(--muted); font-size: clamp(11px, 3vw, 13px); font-weight: 300; }
+    .td-juz { text-align: center; }
     .juz-pill {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 38px;
-      height: 38px;
+      width: 38px; height: 38px;
       border-radius: 50%;
       font-family: 'Amiri', serif;
-      font-size: 17px;
-      font-weight: 700;
+      font-size: 17px; font-weight: 700;
       background: #f0ece2;
       color: var(--green);
     }
 
     /* ── TODAY ROW ── */
-    tr.today-row {
-      background: var(--today-bg) !important;
-      position: relative;
-    }
+    tr.today-row { background: var(--today-bg) !important; }
     tr.today-row td { padding-top: 14px; padding-bottom: 14px; }
     tr.today-row .juz-pill {
       background: var(--green);
@@ -200,8 +166,7 @@
       gap: 5px;
       background: var(--gold);
       color: #fff;
-      font-size: 10px;
-      font-weight: 700;
+      font-size: 10px; font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       padding: 3px 9px;
@@ -209,8 +174,7 @@
       margin-top: 4px;
     }
     .blink-dot {
-      width: 6px;
-      height: 6px;
+      width: 6px; height: 6px;
       border-radius: 50%;
       background: #fff;
       animation: blink 1s step-start infinite;
@@ -218,13 +182,58 @@
 
     @keyframes blink {
       0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
+      50%       { opacity: 0; }
     }
     @keyframes pulse-ring {
       0%   { box-shadow: 0 0 0 0 rgba(45,106,79,0.45); }
       70%  { box-shadow: 0 0 0 10px rgba(45,106,79,0); }
       100% { box-shadow: 0 0 0 0 rgba(45,106,79,0); }
     }
+
+    /* ── STATS ── */
+    .stats-wrap {
+      margin: 20px 16px 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px 16px 18px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+    }
+    .stat-card.green::before { background: linear-gradient(90deg, var(--green), var(--green-light)); }
+    .stat-card.gold::before  { background: linear-gradient(90deg, #b8860b, var(--gold-light)); }
+    .stat-icon { font-size: 22px; margin-bottom: 8px; display: block; }
+    .stat-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+    .stat-number {
+      font-family: 'Amiri', serif;
+      font-size: clamp(34px, 10vw, 52px);
+      line-height: 1;
+      font-weight: 700;
+    }
+    .stat-card.green .stat-number { color: var(--green); }
+    .stat-card.gold  .stat-number { color: #b8860b; }
+    .stat-sub  { font-size: 11px; color: var(--muted); margin-top: 6px; }
+    .stat-since { font-size: 10px; color: #bbb; margin-top: 4px; letter-spacing: 0.05em; }
 
     /* ── FOOTER ── */
     footer {
@@ -234,12 +243,8 @@
       font-size: 12px;
       letter-spacing: 0.05em;
     }
-    footer span {
-      color: var(--green);
-      font-weight: 600;
-    }
+    footer span { color: var(--green); font-weight: 600; }
 
-    /* ── RESPONSIVE ── */
     @media (max-width: 380px) {
       thead th, td { padding-left: 12px; padding-right: 12px; }
       .juz-pill { width: 34px; height: 34px; font-size: 15px; }
@@ -254,7 +259,6 @@
   <div class="month-badge">Mei 2025</div>
 </header>
 
-<!-- Today banner -->
 <div id="today-banner">
   <div class="banner-icon">📖</div>
   <div>
@@ -280,64 +284,78 @@
   </table>
 </div>
 
+<div class="stats-wrap">
+  <div class="stat-card green">
+    <span class="stat-icon">📅</span>
+    <div class="stat-label">Jumlah Hari</div>
+    <div class="stat-number" id="stat-days">—</div>
+    <div class="stat-sub">hari</div>
+    <div class="stat-since">Sejak 31 Okt 2016</div>
+  </div>
+  <div class="stat-card gold">
+    <span class="stat-icon">📖</span>
+    <div class="stat-label">Jumlah Juzuk</div>
+    <div class="stat-number" id="stat-juz">—</div>
+    <div class="stat-sub">juzuk</div>
+    <div class="stat-since">1 juz sehari</div>
+  </div>
+</div>
+
 <footer>
   Dikemaskini secara automatik &mdash; <span>Semoga istiqamah</span> 🌿
 </footer>
 
 <script>
   const schedule = [
-    { date: "1-May",  day: "Khamis",  juz: 21 },
-    { date: "2-May",  day: "Jumaat",  juz: 22 },
-    { date: "3-May",  day: "Sabtu",   juz: 23 },
-    { date: "4-May",  day: "Ahad",    juz: 24 },
-    { date: "5-May",  day: "Isnin",   juz: 25 },
-    { date: "6-May",  day: "Selasa",  juz: 26 },
-    { date: "7-May",  day: "Rabu",    juz: 27 },
-    { date: "8-May",  day: "Khamis",  juz: 28 },
-    { date: "9-May",  day: "Jumaat",  juz: 29 },
-    { date: "10-May", day: "Sabtu",   juz: 30 },
-    { date: "11-May", day: "Ahad",    juz: 1  },
-    { date: "12-May", day: "Isnin",   juz: 2  },
-    { date: "13-May", day: "Selasa",  juz: 3  },
-    { date: "14-May", day: "Rabu",    juz: 4  },
-    { date: "15-May", day: "Khamis",  juz: 5  },
-    { date: "16-May", day: "Jumaat",  juz: 6  },
-    { date: "17-May", day: "Sabtu",   juz: 7  },
-    { date: "18-May", day: "Ahad",    juz: 8  },
-    { date: "19-May", day: "Isnin",   juz: 9  },
-    { date: "20-May", day: "Selasa",  juz: 10 },
-    { date: "21-May", day: "Rabu",    juz: 11 },
-    { date: "22-May", day: "Khamis",  juz: 12 },
-    { date: "23-May", day: "Jumaat",  juz: 13 },
-    { date: "24-May", day: "Sabtu",   juz: 14 },
-    { date: "25-May", day: "Ahad",    juz: 15 },
-    { date: "26-May", day: "Isnin",   juz: 16 },
-    { date: "27-May", day: "Selasa",  juz: 17 },
-    { date: "28-May", day: "Rabu",    juz: 18 },
-    { date: "29-May", day: "Khamis",  juz: 19 },
-    { date: "30-May", day: "Jumaat",  juz: 20 },
-    { date: "31-May", day: "Sabtu",   juz: 21 },
+    { date: "1-May",  day: "Jumaat",  juz: 21 },
+    { date: "2-May",  day: "Sabtu",   juz: 22 },
+    { date: "3-May",  day: "Ahad",    juz: 23 },
+    { date: "4-May",  day: "Isnin",   juz: 24 },
+    { date: "5-May",  day: "Selasa",  juz: 25 },
+    { date: "6-May",  day: "Rabu",    juz: 26 },
+    { date: "7-May",  day: "Khamis",  juz: 27 },
+    { date: "8-May",  day: "Jumaat",  juz: 28 },
+    { date: "9-May",  day: "Sabtu",   juz: 29 },
+    { date: "10-May", day: "Ahad",    juz: 30 },
+    { date: "11-May", day: "Isnin",   juz: 1  },
+    { date: "12-May", day: "Selasa",  juz: 2  },
+    { date: "13-May", day: "Rabu",    juz: 3  },
+    { date: "14-May", day: "Khamis",  juz: 4  },
+    { date: "15-May", day: "Jumaat",  juz: 5  },
+    { date: "16-May", day: "Sabtu",   juz: 6  },
+    { date: "17-May", day: "Ahad",    juz: 7  },
+    { date: "18-May", day: "Isnin",   juz: 8  },
+    { date: "19-May", day: "Selasa",  juz: 9  },
+    { date: "20-May", day: "Rabu",    juz: 10 },
+    { date: "21-May", day: "Khamis",  juz: 11 },
+    { date: "22-May", day: "Jumaat",  juz: 12 },
+    { date: "23-May", day: "Sabtu",   juz: 13 },
+    { date: "24-May", day: "Ahad",    juz: 14 },
+    { date: "25-May", day: "Isnin",   juz: 15 },
+    { date: "26-May", day: "Selasa",  juz: 16 },
+    { date: "27-May", day: "Rabu",    juz: 17 },
+    { date: "28-May", day: "Khamis",  juz: 18 },
+    { date: "29-May", day: "Jumaat",  juz: 19 },
+    { date: "30-May", day: "Sabtu",   juz: 20 },
+    { date: "31-May", day: "Ahad",    juz: 21 },
   ];
 
   const now   = new Date();
-  const month = now.getMonth(); // 4 = May
+  const month = now.getMonth();
   const dayN  = now.getDate();
-  const isMay = (month === 4); // May = index 4
+  const isMay = (month === 4);
 
   const tbody = document.getElementById('schedule-body');
 
   schedule.forEach((row, i) => {
     const isToday = isMay && (i + 1 === dayN);
-
     const tr = document.createElement('tr');
     if (isToday) {
       tr.className = 'today-row';
-      // Update banner
       document.getElementById('today-banner').classList.add('show');
       document.getElementById('banner-date').textContent = `${row.day}, ${row.date} 2025`;
       document.getElementById('banner-juz').textContent  = row.juz;
     }
-
     tr.innerHTML = `
       <td class="td-date">
         ${row.date}
@@ -349,13 +367,31 @@
     tbody.appendChild(tr);
   });
 
-  // Auto-scroll to today row on load
   const todayRow = document.querySelector('.today-row');
   if (todayRow) {
-    setTimeout(() => {
-      todayRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 300);
+    setTimeout(() => todayRow.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
   }
+
+  // Stats: kiraan hari & juz sejak 31 Okt 2016
+  const startDate = new Date(2016, 9, 31);
+  const today     = new Date();
+  today.setHours(0,0,0,0);
+  startDate.setHours(0,0,0,0);
+  const diffDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+
+  function animateCount(el, target, duration) {
+    const start = performance.now();
+    const update = (time) => {
+      const progress = Math.min((time - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.floor(eased * target).toLocaleString('ms-MY');
+      if (progress < 1) requestAnimationFrame(update);
+    };
+    requestAnimationFrame(update);
+  }
+
+  animateCount(document.getElementById('stat-days'), diffDays, 1200);
+  animateCount(document.getElementById('stat-juz'),  diffDays, 1200);
 </script>
 </body>
 </html>
