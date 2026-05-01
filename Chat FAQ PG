@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat FAQ - Wan Hasbullah</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #0A2342;
+    --primary-mid: #1B3E6E;
+    --accent: #00B4D8;
+    --accent-light: #90E0EF;
+    --accent-glow: rgba(0,180,216,0.15);
+    --gold: #F4A800;
+    --surface: #F0F4FA;
+    --surface2: #E4EAF5;
+    --card: #FFFFFF;
+    --bubble-bot: #FFFFFF;
+    --bubble-user: linear-gradient(135deg, #00B4D8 0%, #0077B6 100%);
+    --text: #0A1628;
+    --text-muted: #5A6B85;
+    --text-light: #9AAEC4;
+    --border: rgba(0,60,120,0.1);
+    --border-accent: rgba(0,180,216,0.25);
+    --radius: 20px;
+    --shadow: 0 4px 24px rgba(10,35,66,0.08);
+    --header-h: 72px;
+    --input-h: 80px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--surface);
+    color: var(--text);
+    overflow: hidden;
+  }
+
+  .app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    max-width: 760px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    flex-shrink: 0;
+    height: var(--header-h);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%);
+    display: flex;
+    align-items: center;
+    padding: 0 1.25rem;
+    gap: 14px;
+    z-index: 10;
+    position: relative;
+    box-shadow: 0 2px 20px rgba(10,35,66,0.2);
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0,180,216,0.4), transparent);
+  }
+
+  .avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2.5px solid var(--accent-light);
+    display: block;
+  }
+
+  .status-dot {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    width: 11px;
+    height: 11px;
+    background: #2ECC71;
+    border: 2px solid var(--primary);
+    border-radius: 50%;
+  }
+
+  .header-info { flex: 1; }
+
+  .header-name {
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    letter-spacing: -0.01em;
+  }
+
+  .header-status {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .header-status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: #2ECC71;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .header-btn {
+    width: 38px;
+    height: 38px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .header-btn:hover { background: rgba(255,255,255,0.18); }
+  .header-btn svg { width: 18px; height: 18px; }
+
+  /* ─── MESSAGES AREA ─── */
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-behavior: smooth;
+  }
+
+  .messages::-webkit-scrollbar { width: 4px; }
+  .messages::-webkit-scrollbar-track { background: transparent; }
+  .messages::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 2px; }
+
+  .date-divider {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-light);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .date-divider::before, .date-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .msg-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    animation: msgIn 0.25s ease forwards;
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  @keyframes msgIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg-row.bot { justify-content: flex-start; }
+  .msg-row.user { justify-content: flex-end; }
+
+  .msg-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--border-accent);
+    flex-shrink: 0;
+    margin-bottom: 2px;
+  }
+
+  .msg-avatar.hidden { opacity: 0; pointer-events: none; }
+
+  .bubble-wrap { display: flex; flex-direction: column; max-width: 75%; }
+  .msg-row.user .bubble-wrap { align-items: flex-end; }
+
+  .bubble {
+    padding: 0.75rem 1rem;
+    border-radius: 18px;
+    font-size: 14.5px;
+    line-height: 1.65;
+    position: relative;
+    word-break: break-word;
+  }
+
+  .bubble.bot {
+    background: var(--bubble-bot);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 6px;
+    box-shadow: 0 2px 10px rgba(10,35,66,0.06);
+  }
+
+  .bubble.user {
+    background: var(--bubble-user);
+    color: white;
+    border-bottom-right-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0,119,182,0.3);
+  }
+
+  .bubble.bot .sender {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 4px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .bubble .time {
+    font-size: 10.5px;
+    color: var(--text-light);
+    margin-top: 4px;
+    display: block;
+    text-align: right;
+  }
+
+  .bubble.user .time { color: rgba(255,255,255,0.6); }
+
+  /* ─── FAQ RESULT CARD ─── */
+  .faq-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 14px;
+    border-top-left-radius: 6px;
+    padding: 0.875rem 1rem;
+    max-width: 78%;
+    box-shadow: 0 2px 12px rgba(10,35,66,0.06);
+    animation: msgIn 0.25s ease forwards;
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  .faq-card-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .faq-card-label::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  .faq-card-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+
+  .faq-card-body {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  .faq-card-time {
+    font-size: 10px;
+    color: var(--text-light);
+    margin-top: 8px;
+    text-align: right;
+  }
+
+  /* ─── TYPING INDICATOR ─── */
+  .typing-indicator {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    animation: msgIn 0.25s ease forwards;
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  .typing-bubble {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    border-bottom-left-radius: 6px;
+    padding: 0.875rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 10px rgba(10,35,66,0.06);
+  }
+
+  .typing-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--accent-light);
+    border-radius: 50%;
+    animation: typingPulse 1.2s ease-in-out infinite;
+  }
+
+  .typing-dot:nth-child(2) { animation-delay: 0.15s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes typingPulse {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-5px); opacity: 1; }
+  }
+
+  /* ─── SUGGESTIONS ─── */
+  .suggestions {
+    padding: 0 1.25rem 0.75rem;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    flex-shrink: 0;
+  }
+
+  .suggestions::-webkit-scrollbar { display: none; }
+
+  .suggestion-pill {
+    flex-shrink: 0;
+    background: white;
+    border: 1.5px solid var(--border-accent);
+    border-radius: 50px;
+    padding: 6px 14px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--primary-mid);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    display: none;
+  }
+
+  .suggestion-pill.visible { display: block; }
+  .suggestion-pill:hover { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); }
+
+  /* ─── INPUT BAR ─── */
+  .input-bar {
+    flex-shrink: 0;
+    background: white;
+    border-top: 1px solid var(--border);
+    padding: 0.875rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 -4px 20px rgba(10,35,66,0.05);
+  }
+
+  .input-wrap {
+    flex: 1;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    transition: all 0.2s;
+    gap: 8px;
+  }
+
+  .input-wrap:focus-within {
+    border-color: var(--accent);
+    background: white;
+    box-shadow: 0 0 0 4px var(--accent-glow);
+  }
+
+  .input-wrap svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--text-light); }
+
+  #userInput {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14.5px;
+    color: var(--text);
+    padding: 0.625rem 0;
+    min-width: 0;
+  }
+
+  #userInput::placeholder { color: var(--text-light); }
+
+  .send-btn {
+    width: 46px;
+    height: 46px;
+    background: linear-gradient(135deg, var(--accent) 0%, #0077B6 100%);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(0,180,216,0.3);
+  }
+
+  .send-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0,180,216,0.4); }
+  .send-btn:active { transform: scale(0.96); }
+  .send-btn svg { width: 18px; height: 18px; }
+
+  /* ─── NOT FOUND BUBBLE ─── */
+  .notfound-bubble {
+    background: white;
+    border: 1px solid rgba(244,168,0,0.25);
+    border-left: 3px solid var(--gold);
+    border-radius: 14px;
+    border-top-left-radius: 6px;
+    padding: 0.875rem 1rem;
+    max-width: 78%;
+    box-shadow: 0 2px 12px rgba(10,35,66,0.06);
+    animation: msgIn 0.25s ease forwards;
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  .notfound-title {
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.65;
+    margin-bottom: 10px;
+  }
+
+  .wa-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #25D366;
+    color: white;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .wa-btn:hover { background: #1ebe5a; transform: translateY(-1px); }
+  .wa-btn svg { width: 16px; height: 16px; }
+
+  .notfound-time {
+    font-size: 10px;
+    color: var(--text-light);
+    margin-top: 8px;
+    text-align: right;
+  }
+
+  @media (max-width: 480px) {
+    .bubble { max-width: 85%; font-size: 14px; }
+    .faq-card, .notfound-bubble { max-width: 88%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="avatar-wrap">
+      <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjH8kKw3_SWdf96cjqIx_j4exadqr0togYGxXJxWA8D7z40VpkkLeyeyRDrZRCdVXdKPA2LuOtxXZ-eRffWfnM0_UPa6g7KGkCLAx0Br1DoJO3MC3P7jZXg6EZ3FsL0zdiI-RRzcf9ArG87YT4WvpQ5V1PEpe7kCQc0C3SePyxBo5ONOFkmAgYKXDOFTyo=s16000" alt="Avatar" class="avatar">
+      <div class="status-dot"></div>
+    </div>
+    <div class="header-info">
+      <div class="header-name">Pembantu Wan Hasbullah</div>
+      <div class="header-status">Dalam talian sekarang</div>
+    </div>
+    <div class="header-actions">
+      <a href="PAGE_FORM_URL_SINI" class="header-btn" title="Hantar Pertanyaan">
+        <svg fill="none" stroke="rgba(255,255,255,0.8)" viewBox="0 0 24 24" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      </a>
+      <a href="https://wa.me/601126704897" class="header-btn" title="WhatsApp" target="_blank">
+        <svg fill="rgba(255,255,255,0.8)" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- MESSAGES -->
+  <div class="messages" id="messages">
+    <div class="date-divider">Hari ini</div>
+  </div>
+
+  <!-- SUGGESTIONS -->
+  <div class="suggestions" id="suggestions"></div>
+
+  <!-- INPUT BAR -->
+  <div class="input-bar">
+    <div class="input-wrap">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="userInput" placeholder="Taip pertanyaan anda di sini..." autocomplete="off" autocorrect="off">
+    </div>
+    <button class="send-btn" onclick="sendMessage()" id="sendBtn">
+      <svg fill="none" stroke="white" viewBox="0 0 24 24" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+
+</div>
+
+<script>
+  // ─── CONFIG ───────────────────────────────────────────────────────
+  const SHEET_CSV_URL = 'https://script.google.com/macros/s/AKfycbwqegXJIbEIvJwVI0UEWasWA5t_hF1BzCW3LTSFJh0haohGzbZ6BV_Ik5dfKRtijuScrw/exec';
+
+  let faqData = [];
+  let isTyping = false;
+  let dataLoaded = false;
+
+  // ─── UTILITIES ────────────────────────────────────────────────────
+  function now() {
+    return new Date().toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function scrollBottom() {
+    const m = document.getElementById('messages');
+    setTimeout(() => m.scrollTo({ top: m.scrollHeight, behavior: 'smooth' }), 80);
+  }
+
+  // ─── CSV PARSER (selamat untuk data berkoma & berquote) ───────────
+  function parseCSV(text) {
+    const rows = [];
+    const lines = text.trim().split('\n');
+    for (const line of lines) {
+      const cols = [];
+      let cur = '';
+      let inQuote = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQuote && line[i + 1] === '"') { cur += '"'; i++; }
+          else { inQuote = !inQuote; }
+        } else if (ch === ',' && !inQuote) {
+          cols.push(cur.trim()); cur = '';
+        } else {
+          cur += ch;
+        }
+      }
+      cols.push(cur.trim());
+      rows.push(cols);
+    }
+    return rows;
+  }
+
+  // ─── LOAD FAQ DATA ────────────────────────────────────────────────
+  async function loadFAQ() {
+    try {
+      const res = await fetch(SHEET_CSV_URL);
+      const text = await res.text();
+      const rows = parseCSV(text);
+      const dataRows = rows.slice(1); // skip header
+      faqData = dataRows.map(cols => ({
+        tajuk: (cols[1] || '').trim(),
+        huraian: (cols[2] || '').trim()
+      })).filter(d => d.tajuk && d.huraian);
+      dataLoaded = true;
+      showSuggestions();
+    } catch (e) {
+      console.warn('Gagal memuatkan data FAQ:', e);
+      dataLoaded = true;
+    }
+  }
+
+  // ─── SEARCH ───────────────────────────────────────────────────────
+  function searchFAQ(query) {
+    if (!query || faqData.length === 0) return [];
+    const q = query.toLowerCase().replace(/[^a-z0-9 ]/gi, '');
+    const words = q.split(' ').filter(w => w.length > 2);
+
+    const scored = faqData.map(item => {
+      const haystack = (item.tajuk + ' ' + item.huraian).toLowerCase();
+      let score = 0;
+      if (haystack.includes(q)) score += 10;
+      words.forEach(w => { if (haystack.includes(w)) score += 2; });
+      return { ...item, score };
+    }).filter(i => i.score > 0);
+
+    return scored.sort((a, b) => b.score - a.score).slice(0, 3);
+  }
+
+  // ─── RENDER HELPERS ───────────────────────────────────────────────
+  function addTyping() {
+    removeTyping();
+    const div = document.createElement('div');
+    div.className = 'typing-indicator';
+    div.id = 'typingIndicator';
+    div.innerHTML = `
+      <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjH8kKw3_SWdf96cjqIx_j4exadqr0togYGxXJxWA8D7z40VpkkLeyeyRDrZRCdVXdKPA2LuOtxXZ-eRffWfnM0_UPa6g7KGkCLAx0Br1DoJO3MC3P7jZXg6EZ3FsL0zdiI-RRzcf9ArG87YT4WvpQ5V1PEpe7kCQc0C3SePyxBo5ONOFkmAgYKXDOFTyo=s16000" class="msg-avatar">
+      <div class="typing-bubble">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>`;
+    document.getElementById('messages').appendChild(div);
+    scrollBottom();
+  }
+
+  function removeTyping() {
+    const t = document.getElementById('typingIndicator');
+    if (t) t.remove();
+  }
+
+  function addBotBubble(text, skipAvatar = false) {
+    const msgs = document.getElementById('messages');
+    const row = document.createElement('div');
+    row.className = 'msg-row bot';
+    row.innerHTML = `
+      <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjH8kKw3_SWdf96cjqIx_j4exadqr0togYGxXJxWA8D7z40VpkkLeyeyRDrZRCdVXdKPA2LuOtxXZ-eRffWfnM0_UPa6g7KGkCLAx0Br1DoJO3MC3P7jZXg6EZ3FsL0zdiI-RRzcf9ArG87YT4WvpQ5V1PEpe7kCQc0C3SePyxBo5ONOFkmAgYKXDOFTyo=s16000" class="msg-avatar ${skipAvatar ? 'hidden' : ''}">
+      <div class="bubble-wrap">
+        <div class="bubble bot">
+          ${!skipAvatar ? '<span class="sender">Pembantu WH</span>' : ''}
+          ${text}
+          <span class="time">${now()}</span>
+        </div>
+      </div>`;
+    msgs.appendChild(row);
+    scrollBottom();
+  }
+
+  function addUserBubble(text) {
+    const msgs = document.getElementById('messages');
+    const row = document.createElement('div');
+    row.className = 'msg-row user';
+    row.innerHTML = `
+      <div class="bubble-wrap">
+        <div class="bubble user">
+          ${text}
+          <span class="time">${now()} ✓✓</span>
+        </div>
+      </div>`;
+    msgs.appendChild(row);
+    scrollBottom();
+  }
+
+  function addFAQResult(item) {
+    const msgs = document.getElementById('messages');
+    const wrap = document.createElement('div');
+    wrap.style.display = 'flex';
+    wrap.style.gap = '8px';
+    wrap.style.alignItems = 'flex-end';
+
+    const img = document.createElement('img');
+    img.src = 'https://blogger.googleusercontent.com/img/a/AVvXsEjH8kKw3_SWdf96cjqIx_j4exadqr0togYGxXJxWA8D7z40VpkkLeyeyRDrZRCdVXdKPA2LuOtxXZ-eRffWfnM0_UPa6g7KGkCLAx0Br1DoJO3MC3P7jZXg6EZ3FsL0zdiI-RRzcf9ArG87YT4WvpQ5V1PEpe7kCQc0C3SePyxBo5ONOFkmAgYKXDOFTyo=s16000';
+    img.className = 'msg-avatar';
+
+    const card = document.createElement('div');
+    card.className = 'faq-card';
+    card.innerHTML = `
+      <div class="faq-card-label">Rekod FAQ Dijumpai</div>
+      <div class="faq-card-title">${escHtml(item.tajuk)}</div>
+      <div class="faq-card-body">${escHtml(item.huraian)}</div>
+      <div class="faq-card-time">${now()}</div>`;
+
+    wrap.appendChild(img);
+    wrap.appendChild(card);
+    msgs.appendChild(wrap);
+    scrollBottom();
+  }
+
+  function addNotFound() {
+    const msgs = document.getElementById('messages');
+    const wrap = document.createElement('div');
+    wrap.style.display = 'flex';
+    wrap.style.gap = '8px';
+    wrap.style.alignItems = 'flex-end';
+
+    const img = document.createElement('img');
+    img.src = 'https://blogger.googleusercontent.com/img/a/AVvXsEjH8kKw3_SWdf96cjqIx_j4exadqr0togYGxXJxWA8D7z40VpkkLeyeyRDrZRCdVXdKPA2LuOtxXZ-eRffWfnM0_UPa6g7KGkCLAx0Br1DoJO3MC3P7jZXg6EZ3FsL0zdiI-RRzcf9ArG87YT4WvpQ5V1PEpe7kCQc0C3SePyxBo5ONOFkmAgYKXDOFTyo=s16000';
+    img.className = 'msg-avatar';
+
+    const card = document.createElement('div');
+    card.className = 'notfound-bubble';
+    card.innerHTML = `
+      <div class="notfound-title">Pertanyaan anda tiada dalam simpanan saya. Anda boleh rujuk Encik Wan Hasbullah di sini:</div>
+      <a href="https://wa.me/601126704897" class="wa-btn" target="_blank">
+        <svg fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp Encik Wan Hasbullah
+      </a>
+      <div class="notfound-time">${now()}</div>`;
+
+    wrap.appendChild(img);
+    wrap.appendChild(card);
+    msgs.appendChild(wrap);
+    scrollBottom();
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ─── SUGGESTIONS ──────────────────────────────────────────────────
+  function showSuggestions() {
+    const container = document.getElementById('suggestions');
+    container.innerHTML = '';
+    const samples = faqData.slice(0, 4);
+    if (samples.length === 0) return;
+    samples.forEach(item => {
+      const pill = document.createElement('button');
+      pill.className = 'suggestion-pill visible';
+      const label = item.tajuk.length > 35 ? item.tajuk.slice(0, 35) + '...' : item.tajuk;
+      pill.textContent = label;
+      pill.onclick = () => {
+        document.getElementById('userInput').value = item.tajuk;
+        sendMessage();
+      };
+      container.appendChild(pill);
+    });
+  }
+
+  // ─── SEND MESSAGE ─────────────────────────────────────────────────
+  async function sendMessage() {
+    const input = document.getElementById('userInput');
+    const query = input.value.trim();
+    if (!query || isTyping) return;
+
+    isTyping = true;
+    input.value = '';
+    input.focus();
+
+    addUserBubble(escHtml(query));
+    addTyping();
+
+    await new Promise(r => setTimeout(r, 900 + Math.random() * 600));
+    removeTyping();
+
+    const results = searchFAQ(query);
+
+    if (results.length > 0) {
+      addBotBubble(`Saya jumpa <strong>${results.length}</strong> rekod berkaitan pertanyaan anda:`);
+      for (let i = 0; i < results.length; i++) {
+        await new Promise(r => setTimeout(r, i * 300));
+        addFAQResult(results[i]);
+      }
+    } else {
+      addNotFound();
+    }
+
+    isTyping = false;
+  }
+
+  // ─── KEYBOARD ─────────────────────────────────────────────────────
+  document.getElementById('userInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+
+  // ─── WELCOME MESSAGE (TYPING EFFECT) ─────────────────────────────
+  async function welcomeMessage() {
+    const welcomeText = 'Assalamualaikum, Hai. Saya pembantu Encik Wan Hasbullah. Anda ingin bertanya tentang apa?';
+
+    addTyping();
+    await new Promise(r => setTimeout(r, 1400));
+    removeTyping();
+
+    const msgs = document.getElementById('messages');
+    const row = document.createElement('div');
+    row.className = 'msg-row bot';
+    row.innerHTML = `
+      <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjH8kKw3_SWdf96cjqIx_j4exadqr0togYGxXJxWA8D7z40VpkkLeyeyRDrZRCdVXdKPA2LuOtxXZ-eRffWfnM0_UPa6g7KGkCLAx0Br1DoJO3MC3P7jZXg6EZ3FsL0zdiI-RRzcf9ArG87YT4WvpQ5V1PEpe7kCQc0C3SePyxBo5ONOFkmAgYKXDOFTyo=s16000" class="msg-avatar">
+      <div class="bubble-wrap">
+        <div class="bubble bot">
+          <span class="sender">Pembantu WH</span>
+          <span id="welcomeTyped"></span><span id="cursor" style="animation:blink 0.8s step-end infinite">▎</span>
+          <span class="time" id="welcomeTime" style="display:none">${now()}</span>
+        </div>
+      </div>`;
+    msgs.appendChild(row);
+    scrollBottom();
+
+    const typed = document.getElementById('welcomeTyped');
+    const cur = document.getElementById('cursor');
+
+    for (let i = 0; i <= welcomeText.length; i++) {
+      typed.textContent = welcomeText.slice(0, i);
+      scrollBottom();
+      await new Promise(r => setTimeout(r, 28));
+    }
+
+    cur.remove();
+    document.getElementById('welcomeTime').style.display = 'block';
+    scrollBottom();
+
+    loadFAQ();
+  }
+
+  // ─── INIT ─────────────────────────────────────────────────────────
+  setTimeout(welcomeMessage, 600);
+</script>
+
+<style>
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+</style>
+
+</body>
+</html>
