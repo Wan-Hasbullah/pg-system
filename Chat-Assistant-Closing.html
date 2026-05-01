@@ -13,7 +13,6 @@
   --accent: #00B4D8;
   --accent-light: #90E0EF;
   --accent-glow: rgba(0,180,216,0.15);
-  --gold: #F4A800;
   --surface: #F0F4FA;
   --surface2: #E4EAF5;
   --bubble-bot: #FFFFFF;
@@ -119,16 +118,13 @@ html, body {
 }
 @keyframes whMsgIn { to { opacity: 1; transform: translateY(0); } }
 #wh-chat-app .wh-msg-row.bot { justify-content: flex-start; }
-#wh-chat-app .wh-msg-row.user { justify-content: flex-end; }
 
 #wh-chat-app .wh-msg-avatar {
   width: 32px; height: 32px; border-radius: 50%;
   object-fit: cover; border: 1.5px solid var(--border-accent);
   flex-shrink: 0; margin-bottom: 2px;
 }
-#wh-chat-app .wh-msg-avatar.hidden { opacity: 0; pointer-events: none; }
 #wh-chat-app .wh-bubble-wrap { display: flex; flex-direction: column; max-width: 75%; }
-#wh-chat-app .wh-msg-row.user .wh-bubble-wrap { align-items: flex-end; }
 
 #wh-chat-app .wh-bubble {
   padding: 0.75rem 1rem; border-radius: 18px;
@@ -140,11 +136,6 @@ html, body {
   border: 1px solid var(--border); border-bottom-left-radius: 6px;
   box-shadow: 0 2px 10px rgba(10,35,66,0.06);
 }
-#wh-chat-app .wh-bubble.user {
-  background: var(--bubble-user); color: white;
-  border-bottom-right-radius: 6px;
-  box-shadow: 0 4px 16px rgba(0,119,182,0.3);
-}
 #wh-chat-app .wh-bubble.bot .wh-sender {
   font-size: 11px; font-weight: 600; color: var(--accent);
   display: block; margin-bottom: 4px;
@@ -154,7 +145,9 @@ html, body {
   font-size: 10.5px; color: var(--text-light);
   margin-top: 4px; display: block; text-align: right;
 }
-#wh-chat-app .wh-bubble.user .wh-time { color: rgba(255,255,255,0.6); }
+#wh-chat-app .wh-bubble a {
+  color: var(--accent); text-decoration: underline; word-break: break-all;
+}
 
 /* ─── IMAGE BUBBLE ─── */
 #wh-chat-app .wh-img-bubble {
@@ -162,10 +155,12 @@ html, body {
   border-bottom-left-radius: 6px; border-radius: 18px;
   overflow: hidden; max-width: 75%;
   box-shadow: 0 2px 10px rgba(10,35,66,0.06);
+  animation: whMsgIn 0.25s ease forwards;
+  opacity: 0; transform: translateY(8px);
 }
 #wh-chat-app .wh-img-bubble img {
   width: 100%; max-width: 320px; display: block;
-  border-radius: 14px; cursor: pointer;
+  border-radius: 14px;
 }
 #wh-chat-app .wh-img-bubble .wh-img-caption {
   padding: 0.6rem 0.875rem; font-size: 13.5px;
@@ -174,42 +169,6 @@ html, body {
 #wh-chat-app .wh-img-bubble .wh-img-time {
   font-size: 10px; color: var(--text-light);
   padding: 0 0.875rem 0.5rem; text-align: right;
-}
-
-/* ─── FAQ CARD ─── */
-#wh-chat-app .wh-faq-card {
-  background: white; border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: 14px; border-top-left-radius: 6px;
-  padding: 0.875rem 1rem; max-width: 78%;
-  box-shadow: 0 2px 12px rgba(10,35,66,0.06);
-  animation: whMsgIn 0.25s ease forwards;
-  opacity: 0; transform: translateY(8px);
-}
-#wh-chat-app .wh-faq-card-label {
-  font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
-  color: var(--accent); text-transform: uppercase; margin-bottom: 6px;
-  display: flex; align-items: center; gap: 5px;
-}
-#wh-chat-app .wh-faq-card-label::before {
-  content: ''; width: 5px; height: 5px;
-  background: var(--accent); border-radius: 50%;
-}
-#wh-chat-app .wh-faq-card-title {
-  font-family: 'Sora', sans-serif; font-size: 13.5px;
-  font-weight: 600; color: var(--primary); margin-bottom: 6px; line-height: 1.4;
-}
-#wh-chat-app .wh-faq-card-body {
-  font-size: 13.5px; color: var(--text-muted); line-height: 1.65;
-}
-#wh-chat-app .wh-faq-card-body mark {
-  background: rgba(0,180,216,0.15);
-  color: var(--primary); border-radius: 3px;
-  padding: 0 2px; font-weight: 600;
-}
-#wh-chat-app .wh-faq-card-time {
-  font-size: 10px; color: var(--text-light);
-  margin-top: 8px; text-align: right;
 }
 
 /* ─── TYPING ─── */
@@ -249,7 +208,6 @@ html, body {
   font-size: 13px; font-weight: 600; color: var(--primary-mid);
   cursor: pointer; white-space: nowrap;
   transition: all 0.2s; font-family: 'Plus Jakarta Sans', sans-serif;
-  display: flex; align-items: center; gap: 6px;
 }
 #wh-chat-app .wh-qr-btn:hover {
   background: var(--accent-glow); border-color: var(--accent);
@@ -257,30 +215,9 @@ html, body {
   box-shadow: 0 4px 12px rgba(0,180,216,0.2);
 }
 #wh-chat-app .wh-qr-btn:active { transform: translateY(0); }
-#wh-chat-app .wh-qr-btn.disabled {
-  opacity: 0.4; pointer-events: none;
-}
+#wh-chat-app .wh-qr-btn.disabled { opacity: 0.4; pointer-events: none; }
 
-/* ─── SUGGESTIONS ─── */
-#wh-chat-app .wh-suggestions {
-  padding: 0 1.25rem 0.75rem;
-  display: flex; gap: 8px; overflow-x: auto; flex-shrink: 0;
-}
-#wh-chat-app .wh-suggestions::-webkit-scrollbar { display: none; }
-#wh-chat-app .wh-suggestion-pill {
-  flex-shrink: 0; background: white;
-  border: 1.5px solid var(--border-accent); border-radius: 50px;
-  padding: 6px 14px; font-size: 12.5px; font-weight: 500;
-  color: var(--primary-mid); cursor: pointer;
-  white-space: nowrap; transition: all 0.2s; display: none;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-#wh-chat-app .wh-suggestion-pill.visible { display: block; }
-#wh-chat-app .wh-suggestion-pill:hover {
-  background: var(--accent-glow); border-color: var(--accent); color: var(--accent);
-}
-
-/* ─── INPUT BAR ─── */
+/* ─── INPUT BAR (display only, not functional) ─── */
 #wh-chat-app .wh-input-bar {
   flex-shrink: 0; background: white;
   border-top: 1px solid var(--border);
@@ -292,63 +229,23 @@ html, body {
   flex: 1; background: var(--surface);
   border: 1.5px solid var(--border); border-radius: 50px;
   display: flex; align-items: center;
-  padding: 0 16px; transition: all 0.2s; gap: 8px;
+  padding: 0 16px; gap: 8px;
 }
-#wh-chat-app .wh-input-wrap:focus-within {
-  border-color: var(--accent); background: white;
-  box-shadow: 0 0 0 4px var(--accent-glow);
-}
-#wh-chat-app .wh-input-wrap svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--text-light); }
 #wh-chat-app #whUserInput {
   flex: 1; background: transparent; border: none; outline: none;
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 14.5px; color: var(--text); padding: 0.625rem 0; min-width: 0;
+  font-size: 14.5px; color: var(--text-light);
+  padding: 0.625rem 0; min-width: 0; cursor: not-allowed;
 }
-#wh-chat-app #whUserInput::placeholder { color: var(--text-light); }
 #wh-chat-app .wh-send-btn {
   width: 46px; height: 46px;
   background: linear-gradient(135deg, var(--accent) 0%, #0077B6 100%);
   border: none; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; flex-shrink: 0; transition: all 0.2s;
+  opacity: 0.4; cursor: not-allowed;
   box-shadow: 0 4px 14px rgba(0,180,216,0.3);
 }
-#wh-chat-app .wh-send-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0,180,216,0.4); }
-#wh-chat-app .wh-send-btn:active { transform: scale(0.96); }
 #wh-chat-app .wh-send-btn svg { width: 18px; height: 18px; }
-
-/* ─── NOT FOUND ─── */
-#wh-chat-app .wh-notfound-bubble {
-  background: white; border: 1px solid rgba(244,168,0,0.25);
-  border-left: 3px solid var(--gold);
-  border-radius: 14px; border-top-left-radius: 6px;
-  padding: 0.875rem 1rem; max-width: 78%;
-  box-shadow: 0 2px 12px rgba(10,35,66,0.06);
-  animation: whMsgIn 0.25s ease forwards;
-  opacity: 0; transform: translateY(8px);
-}
-#wh-chat-app .wh-notfound-title {
-  font-size: 13.5px; color: var(--text); line-height: 1.65; margin-bottom: 10px;
-}
-#wh-chat-app .wh-wa-btn {
-  display: inline-flex; align-items: center; gap: 7px;
-  background: #25D366; color: white; border-radius: 8px;
-  padding: 8px 14px; font-size: 13px; font-weight: 600;
-  text-decoration: none; transition: all 0.2s;
-}
-#wh-chat-app .wh-wa-btn:hover { background: #1ebe5a; transform: translateY(-1px); }
-#wh-chat-app .wh-wa-btn svg { width: 16px; height: 16px; }
-#wh-chat-app .wh-notfound-time {
-  font-size: 10px; color: var(--text-light); margin-top: 8px; text-align: right;
-}
-
-/* ─── LINK STYLE IN BUBBLES ─── */
-#wh-chat-app .wh-bubble a,
-#wh-chat-app .wh-faq-card a {
-  color: var(--accent); text-decoration: underline;
-  word-break: break-all;
-}
-#wh-chat-app .wh-bubble.user a { color: rgba(255,255,255,0.9); }
 
 @keyframes whBlink { 0%,100%{opacity:1} 50%{opacity:0} }
 </style>
@@ -379,14 +276,11 @@ html, body {
     <div class="wh-date-divider">Hari ini</div>
   </div>
 
-  <div class="wh-suggestions" id="whSuggestions"></div>
-
   <div class="wh-input-bar">
     <div class="wh-input-wrap">
-      <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg>
-      <input autocomplete="off" autocorrect="off" id="whUserInput" placeholder="Taip soalan anda di sini..." type="text" />
+      <input id="whUserInput" type="text" value="Sila tekan butang di atas untuk membalas..." readonly />
     </div>
-    <button class="wh-send-btn" onclick="whSendMessage()">
+    <button class="wh-send-btn">
       <svg fill="none" stroke-width="2.2" stroke="white" viewBox="0 0 24 24"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     </button>
   </div>
@@ -396,96 +290,15 @@ html, body {
 (function () {
   'use strict';
 
-  /* ─────────────────────────────────────────────
-     KONFIGURASI
-  ───────────────────────────────────────────── */
-  const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQ2UJnKP6wyu_05ffuPUbuXIT8NImKFyPGX2QWXiaEy4R5Jr1kO6GeVDhs6qDa0r2rSGWoQJFtnHGP/pub?gid=0&single=true&output=csv';
-  const AVATAR    = 'https://blogger.googleusercontent.com/img/a/AVvXsEjH8kKw3_SWdf96cjqIx_j4exadqr0togYGxXJxWA8D7z40VpkkLeyeyRDrZRCdVXdKPA2LuOtxXZ-eRffWfnM0_UPa6g7KGkCLAx0Br1DoJO3MC3P7jZXg6EZ3FsL0zdiI-RRzcf9ArG87YT4WvpQ5V1PEpe7kCQc0C3SePyxBo5ONOFkmAgYKXDOFTyo=s16000';
+  const AVATAR = 'https://blogger.googleusercontent.com/img/a/AVvXsEjH8kKw3_SWdf96cjqIx_j4exadqr0togYGxXJxWA8D7z40VpkkLeyeyRDrZRCdVXdKPA2LuOtxXZ-eRffWfnM0_UPa6g7KGkCLAx0Br1DoJO3MC3P7jZXg6EZ3FsL0zdiI-RRzcf9ArG87YT4WvpQ5V1PEpe7kCQc0C3SePyxBo5ONOFkmAgYKXDOFTyo=s16000';
 
-  /* Kata yang diabaikan dalam carian */
-  const STOP_WORDS = new Set([
-    'yang','dan','di','ke','dari','pada','untuk','dengan','ini','itu',
-    'ada','tidak','boleh','saya','anda','encik','puan','cara','macam',
-    'mana','bagaimana','apa','bila','berapa','how','what','where','when',
-    'the','is','are','a','an','in','of','to','for','can','i','you'
-  ]);
+  const $        = id => document.getElementById(id);
+  const whNow    = () => new Date().toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit' });
+  const whEsc    = s  => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const whScroll = () => setTimeout(() => $('whMessages').scrollTo({ top: $('whMessages').scrollHeight, behavior: 'smooth' }), 80);
+  const sleep    = ms => new Promise(r => setTimeout(r, ms));
 
-  let faqData      = [];
-  let isTyping     = false;
-  /* Peringkat perbualan automatik */
-  let chatStage    = 'idle'; // idle | awaiting_boleh_1 | awaiting_setuju | awaiting_boleh_2
-
-  /* ─── HELPERS ─── */
-  const $  = id => document.getElementById(id);
-  const whNow = () => new Date().toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit' });
-  const whEsc = s => String(s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const whScroll = () =>
-    setTimeout(() => $('whMessages').scrollTo({ top: $('whMessages').scrollHeight, behavior: 'smooth' }), 80);
-  const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-  /* ─── SVG WHATSAPP ─── */
-  const waSvg = `<svg fill="white" viewBox="0 0 24 24" width="16" height="16"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`;
-
-  /* ─── CSV PARSER ─── */
-  function parseCSV(text) {
-    const rows = [];
-    for (const line of text.trim().split('\n')) {
-      const cols = []; let cur = '', inQ = false;
-      for (let i = 0; i < line.length; i++) {
-        const c = line[i];
-        if (c === '"') { if (inQ && line[i+1]==='"'){cur+='"';i++;} else inQ=!inQ; }
-        else if (c === ',' && !inQ) { cols.push(cur.trim()); cur=''; }
-        else cur += c;
-      }
-      cols.push(cur.trim()); rows.push(cols);
-    }
-    return rows;
-  }
-
-  /* ─── LOAD FAQ ─── */
-  async function whLoadFAQ() {
-    try {
-      const text = await (await fetch(SHEET_URL)).text();
-      faqData = parseCSV(text).slice(1).map(c => ({
-        tajuk:   (c[1] || '').trim(),
-        huraian: (c[2] || '').trim()
-      })).filter(d => d.tajuk && d.huraian);
-      whShowSuggestions();
-    } catch (e) { console.warn('FAQ error:', e); }
-  }
-
-  /* ─── SMART SEARCH ─── */
-  function whSearch(query) {
-    if (!query || !faqData.length) return [];
-    const clean = query.toLowerCase()
-      .replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
-    const keywords = clean.split(' ').filter(w => w.length >= 2 && !STOP_WORDS.has(w));
-    if (!keywords.length) return [];
-    const scored = faqData.map(item => {
-      const hay = (item.tajuk + ' ' + item.huraian).toLowerCase();
-      let score = 0;
-      if (hay.includes(clean)) score += 20;
-      keywords.forEach(kw => {
-        if (hay.includes(kw)) {
-          if (item.tajuk.toLowerCase().includes(kw)) score += 6;
-          else score += 3;
-        }
-      });
-      return { ...item, score, keywords };
-    }).filter(i => i.score > 0);
-    return scored.sort((a, b) => b.score - a.score).slice(0, 3);
-  }
-
-  /* ─── HIGHLIGHT ─── */
-  function whHighlight(text, keywords) {
-    let safe = whEsc(text);
-    keywords.forEach(kw => {
-      const re = new RegExp('(' + kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
-      safe = safe.replace(re, '<mark>$1</mark>');
-    });
-    return safe;
-  }
+  const waSvg = `<svg fill="white" viewBox="0 0 24 24" width="16" height="16" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`;
 
   /* ─── TYPING INDICATOR ─── */
   function whAddTyping() {
@@ -517,31 +330,19 @@ html, body {
     msgs.appendChild(row); whScroll();
   }
 
-  /* ─── USER BUBBLE ─── */
-  function whAddUserBubble(text) {
-    const msgs = $('whMessages');
-    const row  = document.createElement('div');
-    row.className = 'wh-msg-row user';
-    row.innerHTML = `<div class="wh-bubble-wrap">
-      <div class="wh-bubble user">${whEsc(text)}<span class="wh-time">${whNow()} ✓✓</span>
-      </div></div>`;
-    msgs.appendChild(row); whScroll();
-  }
-
   /* ─── IMAGE + CAPTION BUBBLE ─── */
   function whAddImageBubble(imgSrc, caption) {
     const msgs = $('whMessages');
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;gap:8px;align-items:flex-end';
-    wrap.className = 'wh-msg-row bot';
-    const img  = document.createElement('img');
-    img.src    = AVATAR; img.className = 'wh-msg-avatar';
+    const avatarImg = document.createElement('img');
+    avatarImg.src = AVATAR; avatarImg.className = 'wh-msg-avatar';
     const card = document.createElement('div');
     card.className = 'wh-img-bubble';
     card.innerHTML = `<img src="${whEsc(imgSrc)}" alt="Imej Public Gold" loading="lazy">
       ${caption ? `<div class="wh-img-caption">${caption}</div>` : ''}
       <div class="wh-img-time">${whNow()}</div>`;
-    wrap.appendChild(img); wrap.appendChild(card);
+    wrap.appendChild(avatarImg); wrap.appendChild(card);
     msgs.appendChild(wrap); whScroll();
   }
 
@@ -549,13 +350,12 @@ html, body {
   function whAddQuickReplies(buttons) {
     const msgs = $('whMessages');
     const wrap = document.createElement('div');
-    wrap.className = 'wh-quick-replies'; wrap.id = 'whQR';
+    wrap.className = 'wh-quick-replies';
     buttons.forEach(btn => {
       const el = document.createElement('button');
-      el.className = 'wh-qr-btn';
+      el.className   = 'wh-qr-btn';
       el.textContent = btn.label;
       el.onclick = () => {
-        /* Nyahaktifkan semua butang */
         wrap.querySelectorAll('.wh-qr-btn').forEach(b => b.classList.add('disabled'));
         btn.action();
       };
@@ -575,7 +375,10 @@ html, body {
   /* ─── TYPEWRITER EFFECT ─── */
   async function whTypewriter(text, delay = 600) {
     const msgs = $('whMessages');
-    const row  = document.createElement('div');
+    whAddTyping();
+    await sleep(delay);
+    whRemoveTyping();
+    const row = document.createElement('div');
     row.className = 'wh-msg-row bot';
     row.innerHTML = `<img src="${AVATAR}" class="wh-msg-avatar">
       <div class="wh-bubble-wrap"><div class="wh-bubble bot">
@@ -584,9 +387,6 @@ html, body {
         <span class="wh-time" id="whTM" style="display:none">${whNow()}</span>
       </div></div>`;
     msgs.appendChild(row); whScroll();
-    whAddTyping();
-    await sleep(delay);
-    whRemoveTyping();
     const typed = $('whWT'), cur = $('whC');
     for (let i = 0; i <= text.length; i++) {
       typed.textContent = text.slice(0, i); whScroll();
@@ -595,65 +395,12 @@ html, body {
     cur.remove(); $('whTM').style.display = 'block'; whScroll();
   }
 
-  /* ─── FAQ CARD ─── */
-  function whAddFAQCard(item) {
-    const msgs = $('whMessages');
-    const wrap = document.createElement('div');
-    wrap.style.cssText = 'display:flex;gap:8px;align-items:flex-end';
-    const img  = document.createElement('img');
-    img.src    = AVATAR; img.className = 'wh-msg-avatar';
-    const card = document.createElement('div');
-    card.className = 'wh-faq-card';
-    card.innerHTML = `
-      <div class="wh-faq-card-label">Rekod FAQ Dijumpai</div>
-      <div class="wh-faq-card-title">${whEsc(item.tajuk)}</div>
-      <div class="wh-faq-card-body">${whHighlight(item.huraian, item.keywords)}</div>
-      <div class="wh-faq-card-time">${whNow()}</div>`;
-    wrap.appendChild(img); wrap.appendChild(card);
-    msgs.appendChild(wrap); whScroll();
-  }
-
-  /* ─── NOT FOUND ─── */
-  function whAddNotFound(query) {
-    const msgs = $('whMessages');
-    const wrap = document.createElement('div');
-    wrap.style.cssText = 'display:flex;gap:8px;align-items:flex-end';
-    const img  = document.createElement('img');
-    img.src    = AVATAR; img.className = 'wh-msg-avatar';
-    const card = document.createElement('div');
-    card.className = 'wh-notfound-bubble';
-    card.innerHTML = `
-      <div class="wh-notfound-title">
-        Maaf, tiada rekod berkaitan <strong>"${whEsc(query)}"</strong> dalam simpanan saya.<br>
-        Sila hubungi Encik Wan Hasbullah secara terus:
-      </div>
-      <a href="https://wa.me/601126704897" class="wh-wa-btn" target="_blank">
-        ${waSvg} WhatsApp Encik Wan Hasbullah
-      </a>
-      <div class="wh-notfound-time">${whNow()}</div>`;
-    wrap.appendChild(img); wrap.appendChild(card);
-    msgs.appendChild(wrap); whScroll();
-  }
-
-  /* ─── SUGGESTIONS ─── */
-  function whShowSuggestions() {
-    const c = $('whSuggestions'); c.innerHTML = '';
-    faqData.slice(0, 4).forEach(item => {
-      const btn = document.createElement('button');
-      btn.className   = 'wh-suggestion-pill visible';
-      btn.textContent = item.tajuk.length > 35 ? item.tajuk.slice(0, 35) + '...' : item.tajuk;
-      btn.onclick = () => { $('whUserInput').value = item.tajuk; whSendMessage(); };
-      c.appendChild(btn);
-    });
-  }
-
   /* ═══════════════════════════════════════════
-     ALIRAN PERBUALAN AUTOMATIK
+     ALIRAN PERBUALAN
   ═══════════════════════════════════════════ */
 
-  /* ── LANGKAH 3: Selepas pengguna balas "boleh" (fb group) ── */
+  /* ── Langkah 3: Selepas klik "Boleh" (kumpulan FB) ── */
   async function whFlow_AfterBoleh1() {
-    chatStage = 'awaiting_setuju';
     await whBotSay(`
       Team kami ada sediakan saluran dan kumpulan khusus untuk penyimpan emas di bawah dealership kami.<br><br>
       Fokus kami untuk <strong>mengemaskini maklumat terkini tentang emas</strong>, terutama berkaitan maklumat daripada Public Gold.<br><br>
@@ -665,11 +412,10 @@ html, body {
     ]);
   }
 
-  /* ── LANGKAH 4: Selepas pengguna balas "setuju" ── */
+  /* ── Langkah 4: Selepas klik "Setuju" ── */
   async function whFlow_AfterSetuju() {
-    chatStage = 'awaiting_boleh_2';
 
-    /* Chat 1 – link channel */
+    /* Chat 1 – pautan saluran */
     await whBotSay(`
       Baiklah, boleh klik pautan di bawah ini:<br><br>
       <a href="https://whatsapp.com/channel/0029VaQTCIN3LdQZhU4O3r3s" target="_blank">
@@ -677,37 +423,31 @@ html, body {
       </a>
     `, 1000);
 
-    /* Chat 2 – imej GAP + keterangan */
+    /* Chat 2 – imej GAP */
     await sleep(800);
-    whAddTyping();
-    await sleep(1200);
-    whRemoveTyping();
+    whAddTyping(); await sleep(1200); whRemoveTyping();
     whAddImageBubble(
       'https://blogger.googleusercontent.com/img/a/AVvXsEghzD8nV7JX_PYLFIJWJz2n8_6v3C67XpSd8_IZyoaF_z4-bjgUQCJlHCaZS9f8cZRM5tceBIew3HXfkMpPEu6ekN57ldJSAYzBIlG4dVMqvUu9M_Gvmdkmxf64nUbaGQjL4hoifZviKI7EPJN9ZwPzZEX7ze5cskUiU0XYp7iYjGRHik8z3MFvjajU25U=s16000',
       'Anak panah warna hitam dalam gambar ini menunjukkan jumlah gram emas yang terkumpul apabila menyimpan emas melalui Akaun Emas GAP.'
     );
 
-    /* Chat 3 – imej withdraw 0.5g + keterangan */
+    /* Chat 3 – imej withdraw 0.5g */
     await sleep(900);
-    whAddTyping();
-    await sleep(1300);
-    whRemoveTyping();
+    whAddTyping(); await sleep(1300); whRemoveTyping();
     whAddImageBubble(
-      'https://blogger.googleusercontent.com/img/a/AVvXsEhigj_gbinzpzapYmdANS5Am3mPJplzdRhAYJJ5Bt2MCtSLQeUmbyNzx_Y-FeZ3XWiDiH4-7u5AQHJ9oC7RTT--vK0y4N9KsrArVaAPhefWInoKJ4vmt-l8LYYgKjE5lqVCriC7O5mmoV7ln-ilmu6dvxpZy25lBE5cJX-nAoVSzYMRq_NKOTP9zdHYx14=s16000',
-      'Apabila sudah cukup 0.5 gram dalam akaun, saya cadangkan untuk keluarkan sekeping jongkong emas 0.5 gram bagi mengambil pengalaman pengeluaran daripada akaun emas GAP.<br>Boleh lihat reka bentuk lain dalam aplikasi PG.<br>Masuk aplikasi &gt; pilih Withdraw.'
+      'https://blogger.googleusercontent.com/img/a/AVvXsEiht29qc6OcI5bwI15w695b3svr-OaB8lnVaAFigMSuKWtya8mf4N3ZExXe4BTrtsu0cdPkJPakJ7n4E-KCJuaCeyeECm3mdbunRUYlbDIkriIzj4LKD35JvZd0HcxM_FPq5FSNIfrEIXkHAb371OHplT-TI2vk0FOfmwuCV3__z5RnNOecclwOA6TQt3M=s16000',
+      'Apabila sudah cukup 0.5 gram dalam akaun, saya cadangkan untuk keluarkan sekeping jongkong emas 0.5 gram bagi mengambil pengalaman pengeluaran daripada akaun emas GAP.<br>Boleh lihat reka bentuk lain dalam aplikasi Public Gold.<br>Masuk aplikasi &gt; pilih Withdraw.'
     );
 
-    /* Chat 4 – imej jongkong besar + keterangan */
+    /* Chat 4 – imej jongkong besar */
     await sleep(900);
-    whAddTyping();
-    await sleep(1300);
-    whRemoveTyping();
+    whAddTyping(); await sleep(1300); whRemoveTyping();
     whAddImageBubble(
       'https://blogger.googleusercontent.com/img/a/AVvXsEjMtbZhE3vA5i_xW6rI_qFTKlIkzdjhpEURIPo5pgzGRt5BiVopoN2hu_4Qf3QQUpmMuz_GvfioFKnQNvriHEf4YEadkcZCzCE3vSyaWX9QgPeI1A3awqUBXtOcImxtaJY8XfLWeySjkndq68Q6adx7dZAGI6GP5ydTeDHv1ATwTjgUZ7VcbW-GpjWSUDo=s16000',
       'Seterusnya boleh sasarkan pengeluaran emas yang lebih besar seperti dalam gambar ini pula.'
     );
 
-    /* Chat 5 – soal boleh join channel */
+    /* Chat 5 – soal boleh sertai saluran */
     await sleep(900);
     await whBotSay(`
       Pautan ini <a href="https://whatsapp.com/channel/0029VaQTCIN3LdQZhU4O3r3s" target="_blank">
@@ -719,9 +459,8 @@ html, body {
     ]);
   }
 
-  /* ── LANGKAH 5: Selepas pengguna balas "boleh" (channel) ── */
+  /* ── Langkah 5: Selepas klik "Boleh" (saluran WA) ── */
   async function whFlow_AfterBoleh2() {
-    chatStage = 'idle';
 
     /* Chat 1 – SOP & Tutorial */
     await whBotSay(`
@@ -739,7 +478,7 @@ html, body {
       Dari semasa ke semasa, saya atau team kami akan menghantar WhatsApp secara peribadi untuk mengemaskini tentang Public Gold dan berkongsi ilmu emas.<br><br>
       Jadi boleh simpan dahulu nombor WhatsApp team kami supaya tidak terkejut nanti:<br><br>
       <a href="http://www.wasap.my/601126159697" target="_blank">http://www.wasap.my/601126159697</a>
-      <strong>(Cik Humairah)</strong>
+      &nbsp;<strong>(Cik Humairah)</strong>
     `, 1200);
 
     /* Chat 3 – video */
@@ -750,65 +489,26 @@ html, body {
       Klik di sini ya: <a href="https://pgolink.com/elakkan-kerugian" target="_blank">https://pgolink.com/elakkan-kerugian</a>
     `, 1200);
 
-    /* Chat 4 – WhatsApp Encik Wan Hasbullah */
+    /* Chat 4 – butang WhatsApp */
     await sleep(900);
     await whBotSay(`
       Sekiranya ada sebarang isu berkaitan Public Gold, boleh WhatsApp Encik Wan Hasbullah ya 👌<br><br>
-      <a href="https://wa.me/601126704897" class="wh-wa-btn" target="_blank" style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:white;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;text-decoration:none;">
-        ${waSvg} WhatsApp Encik Wan Hasbullah
+      <a href="https://wa.me/601126704897" target="_blank"
+         style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:white;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;text-decoration:none;">
+        ${waSvg}&nbsp;WhatsApp Encik Wan Hasbullah
       </a>
     `, 1200);
-
-    /* Papar semula cadangan FAQ */
-    whShowSuggestions();
-    chatStage = 'idle';
   }
 
   /* ═══════════════════════════════════════════
-     SEND MESSAGE (carian FAQ biasa)
-  ═══════════════════════════════════════════ */
-  window.whSendMessage = async function () {
-    const input = $('whUserInput');
-    const query = input.value.trim();
-    if (!query || isTyping) return;
-
-    /* Jika dalam aliran perbualan automatik, ignore carian */
-    if (chatStage !== 'idle') {
-      input.value = ''; return;
-    }
-
-    isTyping = true; input.value = ''; input.focus();
-    whAddUserBubble(query);
-    whAddTyping();
-    await sleep(800 + Math.random() * 500);
-    whRemoveTyping();
-
-    const results = whSearch(query);
-    if (results.length) {
-      whAddBotBubble(`Saya jumpa <strong>${results.length}</strong> rekod berkaitan pertanyaan anda:`);
-      for (let i = 0; i < results.length; i++) {
-        await sleep(i * 300);
-        whAddFAQCard(results[i]);
-      }
-    } else {
-      whAddNotFound(query);
-    }
-    isTyping = false;
-  };
-
-  $('whUserInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); whSendMessage(); }
-  });
-
-  /* ═══════════════════════════════════════════
-     WELCOME SEQUENCE (auto-play)
+     WELCOME SEQUENCE
   ═══════════════════════════════════════════ */
   async function whWelcome() {
 
-    /* ── Skrip 1 ── */
+    /* Skrip 1 – typewriter */
     await whTypewriter('Assalamualaikum dan Hai, Saya chat assistant Encik Wan Hasbullah.', 600);
 
-    /* ── Skrip 2 ── */
+    /* Skrip 2 – kumpulan Facebook */
     await sleep(800);
     whAddTyping();
     await sleep(1500);
@@ -825,14 +525,9 @@ html, body {
       Cuba tekan pautan itu dahulu, boleh sertai?
     `);
 
-    /* Butang "Boleh" – Skrip 2 */
-    chatStage = 'awaiting_boleh_1';
     whAddQuickReplies([
       { label: '✅ Boleh', action: whFlow_AfterBoleh1 }
     ]);
-
-    /* Muat FAQ di latar belakang */
-    whLoadFAQ();
   }
 
   setTimeout(whWelcome, 600);
