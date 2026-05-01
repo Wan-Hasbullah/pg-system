@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jadual Harian</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0d14;
+      --surface: #111520;
+      --card: #161b2e;
+      --border: #1e2d4a;
+      --accent: #00d4ff;
+      --accent2: #7c3aed;
+      --accent3: #10b981;
+      --gold: #f59e0b;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --current-bg: rgba(0,212,255,0.08);
+      --current-border: #00d4ff;
+      --ibadah: #1a2a1a;
+      --ibadah-text: #4ade80;
+      --family: #1a1f2e;
+      --business: #2a1a2e;
+      --business-text: #c084fc;
+      --education: #1a2030;
+      --education-text: #60a5fa;
+      --rest: #1a1a20;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Background mesh */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 0%, rgba(0,212,255,0.07) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(124,58,237,0.07) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,212,255,0.1);
+      border: 1px solid rgba(0,212,255,0.25);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .pulse-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    h1 {
+      font-size: clamp(24px, 5vw, 40px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #e2e8f0 30%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .clock-display {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(28px, 6vw, 48px);
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      margin: 12px 0 4px;
+      text-shadow: 0 0 30px rgba(0,212,255,0.4);
+    }
+
+    .date-display {
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    /* Day tabs */
+    .day-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 24px;
+      scrollbar-width: none;
+    }
+    .day-tabs::-webkit-scrollbar { display: none; }
+
+    .day-tab {
+      flex-shrink: 0;
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Sora', sans-serif;
+      white-space: nowrap;
+    }
+
+    .day-tab:hover {
+      border-color: rgba(0,212,255,0.3);
+      color: var(--text);
+    }
+
+    .day-tab.active {
+      background: rgba(0,212,255,0.1);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .day-tab.today {
+      position: relative;
+    }
+    .day-tab.today::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 50%; transform: translateX(-50%);
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    /* Schedule */
+    .schedule-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .schedule-item {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .schedule-item::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+
+    .schedule-item.ibadah { background: var(--ibadah); }
+    .schedule-item.ibadah::before { background: var(--ibadah-text); }
+    .schedule-item.ibadah .activity { color: var(--ibadah-text); }
+
+    .schedule-item.business { background: var(--business); }
+    .schedule-item.business::before { background: var(--business-text); }
+    .schedule-item.business .activity { color: var(--business-text); }
+
+    .schedule-item.education { background: var(--education); }
+    .schedule-item.education::before { background: var(--education-text); }
+    .schedule-item.education .activity { color: var(--education-text); }
+
+    .schedule-item.rest { background: var(--rest); }
+    .schedule-item.rest::before { background: var(--muted); }
+    .schedule-item.rest .activity { color: var(--muted); }
+
+    .schedule-item.family::before { background: var(--gold); }
+    .schedule-item.family .activity { color: var(--gold); }
+
+    /* CURRENT item */
+    .schedule-item.current {
+      background: var(--current-bg) !important;
+      border-color: var(--current-border) !important;
+      box-shadow: 0 0 20px rgba(0,212,255,0.15), inset 0 0 20px rgba(0,212,255,0.03);
+    }
+    .schedule-item.current::before { background: var(--accent) !important; }
+    .schedule-item.current .activity { color: #fff !important; font-weight: 600; }
+
+    .current-indicator {
+      display: none;
+      position: absolute;
+      right: 14px;
+      top: 50%; transform: translateY(-50%);
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+    }
+    .schedule-item.current .current-indicator { display: flex; }
+
+    .blink-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .time-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .activity {
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    /* Past items dim */
+    .schedule-item.past {
+      opacity: 0.45;
+    }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+      padding: 16px;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .legend-title {
+      width: 100%;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 2px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .legend-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+    }
+
+    /* Mobile full table toggle */
+    @media (max-width: 600px) {
+      .schedule-item { grid-template-columns: 80px 1fr; gap: 8px; padding: 12px; }
+      .activity { font-size: 13px; }
+      .time-label { font-size: 10px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-badge">
+      <span class="pulse-dot"></span>
+      Jadual Harian Aktif
+    </div>
+    <h1>My Daily Schedule</h1>
+    <div class="clock-display" id="clock">--:--:--</div>
+    <div class="date-display" id="dateDisplay">--</div>
+  </header>
+
+  <div class="day-tabs" id="dayTabs"></div>
+  <div class="schedule-list" id="scheduleList"></div>
+
+  <div class="legend">
+    <div class="legend-title">Kategori</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div> Ibadah</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div> Pendidikan</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#c084fc"></div> Bisnes</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Keluarga</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#64748b"></div> Rehat</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#00d4ff"></div> Sekarang</div>
+  </div>
+
+</div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────────────────────────
+// Category: ibadah | education | business | family | rest
+const DAYS = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
+
+// Schedule indexed by day name. JS day: 0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri,6=Sat
+// Map: Ahad=0, Isnin=1, Selasa=2, Rabu=3, Khamis=4, Jumaat=5, Sabtu=6
+const scheduleData = {
+  Ahad: [
+    { start: '04:30', end: '05:00', label: 'Bangun | Tahajjud', cat: 'ibadah' },
+    { start: '05:00', end: '06:00', label: 'Editing', cat: 'business' },
+    { start: '06:00', end: '07:00', label: 'Subuh berjemaah', cat: 'ibadah' },
+    { start: '07:00', end: '07:45', label: 'Live TT (Kuliah Emas Subuh)', cat: 'education' },
+    { start: '07:45', end: '08:00', label: 'Hantar kakak sekolah', cat: 'family' },
+    { start: '08:00', end: '08:30', label: "Kelas (Saba') 8.00–8.30am", cat: 'education' },
+    { start: '08:40', end: '09:20', label: 'Kelas AQIL 8.40–9.20am', cat: 'education' },
+    { start: '11:00', end: '11:45', label: 'Qailullah', cat: 'rest' },
+    { start: '11:45', end: '12:15', label: 'Lunch', cat: 'family' },
+    { start: '12:15', end: '12:40', label: 'Persiapan', cat: 'rest' },
+    { start: '12:40', end: '13:00', label: 'Amik kakak sekolah + Ke Sekolah', cat: 'family' },
+    { start: '13:00', end: '16:15', label: 'Sekolah KAFA', cat: 'education' },
+    { start: '16:15', end: '16:45', label: 'Solat Asar berjemaah', cat: 'ibadah' },
+    { start: '17:00', end: '18:00', label: 'Talaqqi Kitab + Baca Modul', cat: 'education' },
+    { start: '18:00', end: '19:00', label: 'Santai Keluarga/Rehat', cat: 'family' },
+    { start: '19:00', end: '19:30', label: 'Solat Maghrib berjemaah', cat: 'ibadah' },
+    { start: '19:00', end: '19:30', label: 'Live TT (Kuliah Emas Maghrib)', cat: 'education' },
+    { start: '19:30', end: '20:00', label: 'Solat Isyak berjemaah', cat: 'ibadah' },
+    { start: '21:00', end: '22:30', label: 'Training + Editing', cat: 'business' },
+    { start: '23:00', end: '04:30', label: 'Tidur', cat: 'rest' },
+  ],
+  Isnin: [
+    { start: '04:30', end: '05:00', label: 'Bangun | Tahajjud', cat: 'ibadah' },
+    { start: '05:00', end: '06:00', label: 'Editing', cat: 'business' },
+    { start: '06:00', end: '07:00', label: 'Subuh berjemaah', cat: 'ibadah' },
+    { start: '07:00', end: '07:45', label: 'Live TT (Kuliah Emas Subuh)', cat: 'education' },
+    { start: '07:45', end: '08:00', label: 'Hantar kakak sekolah', cat: 'family' },
+    { start: '08:00', end: '08:30', label: "Kelas (Saba') 8.00–8.30am", cat: 'education' },
+    { start: '09:30', end: '11:00', label: 'Editing', cat: 'business' },
+    { start: '11:00', end: '11:45', label: 'Qailullah', cat: 'rest' },
+    { start: '11:45', end: '12:15', label: 'Lunch', cat: 'family' },
+    { start: '12:15', end: '12:40', label: 'Persiapan', cat: 'rest' },
+    { start: '12:40', end: '13:00', label: 'Amik kakak sekolah + Ke Sekolah', cat: 'family' },
+    { start: '13:00', end: '16:15', label: 'Sekolah KAFA', cat: 'education' },
+    { start: '16:15', end: '16:45', label: 'Solat Asar berjemaah', cat: 'ibadah' },
+    { start: '17:00', end: '18:00', label: 'Talaqqi Kitab + Baca Modul', cat: 'business' },
+    { start: '18:00', end: '19:00', label: 'Santai Keluarga/Rehat', cat: 'family' },
+    { start: '19:00', end: '19:30', label: 'Solat Maghrib berjemaah', cat: 'ibadah' },
+    { start: '19:00', end: '19:30', label: 'Live TT (Kuliah Emas Maghrib)', cat: 'education' },
+    { start: '19:30', end: '20:00', label: 'Solat Isyak berjemaah', cat: 'ibadah' },
+    { start: '21:00', end: '22:30', label: 'Editing', cat: 'business' },
+    { start: '23:00', end: '04:30', label: 'Tidur', cat: 'rest' },
+  ],
+  Selasa: [
+    { start: '04:30', end: '05:00', label: 'Bangun | Tahajjud', cat: 'ibadah' },
+    { start: '05:00', end: '06:00', label: 'Photomode / Blog', cat: 'business' },
+    { start: '06:00', end: '07:00', label: 'Subuh berjemaah', cat: 'ibadah' },
+    { start: '07:00', end: '07:45', label: 'Live TT (Kuliah Emas Subuh)', cat: 'education' },
+    { start: '07:45', end: '08:00', label: 'Hantar kakak sekolah', cat: 'family' },
+    { start: '08:00', end: '08:30', label: "Kelas (Pra Saba' & Mukhtar) + Follow Throught", cat: 'education' },
+    { start: '09:30', end: '11:00', label: 'Editing', cat: 'business' },
+    { start: '11:45', end: '12:15', label: 'Bisnes Supplier', cat: 'business' },
+    { start: '12:40', end: '13:00', label: 'Amik kakak sekolah', cat: 'family' },
+    { start: '13:00', end: '16:15', label: 'Bisnes Supplier', cat: 'business' },
+    { start: '16:15', end: '16:45', label: 'Solat Asar berjemaah', cat: 'ibadah' },
+    { start: '17:00', end: '18:00', label: 'Photomode / Blog', cat: 'business' },
+    { start: '18:00', end: '19:00', label: 'Santai Keluarga/Rehat', cat: 'family' },
+    { start: '19:00', end: '19:30', label: 'Solat Maghrib berjemaah', cat: 'ibadah' },
+    { start: '19:00', end: '19:30', label: 'Live TT (Kuliah Emas Maghrib)', cat: 'education' },
+    { start: '19:30', end: '20:00', label: 'Solat Isyak berjemaah', cat: 'ibadah' },
+    { start: '21:00', end: '22:30', label: 'Editing', cat: 'business' },
+    { start: '23:00', end: '04:30', label: 'Tidur', cat: 'rest' },
+  ],
+  Rabu: [
+    { start: '04:30', end: '05:00', label: 'Bangun | Tahajjud', cat: 'ibadah' },
+    { start: '05:00', end: '06:00', label: 'Photomode / Blog', cat: 'business' },
+    { start: '06:00', end: '07:00', label: 'Subuh berjemaah', cat: 'ibadah' },
+    { start: '07:00', end: '07:45', label: 'Live TT (Kuliah Emas Subuh)', cat: 'education' },
+    { start: '07:45', end: '08:00', label: 'Hantar kakak sekolah', cat: 'family' },
+    { start: '08:00', end: '08:30', label: "Kelas (Pra Saba' & Mukhtar) + Follow Throught", cat: 'education' },
+    { start: '09:30', end: '11:00', label: 'Photomode + Blog', cat: 'business' },
+    { start: '11:45', end: '12:15', label: 'Bisnes Supplier', cat: 'business' },
+    { start: '12:40', end: '13:00', label: 'Amik kakak sekolah', cat: 'family' },
+    { start: '13:00', end: '16:15', label: 'Bisnes Supplier', cat: 'business' },
+    { start: '16:15', end: '16:45', label: 'Solat Asar berjemaah', cat: 'ibadah' },
+    { start: '17:00', end: '18:00', label: 'Photomode / Blog', cat: 'business' },
+    { start: '18:00', end: '19:00', label: 'Santai Keluarga/Rehat', cat: 'family' },
+    { start: '19:00', end: '19:30', label: 'Solat Maghrib berjemaah', cat: 'ibadah' },
+    { start: '19:00', end: '19:30', label: 'Live TT (Kuliah Emas Maghrib)', cat: 'education' },
+    { start: '19:30', end: '20:00', label: 'Solat Isyak berjemaah', cat: 'ibadah' },
+    { start: '21:00', end: '22:30', label: 'Editing', cat: 'business' },
+    { start: '23:00', end: '04:30', label: 'Tidur', cat: 'rest' },
+  ],
+  Khamis: [
+    { start: '04:30', end: '05:00', label: 'Bangun | Tahajjud', cat: 'ibadah' },
+    { start: '05:00', end: '06:00', label: 'Photomode / Blog', cat: 'business' },
+    { start: '06:00', end: '07:00', label: 'Subuh berjemaah', cat: 'ibadah' },
+    { start: '07:00', end: '07:45', label: 'Live TT (Kuliah Emas Subuh)', cat: 'education' },
+    { start: '07:45', end: '08:00', label: 'Hantar kakak sekolah', cat: 'family' },
+    { start: '08:00', end: '08:30', label: "Kelas (Pra Saba' & Mukhtar) + Follow Throught", cat: 'education' },
+    { start: '09:30', end: '11:00', label: 'Photomode + Blog', cat: 'business' },
+    { start: '11:00', end: '11:45', label: 'Qailullah', cat: 'rest' },
+    { start: '11:40', end: '12:10', label: 'Lunch + Persiapan', cat: 'family' },
+    { start: '12:10', end: '12:40', label: 'Amik kakak sekolah + Ke Sekolah', cat: 'family' },
+    { start: '13:00', end: '16:15', label: 'Sekolah KAFA', cat: 'education' },
+    { start: '13:00', end: '14:00', label: 'Talaqqi + Baca Modul', cat: 'education' },
+    { start: '16:15', end: '16:45', label: 'Solat Asar berjemaah', cat: 'ibadah' },
+    { start: '17:00', end: '18:00', label: 'My RPH', cat: 'education' },
+    { start: '18:00', end: '19:00', label: 'Santai Keluarga/Rehat', cat: 'family' },
+    { start: '19:00', end: '19:30', label: 'Solat Maghrib berjemaah', cat: 'ibadah' },
+    { start: '19:00', end: '19:30', label: 'Live TT (Kuliah Emas Maghrib)', cat: 'education' },
+    { start: '19:30', end: '20:00', label: 'Solat Isyak berjemaah', cat: 'ibadah' },
+    { start: '21:00', end: '22:30', label: 'Training + Photomode / Blog', cat: 'business' },
+    { start: '23:00', end: '04:30', label: 'Tidur', cat: 'rest' },
+  ],
+  Jumaat: [
+    { start: '04:30', end: '05:00', label: 'Bangun | Tahajjud', cat: 'ibadah' },
+    { start: '06:00', end: '07:00', label: 'Subuh berjemaah', cat: 'ibadah' },
+    { start: '07:00', end: '07:45', label: 'Live TT (Kuliah Emas Subuh)', cat: 'education' },
+    { start: '12:00', end: '14:00', label: 'Solat Jumaat', cat: 'ibadah' },
+    { start: '16:15', end: '16:45', label: 'Solat Asar berjemaah', cat: 'ibadah' },
+    { start: '18:00', end: '19:00', label: 'Santai Keluarga/Rehat', cat: 'family' },
+    { start: '19:00', end: '19:30', label: 'Solat Maghrib berjemaah', cat: 'ibadah' },
+    { start: '19:30', end: '20:00', label: 'Solat Isyak berjemaah', cat: 'ibadah' },
+    { start: '23:00', end: '04:30', label: 'Tidur', cat: 'rest' },
+  ],
+  Sabtu: [
+    { start: '04:30', end: '05:00', label: 'Bangun | Tahajjud', cat: 'ibadah' },
+    { start: '06:00', end: '07:00', label: 'Subuh berjemaah', cat: 'ibadah' },
+    { start: '07:00', end: '07:45', label: 'Live TT (Kuliah Emas Subuh)', cat: 'education' },
+    { start: '18:00', end: '19:00', label: 'Santai Keluarga/Rehat', cat: 'family' },
+    { start: '19:00', end: '19:30', label: 'Solat Maghrib berjemaah', cat: 'ibadah' },
+    { start: '19:30', end: '20:00', label: 'Solat Isyak berjemaah', cat: 'ibadah' },
+    { start: '23:00', end: '04:30', label: 'Tidur', cat: 'rest' },
+  ],
+};
+
+// JS: 0=Sun,1=Mon,...,6=Sat → map to our day names
+const JS_DAY_MAP = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let selectedDay = null;
+
+function toMinutes(t) {
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function isCurrent(item, nowMin) {
+  let s = toMinutes(item.start);
+  let e = toMinutes(item.end);
+  if (e <= s) e += 1440; // overnight wrap
+  let now = nowMin;
+  if (now < s && e > 1440) now += 1440;
+  return now >= s && now < e;
+}
+
+function isPast(item, nowMin) {
+  let e = toMinutes(item.end);
+  if (e < toMinutes(item.start)) e += 1440;
+  return nowMin > e;
+}
+
+// ── Render Tabs ───────────────────────────────────────────────────────────────
+function renderTabs(todayName) {
+  const tabs = document.getElementById('dayTabs');
+  tabs.innerHTML = '';
+  DAYS.forEach(day => {
+    const btn = document.createElement('button');
+    btn.className = 'day-tab' + (day === todayName ? ' today' : '') + (day === selectedDay ? ' active' : '');
+    btn.textContent = day;
+    btn.onclick = () => { selectedDay = day; renderTabs(todayName); renderSchedule(); };
+    tabs.appendChild(btn);
+  });
+}
+
+// ── Render Schedule ───────────────────────────────────────────────────────────
+function renderSchedule() {
+  const list = document.getElementById('scheduleList');
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const todayName = JS_DAY_MAP[now.getDay()];
+  const isToday = selectedDay === todayName;
+  const items = scheduleData[selectedDay] || [];
+
+  list.innerHTML = '';
+  let hasCurrent = false;
+
+  items.forEach(item => {
+    const div = document.createElement('div');
+    const current = isToday && isCurrent(item, nowMin);
+    const past = isToday && !current && isPast(item, nowMin);
+    if (current) hasCurrent = true;
+
+    div.className = `schedule-item ${item.cat}${current ? ' current' : ''}${past ? ' past' : ''}`;
+
+    div.innerHTML = `
+      <div class="time-label">${to12h(item.start)}${item.end ? ' – ' + to12h(item.end) : ''}</div>
+      <div class="activity">${item.label}</div>
+      <div class="current-indicator"><div class="blink-dot"></div>LIVE</div>
+    `;
+    list.appendChild(div);
+
+    if (current) {
+      setTimeout(() => div.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+    }
+  });
+}
+
+// ── Clock ─────────────────────────────────────────────────────────────────────
+const daysFull = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
+const monthsFull = ['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+
+function to12h(time24) {
+  const [h, m] = time24.split(':').map(Number);
+  const period = h < 12 ? 'AM' : 'PM';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${h12}:${String(m).padStart(2,'0')} ${period}`;
+}
+
+function updateClock() {
+  const now = new Date();
+  const h24 = now.getHours();
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  const period = h24 < 12 ? 'AM' : 'PM';
+  const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+  document.getElementById('clock').textContent = `${h12}:${m}:${s} ${period}`;
+  document.getElementById('dateDisplay').textContent =
+    `${daysFull[now.getDay()]}, ${now.getDate()} ${monthsFull[now.getMonth()]} ${now.getFullYear()}`;
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+function init() {
+  const todayName = JS_DAY_MAP[new Date().getDay()];
+  selectedDay = todayName;
+  updateClock();
+  renderTabs(todayName);
+  renderSchedule();
+
+  setInterval(() => {
+    updateClock();
+    renderTabs(JS_DAY_MAP[new Date().getDay()]);
+    renderSchedule();
+  }, 60000);
+
+  setInterval(updateClock, 1000);
+}
+
+init();
+</script>
+</body>
+</html>
