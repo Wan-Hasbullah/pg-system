@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jadual Content Marketing</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0d14;
+    --surface: #111520;
+    --card: #161c2e;
+    --card2: #12192a;
+    --border: #1e2a42;
+    --accent: #3b82f6;
+    --accent2: #06b6d4;
+    --gold: #f59e0b;
+    --green: #10b981;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --blink: #f59e0b;
+    --active-slot: rgba(59,130,246,0.12);
+    --glow: 0 0 20px rgba(59,130,246,0.25);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #0f1629 0%, #0a1020 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 20px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .logo-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50% { opacity:0.6; transform:scale(1.3); }
+  }
+  .header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #94a3b8;
+  }
+  .clock-display {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    margin-left: auto;
+  }
+
+  /* ── REMINDER BANNER ── */
+  #reminder-banner {
+    background: linear-gradient(90deg, rgba(245,158,11,0.12) 0%, rgba(59,130,246,0.08) 100%);
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 10px;
+    margin: 12px 16px 0;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+  }
+  #reminder-banner.hidden { display:none; }
+  .reminder-icon {
+    font-size: 18px;
+    animation: blink-icon 1s infinite;
+    flex-shrink: 0;
+  }
+  @keyframes blink-icon {
+    0%,100%{ opacity:1; } 50%{ opacity:0.3; }
+  }
+  .reminder-text {
+    flex: 1;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .reminder-title {
+    font-weight: 600;
+    color: var(--gold);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .reminder-body { color: var(--text); }
+  .btn-jump {
+    background: var(--gold);
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .btn-jump:hover { background: #fbbf24; transform: scale(1.03); }
+
+  /* ── MAIN ── */
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 16px 14px 0;
+  }
+
+  /* ── CARD ── */
+  .week-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: box-shadow 0.3s;
+  }
+  .week-card.active-week {
+    border-color: rgba(59,130,246,0.4);
+    box-shadow: var(--glow);
+  }
+
+  .card-header {
+    background: linear-gradient(90deg, #1a2540 0%, #141d30 100%);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .card-week-badge {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--accent);
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .card-week-badge.gold { background: var(--gold); color: #000; }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    flex: 1;
+    color: var(--text);
+  }
+  .card-dates {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .card-status {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+  .card-status.live {
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 1.5s infinite;
+  }
+
+  /* ── TIME SLOT ── */
+  .time-slot {
+    border-top: 1px solid var(--border);
+  }
+  .time-slot-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  .time-slot-header:hover { background: rgba(255,255,255,0.02); }
+  .time-slot-header.active-slot {
+    background: var(--active-slot);
+  }
+  .time-badge {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent2);
+    min-width: 56px;
+    letter-spacing: 0.03em;
+  }
+  .time-badge.blink-time {
+    color: var(--blink);
+    animation: text-blink 0.8s infinite;
+    text-shadow: 0 0 8px var(--blink);
+  }
+  @keyframes text-blink {
+    0%,100%{ opacity:1; } 50%{ opacity:0.4; }
+  }
+  .slot-label {
+    flex: 1;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .slot-label.active-label { color: var(--text); }
+  .live-dot {
+    display: none;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #f59e0b;
+    box-shadow: 0 0 6px #f59e0b;
+    animation: pulse 1s infinite;
+  }
+  .live-dot.show { display: block; }
+  .chevron {
+    color: var(--muted);
+    font-size: 11px;
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+  .chevron.open { transform: rotate(90deg); }
+
+  /* ── DROPDOWN CONTENT ── */
+  .slot-content {
+    display: none;
+    padding: 4px 16px 12px 16px;
+    animation: fadeIn 0.2s ease;
+  }
+  .slot-content.open { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
+
+  .category-block {
+    margin-bottom: 10px;
+  }
+  .category-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 8px 0 6px;
+    padding-left: 2px;
+  }
+
+  .sub-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #4b6082;
+    margin: 6px 0 4px 4px;
+  }
+
+  .day-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 6px;
+    border-radius: 7px;
+    margin-bottom: 2px;
+    transition: background 0.15s;
+  }
+  .day-row:hover { background: rgba(255,255,255,0.03); }
+  .day-row.today-row {
+    background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.2);
+  }
+  .day-name {
+    font-size: 12px;
+    color: var(--muted);
+    min-width: 60px;
+    font-weight: 400;
+  }
+  .day-name.today { color: var(--accent); font-weight: 600; }
+  .day-tag {
+    font-size: 10px;
+    background: rgba(255,255,255,0.06);
+    color: #94a3b8;
+    padding: 1px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .btn-lihat {
+    margin-left: auto;
+    background: rgba(59,130,246,0.15);
+    color: var(--accent);
+    border: 1px solid rgba(59,130,246,0.25);
+    border-radius: 5px;
+    padding: 3px 10px;
+    font-size: 10px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  .btn-lihat:hover {
+    background: rgba(59,130,246,0.3);
+    transform: scale(1.03);
+  }
+  .btn-lihat.now {
+    background: rgba(245,158,11,0.2);
+    color: var(--gold);
+    border-color: rgba(245,158,11,0.35);
+    animation: glow-btn 1.2s infinite;
+  }
+  @keyframes glow-btn {
+    0%,100%{ box-shadow:0 0 0 rgba(245,158,11,0); }
+    50%{ box-shadow:0 0 10px rgba(245,158,11,0.4); }
+  }
+  .emoji-dot { font-size: 10px; flex-shrink: 0; }
+  .no-link { color: var(--muted); font-size: 10px; font-style: italic; margin-left:auto; }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    padding: 24px 20px 0;
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 480px) {
+    .day-name { min-width: 50px; }
+    .card-title { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="logo-dot"></div>
+    <h1>Content Marketing Schedule</h1>
+    <div class="clock-display" id="clock">--:-- --</div>
+  </div>
+</div>
+
+<!-- REMINDER BANNER -->
+<div id="reminder-banner" class="hidden">
+  <div class="reminder-icon">🔔</div>
+  <div class="reminder-text">
+    <div class="reminder-title">Reminder Aktif</div>
+    <div class="reminder-body" id="reminder-body">—</div>
+  </div>
+  <button class="btn-jump" onclick="jumpToActive()">Pergi ▸</button>
+</div>
+
+<!-- MAIN -->
+<div class="container" id="main">
+
+  <!-- ═══════════════════════════════════════════
+       KAD 1 : 10-16 May 2026
+  ═══════════════════════════════════════════ -->
+  <div class="week-card" id="card-week1">
+    <div class="card-header" onclick="toggleCard('week1-body')">
+      <span class="card-week-badge gold">Minggu 2</span>
+      <div>
+        <div class="card-title">Photomode &amp; Overlay</div>
+        <div class="card-dates">10 – 16 Mei 2026</div>
+      </div>
+      <div class="card-status" id="status-week1"></div>
+    </div>
+    <div id="week1-body">
+
+      <!-- 7am -->
+      <div class="time-slot" id="slot-week1-7">
+        <div class="time-slot-header" onclick="toggleSlot('week1-7-content','week1-7')">
+          <span class="time-badge" id="badge-week1-7">7:00am</span>
+          <span class="slot-label" id="label-week1-7">Nota Wan Hasbullah</span>
+          <span class="live-dot" id="dot-week1-7"></span>
+          <span class="chevron" id="chev-week1-7">▶</span>
+        </div>
+        <div class="slot-content" id="week1-7-content">
+          <!-- Facebook -->
+          <div class="category-block">
+            <div class="category-label">» Facebook</div>
+            <div id="fb-week1-7"></div>
+          </div>
+          <!-- Blog -->
+          <div class="category-block">
+            <div class="category-label">» Blog</div>
+            <div id="blog-week1-7"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10am -->
+      <div class="time-slot" id="slot-week1-10">
+        <div class="time-slot-header" onclick="toggleSlot('week1-10-content','week1-10')">
+          <span class="time-badge" id="badge-week1-10">10:00am</span>
+          <span class="slot-label" id="label-week1-10">Youtube</span>
+          <span class="live-dot" id="dot-week1-10"></span>
+          <span class="chevron" id="chev-week1-10">▶</span>
+        </div>
+        <div class="slot-content" id="week1-10-content">
+          <div class="category-block">
+            <div class="category-label">▶ Youtube</div>
+            <div id="yt-week1-10"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 12pm -->
+      <div class="time-slot" id="slot-week1-12">
+        <div class="time-slot-header" onclick="toggleSlot('week1-12-content','week1-12')">
+          <span class="time-badge" id="badge-week1-12">12:00pm</span>
+          <span class="slot-label" id="label-week1-12">Photomode</span>
+          <span class="live-dot" id="dot-week1-12"></span>
+          <span class="chevron" id="chev-week1-12">▶</span>
+        </div>
+        <div class="slot-content" id="week1-12-content">
+          <div class="category-block">
+            <div class="category-label">📷 Photomode</div>
+            <div id="pm-week1-12"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5pm -->
+      <div class="time-slot" id="slot-week1-17">
+        <div class="time-slot-header" onclick="toggleSlot('week1-17-content','week1-17')">
+          <span class="time-badge" id="badge-week1-17">5:00pm</span>
+          <span class="slot-label" id="label-week1-17">Tips Emas Mentor</span>
+          <span class="live-dot" id="dot-week1-17"></span>
+          <span class="chevron" id="chev-week1-17">▶</span>
+        </div>
+        <div class="slot-content" id="week1-17-content">
+          <div class="category-block">
+            <div class="category-label">⭐ Tips Emas Mentor</div>
+            <div id="tem-week1-17"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9pm -->
+      <div class="time-slot" id="slot-week1-21">
+        <div class="time-slot-header" onclick="toggleSlot('week1-21-content','week1-21')">
+          <span class="time-badge" id="badge-week1-21">9:00pm</span>
+          <span class="slot-label" id="label-week1-21">Video</span>
+          <span class="live-dot" id="dot-week1-21"></span>
+          <span class="chevron" id="chev-week1-21">▶</span>
+        </div>
+        <div class="slot-content" id="week1-21-content">
+          <div class="category-block">
+            <div class="category-label">🎬 Video</div>
+            <div id="vid-week1-21"></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- week1-body -->
+  </div><!-- card week1 -->
+
+
+  <!-- ═══════════════════════════════════════════
+       KAD 2 : 3-9 May 2026
+  ═══════════════════════════════════════════ -->
+  <div class="week-card" id="card-week2">
+    <div class="card-header" onclick="toggleCard('week2-body')">
+      <span class="card-week-badge">Minggu 1</span>
+      <div>
+        <div class="card-title">Artikel &amp; Blog</div>
+        <div class="card-dates">3 – 9 Mei 2026</div>
+      </div>
+      <div class="card-status" id="status-week2"></div>
+    </div>
+    <div id="week2-body">
+
+      <!-- 7am -->
+      <div class="time-slot" id="slot-week2-7">
+        <div class="time-slot-header" onclick="toggleSlot('week2-7-content','week2-7')">
+          <span class="time-badge" id="badge-week2-7">7:00am</span>
+          <span class="slot-label" id="label-week2-7">Thread &amp; Artikel</span>
+          <span class="live-dot" id="dot-week2-7"></span>
+          <span class="chevron" id="chev-week2-7">▶</span>
+        </div>
+        <div class="slot-content" id="week2-7-content">
+          <div class="category-block">
+            <div class="category-label">» Thread</div>
+            <div id="thread-week2-7"></div>
+          </div>
+          <div class="category-block">
+            <div class="category-label">» Artikel</div>
+            <div class="sub-label">»&gt; Facebook</div>
+            <div id="artfb-week2-7"></div>
+            <div class="sub-label">»&gt; Blog</div>
+            <div id="artblog-week2-7"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10am -->
+      <div class="time-slot" id="slot-week2-10">
+        <div class="time-slot-header" onclick="toggleSlot('week2-10-content','week2-10')">
+          <span class="time-badge" id="badge-week2-10">10:00am</span>
+          <span class="slot-label" id="label-week2-10">Youtube</span>
+          <span class="live-dot" id="dot-week2-10"></span>
+          <span class="chevron" id="chev-week2-10">▶</span>
+        </div>
+        <div class="slot-content" id="week2-10-content">
+          <div class="category-block">
+            <div class="category-label">▶ Youtube</div>
+            <div id="yt-week2-10"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 12pm -->
+      <div class="time-slot" id="slot-week2-12">
+        <div class="time-slot-header" onclick="toggleSlot('week2-12-content','week2-12')">
+          <span class="time-badge" id="badge-week2-12">12:00pm</span>
+          <span class="slot-label" id="label-week2-12">Photomode</span>
+          <span class="live-dot" id="dot-week2-12"></span>
+          <span class="chevron" id="chev-week2-12">▶</span>
+        </div>
+        <div class="slot-content" id="week2-12-content">
+          <div class="category-block">
+            <div class="category-label">📷 Photomode</div>
+            <div id="pm-week2-12"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5pm -->
+      <div class="time-slot" id="slot-week2-17">
+        <div class="time-slot-header" onclick="toggleSlot('week2-17-content','week2-17')">
+          <span class="time-badge" id="badge-week2-17">5:00pm</span>
+          <span class="slot-label" id="label-week2-17">Tips Emas Mentor</span>
+          <span class="live-dot" id="dot-week2-17"></span>
+          <span class="chevron" id="chev-week2-17">▶</span>
+        </div>
+        <div class="slot-content" id="week2-17-content">
+          <div class="category-block">
+            <div class="category-label">⭐ Tips Emas Mentor</div>
+            <div id="tem-week2-17"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9pm -->
+      <div class="time-slot" id="slot-week2-21">
+        <div class="time-slot-header" onclick="toggleSlot('week2-21-content','week2-21')">
+          <span class="time-badge" id="badge-week2-21">9:00pm</span>
+          <span class="slot-label" id="label-week2-21">Video</span>
+          <span class="live-dot" id="dot-week2-21"></span>
+          <span class="chevron" id="chev-week2-21">▶</span>
+        </div>
+        <div class="slot-content" id="week2-21-content">
+          <div class="category-block">
+            <div class="category-label">🎬 Video</div>
+            <div id="vid-week2-21"></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- week2-body -->
+  </div><!-- card week2 -->
+
+</div><!-- container -->
+
+<div class="footer">© Content Marketing Schedule · Auto-refresh setiap minit</div>
+
+<script>
+/* ────────────────────────────
+   DATA
+──────────────────────────── */
+const DAYS = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
+
+// Week 1: 10-16 May 2026  (Sun=11, Mon=12 ... Sat=16) — actually Sun=10 May
+// Date index: 0=Ahad(10 May), 1=Isnin(11)...6=Sabtu(16)
+const WEEK1_START = new Date(2026, 4, 10); // May 10
+const WEEK1_END   = new Date(2026, 4, 16); // May 16
+
+// Week 2: 3-9 May 2026  Sun=3 May
+const WEEK2_START = new Date(2026, 4, 3);
+const WEEK2_END   = new Date(2026, 4, 9);
+
+const DATA = {
+  week1: {
+    '7': {
+      facebook: [
+        { day:'Ahad',   tag:'Nota',     url:'https://t.me/c/3858932014/64' },
+        { day:'Isnin',  tag:'Abnayadh', url:'https://t.me/c/3858932014/66' },
+        { day:'Selasa', tag:'Nota',     url:'https://t.me/c/3858932014/69' },
+        { day:'Rabu',   tag:'Abnayadh', url:'https://t.me/c/3858932014/71' },
+        { day:'Khamis', tag:'Nota',     url:'https://t.me/c/3858932014/73' },
+        { day:'Jumaat', tag:'Abnayadh', url:'' },
+        { day:'Sabtu',  tag:'Nota',     url:'' },
+      ],
+      blog: [
+        { day:'Ahad',   tag:'', url:'https://t.me/c/3858932014/75' },
+        { day:'Isnin',  tag:'', url:'https://t.me/c/3858932014/76' },
+        { day:'Selasa', tag:'', url:'https://t.me/c/3858932014/77' },
+        { day:'Rabu',   tag:'', url:'https://t.me/c/3858932014/78' },
+        { day:'Khamis', tag:'', url:'https://t.me/c/3858932014/79' },
+        { day:'Jumaat', tag:'', url:'' },
+        { day:'Sabtu',  tag:'', url:'' },
+      ]
+    },
+    '10': {
+      youtube: [
+        { day:'Ahad',   tag:'', url:'https://t.me/c/2217339903/902' },
+        { day:'Isnin',  tag:'', url:'https://t.me/c/2217339903/904' },
+        { day:'Selasa', tag:'', url:'https://t.me/c/2217339903/906' },
+        { day:'Rabu',   tag:'', url:'https://t.me/c/2217339903/908' },
+        { day:'Khamis', tag:'', url:'https://t.me/c/2217339903/910' },
+        { day:'Jumaat', tag:'', url:'https://t.me/c/2217339903/912' },
+        { day:'Sabtu',  tag:'', url:'https://t.me/c/2217339903/914' },
+      ]
+    },
+    '12': {
+      photomode: [
+        { day:'Ahad',   tag:'Overlay',   url:'https://t.me/c/2217339903/836' },
+        { day:'Isnin',  tag:'Photomode', url:'https://t.me/c/2217339903/838' },
+        { day:'Selasa', tag:'Overlay',   url:'https://t.me/c/2217339903/840' },
+        { day:'Rabu',   tag:'Photomode', url:'https://t.me/c/2217339903/842' },
+        { day:'Khamis', tag:'Overlay',   url:'https://t.me/c/2217339903/844' },
+        { day:'Jumaat', tag:'Photomode', url:'https://t.me/c/2217339903/846' },
+        { day:'Sabtu',  tag:'Poster',    url:'https://t.me/c/2217339903/848' },
+      ]
+    },
+    '17': {
+      tem: [
+        { day:'Ahad',   tag:'Poster',        emoji:'🟢', url:'https://t.me/c/2217339903/1063' },
+        { day:'Isnin',  tag:'TEM',           emoji:'🔵', url:'https://t.me/c/2217339903/1065' },
+        { day:'Selasa', tag:'Poster',        emoji:'🟢', url:'https://t.me/c/2217339903/1067' },
+        { day:'Rabu',   tag:'G100 Talk Show',emoji:'🟡', url:'https://t.me/c/2217339903/1069' },
+        { day:'Khamis', tag:'TEM',           emoji:'🔵', url:'https://t.me/c/2217339903/1071' },
+        { day:'Jumaat', tag:'Poster',        emoji:'🟢', url:'https://t.me/c/2217339903/1073' },
+        { day:'Sabtu',  tag:'TEM',           emoji:'🔵', url:'https://t.me/c/2217339903/1075' },
+      ]
+    },
+    '21': {
+      video: [
+        { day:'Ahad',   tag:'', url:'https://t.me/c/2217339903/729' },
+        { day:'Isnin',  tag:'', url:'https://t.me/c/2217339903/731' },
+        { day:'Selasa', tag:'', url:'https://t.me/c/2217339903/733' },
+        { day:'Rabu',   tag:'', url:'https://t.me/c/2217339903/735' },
+        { day:'Khamis', tag:'', url:'https://t.me/c/2217339903/737' },
+        { day:'Jumaat', tag:'', url:'https://t.me/c/2217339903/739' },
+        { day:'Sabtu',  tag:'', url:'https://t.me/c/2217339903/741' },
+      ]
+    }
+  },
+  week2: {
+    '7': {
+      thread: [
+        { day:'Ahad',   tag:'',              url:'https://t.me/c/2608705880/427' },
+        { day:'Isnin',  tag:'',              url:'https://t.me/c/2608705880/433' },
+        { day:'Selasa', tag:'Kisah Inspirasi',url:'https://t.me/c/2608705880/439' },
+        { day:'Rabu',   tag:'Kisah Inspirasi',url:'https://t.me/c/2608705880/445' },
+        { day:'Khamis', tag:'',              url:'https://t.me/c/2608705880/445' },
+        { day:'Jumaat', tag:'',              url:'https://t.me/c/2608705880/451' },
+        { day:'Sabtu',  tag:'',              url:'https://t.me/c/2608705880/457' },
+      ],
+      artfb: [
+        { day:'Ahad',   tag:'', url:'https://t.me/c/2217339903/243' },
+        { day:'Isnin',  tag:'', url:'https://t.me/c/2217339903/245' },
+        { day:'Selasa', tag:'', url:'https://t.me/c/2217339903/247' },
+        { day:'Rabu',   tag:'', url:'https://t.me/c/2217339903/249' },
+        { day:'Khamis', tag:'', url:'https://t.me/c/2217339903/251' },
+        { day:'Jumaat', tag:'', url:'https://t.me/c/2217339903/1098' },
+        { day:'Sabtu',  tag:'', url:'https://t.me/c/2217339903/1100' },
+      ],
+      artblog: [
+        { day:'Ahad',   tag:'', url:'https://t.me/c/2217339903/469' },
+        { day:'Isnin',  tag:'', url:'https://t.me/c/2217339903/470' },
+        { day:'Selasa', tag:'', url:'https://t.me/c/2217339903/473' },
+        { day:'Rabu',   tag:'', url:'https://t.me/c/2217339903/475' },
+        { day:'Khamis', tag:'', url:'https://t.me/c/2217339903/477' },
+        { day:'Jumaat', tag:'', url:'https://t.me/c/2217339903/1104' },
+        { day:'Sabtu',  tag:'', url:'https://t.me/c/2217339903/1106' },
+      ]
+    },
+    '10': {
+      youtube: [
+        { day:'Ahad',   tag:'', url:'https://t.me/c/2217339903/887' },
+        { day:'Isnin',  tag:'', url:'https://t.me/c/2217339903/889' },
+        { day:'Selasa', tag:'', url:'https://t.me/c/2217339903/891' },
+        { day:'Rabu',   tag:'', url:'https://t.me/c/2217339903/893' },
+        { day:'Khamis', tag:'', url:'https://t.me/c/2217339903/895' },
+        { day:'Jumaat', tag:'', url:'https://t.me/c/2217339903/897' },
+        { day:'Sabtu',  tag:'', url:'https://t.me/c/2217339903/899' },
+      ]
+    },
+    '12': {
+      photomode: [
+        { day:'Ahad',   tag:'',              url:'https://t.me/c/2217339903/851' },
+        { day:'Isnin',  tag:'Overlay',       url:'https://t.me/c/2217339903/853' },
+        { day:'Selasa', tag:'',              url:'https://t.me/c/2217339903/855' },
+        { day:'Rabu',   tag:'Overlay',       url:'https://t.me/c/2217339903/857' },
+        { day:'Khamis', tag:'Kisah Inspirasi',url:'https://t.me/c/2217339903/859' },
+        { day:'Jumaat', tag:'Overlay',       url:'https://t.me/c/2217339903/861' },
+        { day:'Sabtu',  tag:'Kisah Inspirasi',url:'https://t.me/c/2217339903/863' },
+      ]
+    },
+    '17': {
+      tem: [
+        { day:'Ahad',   tag:'Poster',        emoji:'🟢', url:'https://t.me/c/2217339903/1078' },
+        { day:'Isnin',  tag:'TEM',           emoji:'🔵', url:'https://t.me/c/2217339903/1080' },
+        { day:'Selasa', tag:'Poster',        emoji:'🟢', url:'https://t.me/c/2217339903/1082' },
+        { day:'Rabu',   tag:'G100 Talk Show',emoji:'🟡', url:'https://t.me/c/2217339903/1069' },
+        { day:'Khamis', tag:'TEM',           emoji:'🔵', url:'https://t.me/c/2217339903/1085' },
+        { day:'Jumaat', tag:'Poster',        emoji:'🟢', url:'https://t.me/c/2217339903/1087' },
+        { day:'Sabtu',  tag:'TEM',           emoji:'🔵', url:'https://t.me/c/2217339903/1089' },
+      ]
+    },
+    '21': {
+      video: [
+        { day:'Ahad',   tag:'', url:'https://t.me/c/2217339903/1011' },
+        { day:'Isnin',  tag:'', url:'https://t.me/c/2217339903/1014' },
+        { day:'Selasa', tag:'', url:'https://t.me/c/2217339903/1017' },
+        { day:'Rabu',   tag:'', url:'https://t.me/c/2217339903/1020' },
+        { day:'Khamis', tag:'', url:'https://t.me/c/2217339903/1023' },
+        { day:'Jumaat', tag:'', url:'https://t.me/c/2217339903/1026' },
+        { day:'Sabtu',  tag:'', url:'https://t.me/c/2217339903/1029' },
+      ]
+    }
+  }
+};
+
+/* ────────────────────────────
+   BUILD ROWS
+──────────────────────────── */
+function buildRows(containerId, items, weekStart, todayDayIdx, isActiveSlot) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = '';
+  items.forEach((item, i) => {
+    const isToday = (i === todayDayIdx) && isActiveSlot !== undefined;
+    const isNow   = isToday && isActiveSlot;
+    const row = document.createElement('div');
+    row.className = 'day-row' + (isNow ? ' today-row' : '');
+
+    const dateObj = new Date(weekStart);
+    dateObj.setDate(dateObj.getDate() + i);
+    const dd = dateObj.getDate();
+    const mm = dateObj.getMonth()+1;
+
+    let html = `<span class="day-name${isToday?' today':''}">${item.day} <span style="font-size:9px;color:#3b5270">${dd}/${mm}</span></span>`;
+    if (item.emoji) html += `<span class="emoji-dot">${item.emoji}</span>`;
+    if (item.tag)   html += `<span class="day-tag">${item.tag}</span>`;
+    if (item.url) {
+      html += `<a href="${item.url}" target="_blank" class="btn-lihat${isNow?' now':''}">Lihat${isNow?' 🔔':''}</a>`;
+    } else {
+      html += `<span class="no-link">— tiada</span>`;
+    }
+    row.innerHTML = html;
+    el.appendChild(row);
+  });
+}
+
+/* ────────────────────────────
+   STATE
+──────────────────────────── */
+const SLOT_HOURS = [7, 10, 12, 17, 21];
+const SLOT_IDS   = ['7','10','12','17','21'];
+
+let activeSlotKey = null; // e.g. 'week1-7'
+
+function getSlotHour(slotId) {
+  return parseInt(slotId);
+}
+
+function getCurrentSlotHour(now) {
+  const h = now.getHours();
+  // active slot = the slot that has passed but next hasn't started
+  let current = null;
+  for (let i = 0; i < SLOT_HOURS.length; i++) {
+    if (h >= SLOT_HOURS[i]) current = SLOT_HOURS[i];
+  }
+  return current;
+}
+
+function dateInRange(d, start, end) {
+  const t = d.setHours(0,0,0,0);
+  return t >= start.setHours(0,0,0,0) && t <= end.setHours(0,0,0,0);
+}
+
+function getDayIndexFromDate(d, weekStart) {
+  // Ahad=0 in our array. weekStart is Sunday.
+  const startDay = weekStart.getDay(); // should be 0 (Sunday)
+  const diff = Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate()) - new Date(weekStart.getFullYear(),weekStart.getMonth(),weekStart.getDate())) / 86400000);
+  return diff; // 0..6
+}
+
+/* ────────────────────────────
+   RENDER ALL
+──────────────────────────── */
+function renderAll() {
+  const now = new Date();
+  const currentHour = getCurrentSlotHour(now);
+
+  const inWeek1 = dateInRange(new Date(now), new Date(WEEK1_START), new Date(WEEK1_END));
+  const inWeek2 = dateInRange(new Date(now), new Date(WEEK2_START), new Date(WEEK2_END));
+
+  let reminderText = '';
+  activeSlotKey = null;
+
+  // ── WEEK 1
+  const dayIdx1 = inWeek1 ? getDayIndexFromDate(now, new Date(WEEK1_START)) : -1;
+  document.getElementById('status-week1').classList.toggle('live', inWeek1);
+  document.getElementById('card-week1').classList.toggle('active-week', inWeek1);
+
+  SLOT_IDS.forEach(sid => {
+    const h = getSlotHour(sid);
+    const isActive = inWeek1 && currentHour === h;
+    const badge = document.getElementById(`badge-week1-${sid}`);
+    const dot   = document.getElementById(`dot-week1-${sid}`);
+    const label = document.getElementById(`label-week1-${sid}`);
+    const header= badge?.closest('.time-slot-header');
+
+    badge?.classList.toggle('blink-time', isActive);
+    dot?.classList.toggle('show', isActive);
+    label?.classList.toggle('active-label', isActive);
+    header?.classList.toggle('active-slot', isActive);
+
+    if (isActive) {
+      activeSlotKey = `week1-${sid}-content`;
+      reminderText = `📅 Minggu 1 (10-16 Mei) · Slot ${badge?.textContent} — Sila semak kandungan hari ini!`;
+    }
+  });
+
+  // Build week1 rows
+  buildRows('fb-week1-7',   DATA.week1['7'].facebook,  new Date(WEEK1_START), dayIdx1, inWeek1 && currentHour===7);
+  buildRows('blog-week1-7', DATA.week1['7'].blog,      new Date(WEEK1_START), dayIdx1, inWeek1 && currentHour===7);
+  buildRows('yt-week1-10',  DATA.week1['10'].youtube,  new Date(WEEK1_START), dayIdx1, inWeek1 && currentHour===10);
+  buildRows('pm-week1-12',  DATA.week1['12'].photomode,new Date(WEEK1_START), dayIdx1, inWeek1 && currentHour===12);
+  buildRows('tem-week1-17', DATA.week1['17'].tem,      new Date(WEEK1_START), dayIdx1, inWeek1 && currentHour===17);
+  buildRows('vid-week1-21', DATA.week1['21'].video,    new Date(WEEK1_START), dayIdx1, inWeek1 && currentHour===21);
+
+  // ── WEEK 2
+  const dayIdx2 = inWeek2 ? getDayIndexFromDate(now, new Date(WEEK2_START)) : -1;
+  document.getElementById('status-week2').classList.toggle('live', inWeek2);
+  document.getElementById('card-week2').classList.toggle('active-week', inWeek2);
+
+  SLOT_IDS.forEach(sid => {
+    const h = getSlotHour(sid);
+    const isActive = inWeek2 && currentHour === h;
+    const badge = document.getElementById(`badge-week2-${sid}`);
+    const dot   = document.getElementById(`dot-week2-${sid}`);
+    const label = document.getElementById(`label-week2-${sid}`);
+    const header= badge?.closest('.time-slot-header');
+
+    badge?.classList.toggle('blink-time', isActive);
+    dot?.classList.toggle('show', isActive);
+    label?.classList.toggle('active-label', isActive);
+    header?.classList.toggle('active-slot', isActive);
+
+    if (isActive) {
+      activeSlotKey = `week2-${sid}-content`;
+      reminderText = `📅 Minggu 2 (3-9 Mei) · Slot ${badge?.textContent} — Sila semak kandungan hari ini!`;
+    }
+  });
+
+  buildRows('thread-week2-7',  DATA.week2['7'].thread,   new Date(WEEK2_START), dayIdx2, inWeek2 && currentHour===7);
+  buildRows('artfb-week2-7',   DATA.week2['7'].artfb,    new Date(WEEK2_START), dayIdx2, inWeek2 && currentHour===7);
+  buildRows('artblog-week2-7', DATA.week2['7'].artblog,  new Date(WEEK2_START), dayIdx2, inWeek2 && currentHour===7);
+  buildRows('yt-week2-10',     DATA.week2['10'].youtube, new Date(WEEK2_START), dayIdx2, inWeek2 && currentHour===10);
+  buildRows('pm-week2-12',     DATA.week2['12'].photomode,new Date(WEEK2_START), dayIdx2, inWeek2 && currentHour===12);
+  buildRows('tem-week2-17',    DATA.week2['17'].tem,     new Date(WEEK2_START), dayIdx2, inWeek2 && currentHour===17);
+  buildRows('vid-week2-21',    DATA.week2['21'].video,   new Date(WEEK2_START), dayIdx2, inWeek2 && currentHour===21);
+
+  // ── REMINDER BANNER
+  const banner = document.getElementById('reminder-banner');
+  if (activeSlotKey) {
+    banner.classList.remove('hidden');
+    document.getElementById('reminder-body').textContent = reminderText;
+  } else if (!inWeek1 && !inWeek2) {
+    banner.classList.remove('hidden');
+    document.getElementById('reminder-body').textContent = '📌 Tiada jadual aktif hari ini. Semak minggu akan datang.';
+  } else {
+    // inside a week but no active slot hour yet
+    banner.classList.remove('hidden');
+    const nextH = SLOT_HOURS.find(h => h > (currentHour || 0));
+    const nextLabel = nextH ? `${nextH < 12 ? nextH+':00am' : (nextH===12?'12:00pm':(nextH-12)+':00pm')}` : '—';
+    document.getElementById('reminder-body').textContent = `📌 Slot seterusnya: ${nextLabel} — Sentiasa pantau jadual ini.`;
+  }
+}
+
+/* ────────────────────────────
+   CLOCK
+──────────────────────────── */
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours();
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  document.getElementById('clock').textContent = `${h12}:${m} ${ampm}`;
+}
+
+/* ────────────────────────────
+   TOGGLE HELPERS
+──────────────────────────── */
+function toggleCard(bodyId) {
+  const el = document.getElementById(bodyId);
+  if (!el) return;
+  el.style.display = el.style.display === 'none' ? '' : 'none';
+}
+
+function toggleSlot(contentId, slotId) {
+  const content = document.getElementById(contentId);
+  const chev = document.getElementById('chev-' + slotId);
+  if (!content) return;
+  const isOpen = content.classList.contains('open');
+  content.classList.toggle('open', !isOpen);
+  if (chev) chev.classList.toggle('open', !isOpen);
+}
+
+function jumpToActive() {
+  if (!activeSlotKey) return;
+  const el = document.getElementById(activeSlotKey);
+  if (!el) return;
+  el.classList.add('open');
+  // also open chevron
+  const slotId = activeSlotKey.replace('-content','');
+  const chev = document.getElementById('chev-' + slotId);
+  if (chev) chev.classList.add('open');
+  el.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+/* ────────────────────────────
+   INIT
+──────────────────────────── */
+updateClock();
+renderAll();
+setInterval(() => { updateClock(); renderAll(); }, 60000);
+</script>
+</body>
+</html>
