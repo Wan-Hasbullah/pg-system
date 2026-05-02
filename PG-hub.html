@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Public Gold Admin Hub</title>
+    <title>Public Gold Admin Hub | Hasbullah</title>
     <style>
         :root {
             --primary: #c9a050; /* Gold */
             --secondary: #1e293b; /* Dark Slate */
             --accent: #6366f1; 
             --dark: #0f172a;
-            --light: #f8fafc;
+            --light: #f1f5f9;
             --white: #ffffff;
             --success: #10b981;
         }
@@ -24,7 +24,7 @@
         }
 
         .admin-container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 40px auto;
             padding: 20px;
         }
@@ -36,9 +36,9 @@
 
         .admin-header h1 {
             color: var(--dark);
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 800;
-            letter-spacing: -0.5px;
+            letter-spacing: -1px;
             margin-bottom: 10px;
         }
 
@@ -58,18 +58,13 @@
             background-color: var(--white);
             color: #64748b;
             border: 1px solid rgba(0,0,0,0.05);
-            padding: 10px 20px;
-            border-radius: 12px;
+            padding: 12px 20px;
+            border-radius: 14px;
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
-
-        .filter-btn:hover {
-            transform: translateY(-2px);
-            background-color: #f1f5f9;
         }
 
         .filter-btn.active {
@@ -115,19 +110,14 @@
         }
 
         .icon-box {
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 18px;
-            font-size: 24px;
-            transition: transform 0.3s ease;
-        }
-
-        .hub-card:hover .icon-box {
-            transform: scale(1.1);
+            margin-bottom: 20px;
+            font-size: 26px;
         }
 
         /* Kategori Colors */
@@ -135,53 +125,32 @@
         .cat-register .icon-box { background: rgba(99, 102, 241, 0.1); color: var(--accent); }
         .cat-assistant .icon-box { background: rgba(16, 185, 129, 0.1); color: var(--success); }
         .cat-official .icon-box { background: rgba(30, 41, 59, 0.1); color: var(--secondary); }
+        .cat-referrer .icon-box { background: rgba(236, 72, 153, 0.1); color: #ec4899; }
 
-        .hub-card h3 { 
-            margin: 0; 
-            color: var(--dark); 
-            font-size: 1.1rem; 
-            font-weight: 700;
-        }
+        .hub-card h3 { margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--dark); }
+        .hub-card p { color: #64748b; font-size: 0.8rem; margin-top: 8px; line-height: 1.5; }
 
-        .hub-card p { 
-            color: #64748b; 
-            font-size: 0.8rem; 
-            margin-top: 8px; 
-            line-height: 1.5;
-        }
-
-        /* Copy Button Style */
         .copy-btn {
             margin-top: 15px;
-            background: #f1f5f9;
-            border: none;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
             padding: 8px 16px;
             border-radius: 10px;
             font-size: 0.7rem;
             font-weight: 700;
-            color: #475569;
+            color: #64748b;
             cursor: pointer;
-            transition: all 0.2s;
             display: flex;
             align-items: center;
             gap: 6px;
-            width: fit-content;
+            transition: all 0.2s;
         }
 
-        .copy-btn:hover {
-            background: #e2e8f0;
-            color: var(--dark);
-        }
-
-        .copy-btn svg {
-            width: 14px;
-            height: 14px;
-        }
+        .copy-btn:hover { background: #f1f5f9; color: var(--dark); }
 
         @media (max-width: 640px) {
             .grid-hub { grid-template-columns: 1fr; }
-            .filter-btn { flex: 1 1 40%; font-size: 0.75rem; }
-            .admin-header h1 { font-size: 1.5rem; }
+            .filter-btn { flex: 1 1 45%; font-size: 0.75rem; }
         }
     </style>
 </head>
@@ -189,8 +158,8 @@
 
 <div class="admin-container">
     <div class="admin-header">
-        <h1>PG Hub Dashboard</h1>
-        <p>Sistem Pengurusan & Capaian Pantas Public Gold</p>
+        <h1>Public Gold Hub</h1>
+        <p>Pusat Kawalan & Capaian Pantas Usahawan Emas</p>
     </div>
 
     <div class="filter-wrapper">
@@ -199,94 +168,101 @@
         <button class="filter-btn" onclick="filterCards('cat-register', this)">Register</button>
         <button class="filter-btn" onclick="filterCards('cat-assistant', this)">Assistant</button>
         <button class="filter-btn" onclick="filterCards('cat-official', this)">Official (G100)</button>
+        <button class="filter-btn" onclick="filterCards('cat-referrer', this)">Referrer</button>
     </div>
 
     <div class="grid-hub" id="cardGrid">
         
-        <!-- PUBLIC GOLD GROUP -->
+        <!-- PUBLIC GOLD -->
         <div class="hub-card cat-pg" data-category="cat-pg">
             <a href="https://publicgold.com.my/index.php?route=account/login" class="card-link" target="_blank">
                 <div class="icon-box">🔑</div>
                 <h3>PG Website</h3>
-                <p>Log masuk terus ke akaun utama Public Gold anda.</p>
+                <p>Log masuk sistem utama Public Gold.</p>
             </a>
-            <button class="copy-btn" onclick="copyToClipboard('https://publicgold.com.my/index.php?route=account/login', this)">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
-                Copy Link
-            </button>
+            <button class="copy-btn" onclick="copyToClipboard('https://publicgold.com.my/index.php?route=account/login', this)">📋 Salin Pautan</button>
         </div>
 
         <div class="hub-card cat-pg" data-category="cat-pg">
             <a href="https://bc.pgmall.my/dashboard" class="card-link" target="_blank">
-                <div class="icon-box">🏢</div>
+                <div class="icon-box">📊</div>
                 <h3>Business Center</h3>
-                <p>Uruskan perniagaan PG Mall anda di dashboard pusat.</p>
+                <p>Dashboard pengurusan perniagaan PG Mall.</p>
             </a>
-            <button class="copy-btn" onclick="copyToClipboard('https://bc.pgmall.my/dashboard', this)">Copy Link</button>
+            <button class="copy-btn" onclick="copyToClipboard('https://bc.pgmall.my/dashboard', this)">📋 Salin Pautan</button>
         </div>
 
         <div class="hub-card cat-pg" data-category="cat-pg">
             <a href="https://bc.pgmall.my/personal-performance" class="card-link" target="_blank">
                 <div class="icon-box">📈</div>
                 <h3>Personal Sale</h3>
-                <p>Semak prestasi jualan peribadi dan insentif bulanan.</p>
+                <p>Semakan prestasi jualan peribadi.</p>
             </a>
-            <button class="copy-btn" onclick="copyToClipboard('https://bc.pgmall.my/personal-performance', this)">Copy Link</button>
+            <button class="copy-btn" onclick="copyToClipboard('https://bc.pgmall.my/personal-performance', this)">📋 Salin Pautan</button>
         </div>
 
         <div class="hub-card cat-pg" data-category="cat-pg">
             <a href="https://bc.pgmall.my/business-group-details" class="card-link" target="_blank">
                 <div class="icon-box">👥</div>
                 <h3>Group Details</h3>
-                <p>Pantau rangkaian dan prestasi kumpulan perniagaan.</p>
+                <p>Maklumat penuh rangkaian kumpulan.</p>
             </a>
-            <button class="copy-btn" onclick="copyToClipboard('https://bc.pgmall.my/business-group-details', this)">Copy Link</button>
+            <button class="copy-btn" onclick="copyToClipboard('https://bc.pgmall.my/business-group-details', this)">📋 Salin Pautan</button>
         </div>
 
-        <!-- REGISTER GROUP -->
+        <!-- REGISTER -->
         <div class="hub-card cat-register" data-category="cat-register">
             <a href="https://pgolink.com/register-pg" class="card-link" target="_blank">
-                <div class="icon-box">📝</div>
+                <div class="icon-box">🖋️</div>
                 <h3>Register My Sistem</h3>
-                <p>Sistem pendaftaran pantas untuk pelanggan baharu.</p>
+                <p>Pautan pendaftaran sistem luaran.</p>
             </a>
-            <button class="copy-btn" onclick="copyToClipboard('https://pgolink.com/register-pg', this)">Copy Link</button>
+            <button class="copy-btn" onclick="copyToClipboard('https://pgolink.com/register-pg', this)">📋 Salin Pautan</button>
         </div>
 
         <div class="hub-card cat-register" data-category="cat-register">
             <a href="https://wan-hasbullah.github.io/pg-system/dashboard-admin.html" class="card-link" target="_blank">
                 <div class="icon-box">🖥️</div>
-                <h3>Dashboard Admin</h3>
-                <p>Pengurusan data pendaftaran sistem melalui GitHub.</p>
+                <h3>Dashboard My Register</h3>
+                <p>Sistem pengurusan pendaftaran admin.</p>
             </a>
-            <button class="copy-btn" onclick="copyToClipboard('https://wan-hasbullah.github.io/pg-system/dashboard-admin.html', this)">Copy Link</button>
+            <button class="copy-btn" onclick="copyToClipboard('https://wan-hasbullah.github.io/pg-system/dashboard-admin.html', this)">📋 Salin Pautan</button>
         </div>
 
         <div class="hub-card cat-register" data-category="cat-register">
             <a href="https://publicgoldofficial.com/wanhasbullah/cara-bermula" class="card-link" target="_blank">
                 <div class="icon-box">🚀</div>
                 <h3>Cara Bermula</h3>
-                <p>Panduan langkah demi langkah untuk penyimpan emas.</p>
+                <p>Panduan lengkap untuk penyimpan baharu.</p>
             </a>
-            <button class="copy-btn" onclick="copyToClipboard('https://publicgoldofficial.com/wanhasbullah/cara-bermula', this)">Copy Link</button>
+            <button class="copy-btn" onclick="copyToClipboard('https://publicgoldofficial.com/wanhasbullah/cara-bermula', this)">📋 Salin Pautan</button>
+        </div>
+
+        <div class="hub-card cat-register" data-category="cat-register">
+            <a href="https://www.publicgoldofficial.com/referrer/referral/PG00556711" class="card-link" target="_blank">
+                <div class="icon-box">🔗</div>
+                <h3>Register Ref</h3>
+                <p>Pautan rujukan pendaftaran (Official).</p>
+            </a>
+            <button class="copy-btn" onclick="copyToClipboard('https://www.publicgoldofficial.com/referrer/referral/PG00556711', this)">📋 Salin Pautan</button>
         </div>
 
         <div class="hub-card cat-register" data-category="cat-register">
             <a href="https://publicgold.com.my/index.php?route=account/register&intro_pgcode=PG00556711&is_dealer=1" class="card-link" target="_blank">
                 <div class="icon-box">👨</div>
-                <h3>PG Web (Adult)</h3>
-                <p>Link pendaftaran akaun dewasa (18 tahun ke atas).</p>
+                <h3>PG Web Register (Adult)</h3>
+                <p>Pendaftaran akaun dewasa Public Gold.</p>
             </a>
-            <button class="copy-btn" onclick="copyToClipboard('https://publicgold.com.my/index.php?route=account/register&intro_pgcode=PG00556711&is_dealer=1', this)">Copy Link</button>
+            <button class="copy-btn" onclick="copyToClipboard('https://publicgold.com.my/index.php?route=account/register&intro_pgcode=PG00556711&is_dealer=1', this)">📋 Salin Pautan</button>
         </div>
 
         <div class="hub-card cat-register" data-category="cat-register">
             <a href="https://publicgold.com.my/index.php?route=account/register&form_type=ja&intro_pgcode=PG00556711&is_dealer=1" class="card-link" target="_blank">
                 <div class="icon-box">👶</div>
-                <h3>PG Web (Junior)</h3>
-                <p>Pendaftaran akaun emas kanak-kanak (bawah 18).</p>
+                <h3>PG Web Register (Junior)</h3>
+                <p>Pendaftaran akaun Junior (Kanak-kanak).</p>
             </a>
-            <button class="copy-btn" onclick="copyToClipboard('https://publicgold.com.my/index.php?route=account/register&form_type=ja&intro_pgcode=PG00556711&is_dealer=1', this)">Copy Link</button>
+            <button class="copy-btn" onclick="copyToClipboard('https://publicgold.com.my/index.php?route=account/register&form_type=ja&intro_pgcode=PG00556711&is_dealer=1', this)">📋 Salin Pautan</button>
         </div>
 
         <!-- CHAT ASSISTANT -->
@@ -294,55 +270,128 @@
             <a href="https://pgolink.com/chat-assistant-first" class="card-link" target="_blank">
                 <div class="icon-box">💬</div>
                 <h3>First Assist</h3>
-                <p>Bantuan awal untuk prospek yang baru berminat.</p>
+                <p>Bantuan sembang untuk pusingan pertama.</p>
             </a>
-            <button class="copy-btn" onclick="copyToClipboard('https://pgolink.com/chat-assistant-first', this)">Copy Link</button>
+            <button class="copy-btn" onclick="copyToClipboard('https://pgolink.com/chat-assistant-first', this)">📋 Salin Pautan</button>
         </div>
 
         <div class="hub-card cat-assistant" data-category="cat-assistant">
             <a href="https://pgolink.com/chat-assistant-closing" class="card-link" target="_blank">
                 <div class="icon-box">🤝</div>
                 <h3>Closing Assist</h3>
-                <p>Skrip dan bantuan untuk fasa penutupan jualan.</p>
+                <p>Bantuan untuk proses penutupan (closing).</p>
             </a>
-            <button class="copy-btn" onclick="copyToClipboard('https://pgolink.com/chat-assistant-closing', this)">Copy Link</button>
+            <button class="copy-btn" onclick="copyToClipboard('https://pgolink.com/chat-assistant-closing', this)">📋 Salin Pautan</button>
+        </div>
+
+        <div class="hub-card cat-assistant" data-category="cat-assistant">
+            <a href="https://pgolink.com/chat-assistant-faq" class="card-link" target="_blank">
+                <div class="icon-box">❓</div>
+                <h3>FAQ Assist</h3>
+                <p>Bantuan jawapan pantas soalan lazim.</p>
+            </a>
+            <button class="copy-btn" onclick="copyToClipboard('https://pgolink.com/chat-assistant-faq', this)">📋 Salin Pautan</button>
         </div>
 
         <div class="hub-card cat-assistant" data-category="cat-assistant">
             <a href="https://wangemashasbullah.blogspot.com/p/faq-form-pg.html?m=1" class="card-link" target="_blank">
-                <div class="icon-box">📋</div>
+                <div class="icon-box">📝</div>
                 <h3>FAQ Form</h3>
-                <p>Borang soalan lazim untuk rujukan pelanggan.</p>
+                <p>Borang pengurusan soalan pelanggan.</p>
             </a>
-            <button class="copy-btn" onclick="copyToClipboard('https://wangemashasbullah.blogspot.com/p/faq-form-pg.html?m=1', this)">Copy Link</button>
+            <button class="copy-btn" onclick="copyToClipboard('https://wangemashasbullah.blogspot.com/p/faq-form-pg.html?m=1', this)">📋 Salin Pautan</button>
         </div>
 
-        <!-- OFFICIAL GROUP -->
+        <!-- PG OFFICIAL (G100) -->
         <div class="hub-card cat-official" data-category="cat-official">
             <a href="https://www.publicgoldofficial.com/app/dashboard" class="card-link" target="_blank">
-                <div class="icon-box">🛡️</div>
+                <div class="icon-box">🏠</div>
                 <h3>Landing Page</h3>
-                <p>Halaman pendaratan rasmi G100 Network.</p>
+                <p>Halaman utama Public Gold Official.</p>
             </a>
-            <button class="copy-btn" onclick="copyToClipboard('https://www.publicgoldofficial.com/app/dashboard', this)">Copy Link</button>
+            <button class="copy-btn" onclick="copyToClipboard('https://www.publicgoldofficial.com/app/dashboard', this)">📋 Salin Pautan</button>
+        </div>
+
+        <div class="hub-card cat-official" data-category="cat-official">
+            <a href="https://www.publicgoldofficial.com/wanhasbullah" class="card-link" target="_blank">
+                <div class="icon-box">🌐</div>
+                <h3>PG Official Web</h3>
+                <p>Laman web rasmi personal (Wan Hasbullah).</p>
+            </a>
+            <button class="copy-btn" onclick="copyToClipboard('https://www.publicgoldofficial.com/wanhasbullah', this)">📋 Salin Pautan</button>
+        </div>
+
+        <div class="hub-card cat-official" data-category="cat-official">
+            <a href="https://www.publicgoldofficial.com/page/wanhasbullah" class="card-link" target="_blank">
+                <div class="icon-box">📄</div>
+                <h3>PG Official Web Page</h3>
+                <p>Halaman info tambahan rasmi.</p>
+            </a>
+            <button class="copy-btn" onclick="copyToClipboard('https://www.publicgoldofficial.com/page/wanhasbullah', this)">📋 Salin Pautan</button>
         </div>
 
         <div class="hub-card cat-official" data-category="cat-official">
             <a href="https://www.publicgoldofficial.com/wanhasbullah/tutorial" class="card-link" target="_blank">
                 <div class="icon-box">📖</div>
                 <h3>Tutorial</h3>
-                <p>Koleksi panduan video dan artikel rasmi.</p>
+                <p>Koleksi tutorial lengkap simpanan emas.</p>
             </a>
-            <button class="copy-btn" onclick="copyToClipboard('https://www.publicgoldofficial.com/wanhasbullah/tutorial', this)">Copy Link</button>
+            <button class="copy-btn" onclick="copyToClipboard('https://www.publicgoldofficial.com/wanhasbullah/tutorial', this)">📋 Salin Pautan</button>
         </div>
 
         <div class="hub-card cat-official" data-category="cat-official">
-            <a href="https://publicgoldofficial.com/referrer/login" class="card-link" target="_blank">
-                <div class="icon-box">💎</div>
-                <h3>Referrer Dashboard</h3>
-                <p>Pantau komisen dan data rujukan anda di sini.</p>
+            <a href="https://publicgoldofficial.com/wanhasbullah/faq" class="card-link" target="_blank">
+                <div class="icon-box">🔍</div>
+                <h3>Soalan Lazim</h3>
+                <p>FAQ rasmi dari sistem G100.</p>
             </a>
-            <button class="copy-btn" onclick="copyToClipboard('https://publicgoldofficial.com/referrer/login', this)">Copy Link</button>
+            <button class="copy-btn" onclick="copyToClipboard('https://publicgoldofficial.com/wanhasbullah/faq', this)">📋 Salin Pautan</button>
+        </div>
+
+        <div class="hub-card cat-official" data-category="cat-official">
+            <a href="https://www.publicgoldofficial.com/wanhasbullah/pgdealer" class="card-link" target="_blank">
+                <div class="icon-box">🎖️</div>
+                <h3>PG Dealer</h3>
+                <p>Halaman rujukan untuk Dealer PG.</p>
+            </a>
+            <button class="copy-btn" onclick="copyToClipboard('https://www.publicgoldofficial.com/wanhasbullah/pgdealer', this)">📋 Salin Pautan</button>
+        </div>
+
+        <!-- REFERRER -->
+        <div class="hub-card cat-referrer" data-category="cat-referrer">
+            <a href="https://www.publicgoldofficial.com/referrer/register/wanhasbullah" class="card-link" target="_blank">
+                <div class="icon-box">➕</div>
+                <h3>Register Referrer</h3>
+                <p>Pendaftaran akaun rujukan baharu.</p>
+            </a>
+            <button class="copy-btn" onclick="copyToClipboard('https://www.publicgoldofficial.com/referrer/register/wanhasbullah', this)">📋 Salin Pautan</button>
+        </div>
+
+        <div class="hub-card cat-referrer" data-category="cat-referrer">
+            <a href="https://publicgoldofficial.com/referrer/login" class="card-link" target="_blank">
+                <div class="icon-box">🔓</div>
+                <h3>Dashboard Referrer</h3>
+                <p>Log masuk sistem pengurusan rujukan.</p>
+            </a>
+            <button class="copy-btn" onclick="copyToClipboard('https://publicgoldofficial.com/referrer/login', this)">📋 Salin Pautan</button>
+        </div>
+
+        <div class="hub-card cat-referrer" data-category="cat-referrer">
+            <a href="https://www.publicgoldofficial.com/app/referral/referrer" class="card-link" target="_blank">
+                <div class="icon-box">🛒</div>
+                <h3>Customer</h3>
+                <p>Senarai pelanggan di bawah rangkaian.</p>
+            </a>
+            <button class="copy-btn" onclick="copyToClipboard('https://www.publicgoldofficial.com/app/referral/referrer', this)">📋 Salin Pautan</button>
+        </div>
+
+        <div class="hub-card cat-referrer" data-category="cat-referrer">
+            <a href="https://www.publicgoldofficial.com/app/referral/referee" class="card-link" target="_blank">
+                <div class="icon-box">🎯</div>
+                <h3>Prospek</h3>
+                <p>Senarai bakal pelanggan (prospek) terkini.</p>
+            </a>
+            <button class="copy-btn" onclick="copyToClipboard('https://www.publicgoldofficial.com/app/referral/referee', this)">📋 Salin Pautan</button>
         </div>
 
     </div>
@@ -366,12 +415,12 @@ function filterCards(category, btn) {
 function copyToClipboard(text, btn) {
     navigator.clipboard.writeText(text).then(() => {
         const originalText = btn.innerHTML;
-        btn.innerHTML = "✅ Berjaya!";
+        btn.innerHTML = "✅ Berjaya Disalin";
         btn.style.color = "#10b981";
         setTimeout(() => {
             btn.innerHTML = originalText;
             btn.style.color = "";
-        }, 1500);
+        }, 2000);
     }).catch(err => {
         console.error('Gagal: ', err);
     });
