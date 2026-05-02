@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Quranic Huffaz</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&family=Amiri&display=swap');
+
+        :root {
+            --primary-blue: #0052ff;
+            --dark-blue: #003db3;
+            --bg-light: #f8fafc;
+            --text-main: #1e293b;
+            --border-color: #e2e8f0;
+            --white: #ffffff;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-wrapper {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: var(--bg-light);
+            border-radius: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Welcome Box - Fintech Style */
+        .welcome-box {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: white;
+            padding: 40px 30px;
+            border-radius: 24px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 82, 255, 0.25);
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .welcome-box h2 {
+            margin: 0;
+            font-size: 28px;
+            font-family: 'Amiri', serif;
+            min-height: 45px;
+            line-height: 1.5;
+        }
+
+        .welcome-box p {
+            margin: 10px 0 0;
+            opacity: 0.9;
+            font-size: 18px;
+            font-family: 'Amiri', serif;
+            min-height: 30px;
+            line-height: 1.5;
+        }
+
+        .typing::after {
+            content: '|';
+            animation: blink 0.7s infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* Search Section */
+        .search-container {
+            margin-bottom: 25px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 16px 20px;
+            border-radius: 16px;
+            border: 2px solid var(--border-color);
+            font-size: 16px;
+            box-sizing: border-box;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: var(--white);
+            font-family: inherit;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 4px rgba(0, 82, 255, 0.1);
+        }
+
+        /* Categories Section - New Integration */
+        .category-section {
+            margin-bottom: 30px;
+        }
+
+        .category-group {
+            margin-bottom: 20px;
+        }
+
+        .category-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            font-weight: 800;
+            margin-bottom: 12px;
+            padding-left: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .category-title::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+            margin-left: 15px;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .cat-item {
+            background: var(--white);
+            padding: 14px;
+            border-radius: 14px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid var(--border-color);
+            transition: 0.2s;
+        }
+
+        .cat-item:hover {
+            border-color: var(--primary-blue);
+            background: #f0f7ff;
+            color: var(--primary-blue);
+        }
+
+        .cat-icon {
+            font-size: 18px;
+        }
+
+        /* Main Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .menu-item {
+            background: var(--white);
+            padding: 25px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 140px;
+        }
+
+        .menu-item:hover { 
+            transform: translateY(-5px); 
+            border-color: var(--primary-blue); 
+            color: var(--primary-blue);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .menu-icon { font-size: 36px; margin-bottom: 12px; }
+
+        /* Responsive Mobile */
+        @media (max-width: 600px) { 
+            .menu-grid { grid-template-columns: 1fr 1fr; }
+            .category-grid { grid-template-columns: 1fr 1fr; }
+            .welcome-box { padding: 30px 15px; }
+            .welcome-box h2 { font-size: 24px; }
+            .dashboard-wrapper { margin: 10px; padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+    <!-- Welcome Header -->
+    <div class="welcome-box">
+        <h2 id="type-title" dir="rtl"></h2>
+        <p id="type-subtitle" dir="rtl"></p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" id="dashboardSearch" onkeyup="filterButtons()" placeholder="Cari butang di bawah..." autocomplete="off">
+        </div>
+    </div>
+
+    <!-- Kategori Section (New) -->
+    <div class="category-section" id="categoryContainer">
+        
+        <!-- Semak & Cek (Sheet) -->
+        <div class="category-group">
+            <div class="category-title">Semak & Cek (Sheet)</div>
+            <div class="category-grid">
+                <a href="https://docs.google.com/spreadsheets/d/14Z--FTqNcLt3_rUgXBC8BMgeawwoTrpWlE_03YQzXg4/edit?usp=drive_link" target="_blank" class="cat-item">
+                    <span class="cat-icon">📋</span> Kehadiran
+                </a>
+                <a href="https://docs.google.com/spreadsheets/d/17NjITHkDLBrFjSItn4l0h2B6nfoE15HPq1yP73NDLYg/edit?usp=drive_link" target="_blank" class="cat-item">
+                    <span class="cat-icon">📊</span> Prestasi
+                </a>
+            </div>
+        </div>
+
+        <!-- Jumlah -->
+        <div class="category-group">
+            <div class="category-title">Jumlah</div>
+            <div class="category-grid">
+                <a href="https://quranichuffaz.blogspot.com/p/kehadiran-pelajar_28.html" class="cat-item">
+                    <span class="cat-icon">🔢</span> Kehadiran
+                </a>
+                <a href="https://quranichuffaz.blogspot.com/p/prestasi-bacaan-pelajar_19.html" class="cat-item">
+                    <span class="cat-icon">🏆</span> Prestasi
+                </a>
+            </div>
+        </div>
+
+        <!-- RPH -->
+        <div class="category-group">
+            <div class="category-title">RPH</div>
+            <div class="category-grid">
+                <a href="https://quranichuffaz.blogspot.com/p/erph.html" class="cat-item">
+                    <span class="cat-icon">📂</span> eRPH
+                </a>
+                <a href="https://quranichuffaz.blogspot.com/p/future-lesson-planner-kafa.html" class="cat-item">
+                    <span class="cat-icon">📅</span> Lesson Planner
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Menu Grid -->
+    <div class="category-title">Menu Pintas</div>
+    <div class="menu-grid" id="menuGrid">
+        <a href="https://quranichuffaz.blogspot.com/p/kehadiran-pelajar_28.html" class="menu-item">
+            <div class="menu-icon">👥</div>
+            <span>Kehadiran Pelajar</span>
+        </a>
+        <a href="https://quranichuffaz.blogspot.com/p/prestasi-bacaan-pelajar_19.html" class="menu-item">
+            <div class="menu-icon">📈</div>
+            <span>Prestasi Bacaan Pelajar</span>
+        </a>
+        <a href="https://quranichuffaz.blogspot.com/p/future-lesson-planner-kafa.html" class="menu-item">
+            <div class="menu-icon">🗓️</div>
+            <span>Future Lesson Planner KAFA</span>
+        </a>
+        <a href="https://quranichuffaz.blogspot.com/p/erph.html" class="menu-item">
+            <div class="menu-icon">📝</div>
+            <span>Mini eRPH</span>
+        </a>
+    </div>
+</div>
+
+<script>
+(function() {
+    // Title: السلام عليكم يا وان الوسيم
+    const titleText = "\u0627\u0644\u0633\u0644\u0627\u0645 \u0639\u0644\u064a\u0643\u0645 \u064a\u0627 \u0648\u0627\u0646 \u0627\u0644\u0648\u0633\u064a\u0645";
+    
+    // Subtitle: كيف حالك اليوم؟ أتمنى أن تكون دائماً في خير
+    const subtitleText = "\u0643\u064a\u0641 \u062d\u0627\u0644\u0643 \u0627\u0644\u064a\u0648\u0645\u061f \u0623\u062a\u0645\u0646\u0649 \u0623\u0646 \u062a\u0643\u0648\u0646 \u062f\u0627\u0626\u0645\u0627\u064b \u0641\u064a \u062e\u064a\u0631";
+
+    function startTyping(elId, text, speed, nextFn) {
+        const el = document.getElementById(elId);
+        if(!el) return;
+        
+        let i = 0;
+        const chars = Array.from(text);
+        el.innerText = "";
+        el.classList.add('typing');
+
+        function step() {
+            if (i < chars.length) {
+                el.innerText += chars[i];
+                i++;
+                setTimeout(step, speed);
+            } else {
+                el.classList.remove('typing');
+                if(nextFn) nextFn();
+            }
+        }
+        step();
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(() => {
+            startTyping("type-title", titleText, 100, () => {
+                setTimeout(() => {
+                    startTyping("type-subtitle", subtitleText, 50);
+                }, 600);
+            });
+        }, 400);
+    });
+})();
+
+function filterButtons() {
+    const input = document.getElementById('dashboardSearch');
+    const filter = input.value.toLowerCase();
+    
+    // Filter Main Menu
+    const items = document.getElementsByClassName('menu-item');
+    for (let i = 0; i < items.length; i++) {
+        const txt = items[i].querySelector('span').innerText;
+        items[i].style.display = txt.toLowerCase().includes(filter) ? "flex" : "none";
+    }
+
+    // Filter Categories
+    const catItems = document.getElementsByClassName('cat-item');
+    for (let j = 0; j < catItems.length; j++) {
+        const txtCat = catItems[j].innerText;
+        catItems[j].style.display = txtCat.toLowerCase().includes(filter) ? "flex" : "none";
+    }
+}
+</script>
+
+</body>
+</html>
