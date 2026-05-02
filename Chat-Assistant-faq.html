@@ -175,20 +175,35 @@ body {
   content: ''; width: 5px; height: 5px;
   background: var(--accent); border-radius: 50%;
 }
+#wh-chat-app .wh-faq-card-cat {
+  font-size: 10px; font-weight: 600; color: var(--text-light);
+  background: var(--surface2); border-radius: 20px;
+  padding: 2px 8px; display: inline-block; margin-bottom: 6px;
+}
 #wh-chat-app .wh-faq-card-title {
   font-family: 'Sora', sans-serif; font-size: 13.5px;
-  font-weight: 600; color: var(--primary); margin-bottom: 6px; line-height: 1.4;
+  font-weight: 600; color: var(--primary); margin-bottom: 4px; line-height: 1.4;
+}
+#wh-chat-app .wh-faq-card-soalan {
+  font-size: 12.5px; font-weight: 500; color: var(--primary-mid);
+  background: rgba(0,180,216,0.07); border-radius: 8px;
+  padding: 6px 10px; margin-bottom: 8px; line-height: 1.5;
+  border-left: 2px solid var(--accent);
 }
 #wh-chat-app .wh-faq-card-body {
   font-size: 13.5px; color: var(--text-muted); line-height: 1.65;
 }
-
-/* ─── KEYWORD HIGHLIGHT ─── */
 #wh-chat-app .wh-faq-card-body mark {
   background: rgba(0,180,216,0.15);
   color: var(--primary); border-radius: 3px;
   padding: 0 2px; font-weight: 600;
 }
+/* Auto-link dalam jawapan */
+#wh-chat-app .wh-faq-card-body a {
+  color: var(--accent); text-decoration: underline;
+  word-break: break-all;
+}
+#wh-chat-app .wh-faq-card-body a:hover { color: var(--primary-mid); }
 
 #wh-chat-app .wh-faq-card-time {
   font-size: 10px; color: var(--text-light);
@@ -264,7 +279,7 @@ body {
 }
 #wh-chat-app #whUserInput::placeholder { color: var(--text-light); }
 
-/* ─── SEND BUTTON (enhanced) ─── */
+/* ─── SEND BUTTON ─── */
 #wh-chat-app .wh-send-btn {
   width: 48px; height: 48px;
   background: linear-gradient(135deg, #00C6E0 0%, #0077B6 100%);
@@ -347,9 +362,7 @@ body {
 #wh-chat-app .wh-cat-btn:hover {
   background: var(--accent-glow); border-color: var(--accent); color: var(--accent);
 }
-#wh-chat-app .wh-cat-btn .wh-cat-icon {
-  font-size: 16px; flex-shrink: 0;
-}
+#wh-chat-app .wh-cat-btn .wh-cat-icon { font-size: 16px; flex-shrink: 0; }
 
 /* ─── TOPIC LIST ─── */
 #wh-chat-app .wh-topic-menu {
@@ -393,6 +406,45 @@ body {
 }
 #wh-chat-app .wh-back-btn:hover { color: var(--accent); }
 
+/* ─── SOALAN LIST (dalam topik) ─── */
+#wh-chat-app .wh-soalan-menu {
+  background: white; border: 1px solid var(--border);
+  border-left: 3px solid #9B59B6;
+  border-radius: 14px; border-top-left-radius: 6px;
+  padding: 0.875rem 1rem; max-width: 84%;
+  box-shadow: 0 2px 12px rgba(10,35,66,0.06);
+  animation: whMsgIn 0.25s ease forwards;
+  opacity: 0; transform: translateY(8px);
+}
+#wh-chat-app .wh-soalan-menu-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+  color: #9B59B6; text-transform: uppercase; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 5px;
+}
+#wh-chat-app .wh-soalan-menu-label::before {
+  content: ''; width: 5px; height: 5px;
+  background: #9B59B6; border-radius: 50%;
+}
+#wh-chat-app .wh-soalan-btn {
+  display: flex; align-items: flex-start; gap: 8px;
+  width: 100%; background: var(--surface);
+  border: 1.5px solid rgba(155,89,182,0.15); border-radius: 10px;
+  padding: 9px 13px; margin-bottom: 7px; cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; font-weight: 500; color: var(--primary-mid);
+  transition: all 0.18s; text-align: left; line-height: 1.45;
+}
+#wh-chat-app .wh-soalan-btn:last-of-type { margin-bottom: 0; }
+#wh-chat-app .wh-soalan-btn:hover {
+  background: rgba(155,89,182,0.06); border-color: #9B59B6; color: #6C3483;
+}
+#wh-chat-app .wh-soalan-num {
+  font-size: 11px; font-weight: 700; color: #9B59B6;
+  background: rgba(155,89,182,0.1); border-radius: 50%;
+  width: 20px; height: 20px; display: flex; align-items: center;
+  justify-content: center; flex-shrink: 0; margin-top: 1px;
+}
+
 @keyframes whBlink { 0%,100%{opacity:1} 50%{opacity:0} }
 </style>
 </head>
@@ -410,10 +462,10 @@ body {
     </div>
     <div class="wh-header-actions">
       <a class="wh-header-btn" href="PAGE_FORM_URL_SINI" title="Hantar Pertanyaan">
-        <svg fill="none" stroke-width="2" stroke="rgba(255,255,255,0.8)" viewbox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+        <svg fill="none" stroke-width="2" stroke="rgba(255,255,255,0.8)" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
       </a>
       <a class="wh-header-btn" href="https://wa.me/601126704897" target="_blank" title="WhatsApp">
-        <svg fill="rgba(255,255,255,0.8)" viewbox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>
+        <svg fill="rgba(255,255,255,0.8)" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>
       </a>
     </div>
   </div>
@@ -426,11 +478,11 @@ body {
 
   <div class="wh-input-bar">
     <div class="wh-input-wrap">
-      <svg fill="none" stroke-width="2" stroke="currentColor" viewbox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" x2="16.65" y1="21" y2="16.65"></line></svg>
+      <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" x2="16.65" y1="21" y2="16.65"></line></svg>
       <input autocomplete="off" autocorrect="off" id="whUserInput" placeholder="Taip soalan anda..." type="text" />
     </div>
     <button class="wh-send-btn" onclick="whSendMessage()">
-      <svg fill="none" stroke-width="2.2" stroke="white" viewbox="0 0 24 24">
+      <svg fill="none" stroke-width="2.2" stroke="white" viewBox="0 0 24 24">
         <line x1="22" y1="2" x2="11" y2="13"></line>
         <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
       </svg>
@@ -440,31 +492,66 @@ body {
 
 <script>
 (function() {
-  const SHEET_URL  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQ2UJnKP6wyu_05ffuPUbuXIT8NImKFyPGX2QWXiaEy4R5Jr1kO6GeVDhs6qDa0r2rSGWoQJFtnHGP/pub?gid=0&single=true&output=csv';
-  const AVATAR     = 'https://blogger.googleusercontent.com/img/a/AVvXsEjH8kKw3_SWdf96cjqIx_j4exadqr0togYGxXJxWA8D7z40VpkkLeyeyRDrZRCdVXdKPA2LuOtxXZ-eRffWfnM0_UPa6g7KGkCLAx0Br1DoJO3MC3P7jZXg6EZ3FsL0zdiI-RRzcf9ArG87YT4WvpQ5V1PEpe7kCQc0C3SePyxBo5ONOFkmAgYKXDOFTyo=s16000';
+  // ══════════════════════════════════════════════
+  // CONFIG — GANTI URL SHEET CSV DI SINI
+  // ══════════════════════════════════════════════
+  const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR76pxM4R7BEoqQcmlwDXT36q_nBAQbLrkHfuxUpoJtpUD-acolPaj9l2qwGIWvnqbhwdBsS2zHHIl0/pub?gid=1216470090&single=true&output=csv';
+  const AVATAR    = 'https://blogger.googleusercontent.com/img/a/AVvXsEjH8kKw3_SWdf96cjqIx_j4exadqr0togYGxXJxWA8D7z40VpkkLeyeyRDrZRCdVXdKPA2LuOtxXZ-eRffWfnM0_UPa6g7KGkCLAx0Br1DoJO3MC3P7jZXg6EZ3FsL0zdiI-RRzcf9ArG87YT4WvpQ5V1PEpe7kCQc0C3SePyxBo5ONOFkmAgYKXDOFTyo=s16000';
 
-  // Kata yang diabaikan dalam carian (stop words BM + EN)
+  // Stop words BM + EN
   const STOP_WORDS = new Set([
     'yang','dan','di','ke','dari','pada','untuk','dengan','ini','itu',
     'ada','tidak','boleh','saya','anda','encik','puan','cara','macam',
     'mana','bagaimana','apa','bila','berapa','how','what','where','when',
-    'the','is','are','a','an','in','of','to','for','can','i','you'
+    'the','is','are','a','an','in','of','to','for','can','i','you','tak',
+    'nak','nak','ye','ya','ok','je','la','lah'
   ]);
 
-  // Category icons mapping (sesuaikan mengikut nama kategori CSV anda)
+  // DUA kategori utama sahaja (sesuai dengan form)
+  const MAIN_CATEGORIES = [
+    'Tutorial/Langkah demi Langkah',
+    'Soalan Lazim'
+  ];
+
   const CAT_ICONS = {
-    'default': '📋'
+    'Tutorial/Langkah demi Langkah': '📋',
+    'Soalan Lazim': '❓'
   };
 
-  let faqData      = [];
-  let categories   = {};  // { kategori: [{ tajuk, huraian }] }
-  let isTyping     = false;
+  // Senarai tajuk mengikut kategori (untuk navigasi)
+  const TAJUK_MAP = {
+    'Tutorial/Langkah demi Langkah': [
+      'Pendaftaran',
+      'Akaun Public Gold',
+      'Gold Accumulation Program (Akaun Emas GAP)',
+      'Outright Purchase (Bayaran Penuh/Bulanan)',
+      'Jualan Emas',
+      'Dealer Public Gold',
+      'Cara Menghubungi Public Gold Customer Service'
+    ],
+    'Soalan Lazim': [
+      'Asas Simpanan Emas',
+      'Pilihan Emas Terbaik',
+      'Strategi Beli, Jual dan Pajak',
+      'Transaksi Emas Public Gold',
+      'Akaun Emas GAP',
+      'Bisnes Emas Public Gold'
+    ]
+  };
 
-  /* ── HELPERS ── */
+  let faqData    = [];
+  let isTyping   = false;
+
   const $ = id => document.getElementById(id);
   const whNow = () => new Date().toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'});
-  const whEsc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const whEsc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const whScroll = () => setTimeout(()=>$('whMessages').scrollTo({top:$('whMessages').scrollHeight,behavior:'smooth'}),80);
+
+  // Auto-linkify URL dalam teks
+  function autoLink(text) {
+    const safe = whEsc(text);
+    return safe.replace(/(https?:\/\/[^\s<>"]+)/gi, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+  }
 
   /* ── CSV PARSER ── */
   function parseCSV(text) {
@@ -482,60 +569,43 @@ body {
     return rows;
   }
 
-  /* ── LOAD FAQ ── */
+  /* ── LOAD FAQ ──
+     Format CSV dijangka: Timestamp | Kategori | Tajuk | Soalan | Jawapan
+     (sama seperti yang Apps Script simpan)
+  */
   async function whLoadFAQ() {
     try {
       const text = await (await fetch(SHEET_URL)).text();
-      // Jangka CSV: col[0]=No/ID, col[1]=Kategori, col[2]=Tajuk, col[3]=Huraian
-      // Jika format lama (tiada kategori): col[0]=No, col[1]=Tajuk, col[2]=Huraian
-      const rows = parseCSV(text).slice(1);
-
-      // Auto-detect: jika ada 4 lajur atau lebih, anggap col[1]=Kategori
-      const hasCategory = rows.some(r => r.length >= 4 && r[1] && r[2] && r[3]);
-
+      const rows = parseCSV(text).slice(1); // skip header
       faqData = [];
-      categories = {};
-
-      if (hasCategory) {
-        rows.forEach(c => {
-          const kat   = (c[1]||'Am').trim();
-          const tajuk = (c[2]||'').trim();
-          const huraian = (c[3]||'').trim();
-          if (!tajuk || !huraian) return;
-          faqData.push({ kategori: kat, tajuk, huraian });
-          if (!categories[kat]) categories[kat] = [];
-          categories[kat].push({ tajuk, huraian });
-        });
-      } else {
-        // Fallback: format lama tanpa kategori — letak semua dalam satu kategori
-        rows.forEach(c => {
-          const tajuk = (c[1]||'').trim();
-          const huraian = (c[2]||'').trim();
-          if (!tajuk || !huraian) return;
-          const kat = 'Soalan Lazim';
-          faqData.push({ kategori: kat, tajuk, huraian });
-          if (!categories[kat]) categories[kat] = [];
-          categories[kat].push({ tajuk, huraian });
-        });
-      }
-
+      rows.forEach(c => {
+        // Jangkakan: col[0]=Timestamp, col[1]=Kategori, col[2]=Tajuk, col[3]=Soalan, col[4]=Jawapan
+        const timestamp = (c[0]||'').trim();
+        const kategori  = (c[1]||'').trim();
+        const tajuk     = (c[2]||'').trim();
+        const soalan    = (c[3]||'').trim();
+        const jawapan   = (c[4]||'').trim();
+        if (!kategori || !tajuk || !jawapan) return;
+        faqData.push({ timestamp, kategori, tajuk, soalan, jawapan });
+      });
       whShowCategoryPills();
-    } catch(e){ console.warn('FAQ error:',e); }
+    } catch(e) { console.warn('FAQ error:', e); }
   }
 
-  /* ── SMART SEARCH (kekal untuk taip manual) ── */
+  /* ── SMART SEARCH ── */
   function whSearch(query) {
     if (!query || !faqData.length) return [];
     const clean = query.toLowerCase().replace(/[^\w\s]/g,'').replace(/\s+/g,' ').trim();
     const keywords = clean.split(' ').filter(w => w.length >= 2 && !STOP_WORDS.has(w));
     if (!keywords.length) return [];
     const scored = faqData.map(item => {
-      const hay = (item.tajuk + ' ' + item.huraian).toLowerCase();
+      const hay = (item.tajuk + ' ' + item.soalan + ' ' + item.jawapan + ' ' + item.kategori).toLowerCase();
       let score = 0;
       if (hay.includes(clean)) score += 20;
       keywords.forEach(kw => {
         if (hay.includes(kw)) {
-          if (item.tajuk.toLowerCase().includes(kw)) score += 6;
+          if (item.tajuk.toLowerCase().includes(kw)) score += 8;
+          else if (item.soalan.toLowerCase().includes(kw)) score += 5;
           else score += 3;
         }
       });
@@ -546,16 +616,16 @@ body {
 
   /* ── HIGHLIGHT ── */
   function whHighlight(text, keywords) {
-    let safe = whEsc(text);
+    let safe = autoLink(text);
     if (!keywords || !keywords.length) return safe;
     keywords.forEach(kw => {
-      const re = new RegExp('('+kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')', 'gi');
+      const re = new RegExp('(?<!["\'])(' + kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')(?!["\'])', 'gi');
       safe = safe.replace(re, '<mark>$1</mark>');
     });
     return safe;
   }
 
-  /* ── TYPING INDICATOR ── */
+  /* ── TYPING ── */
   function whAddTyping() {
     whRemoveTyping();
     const d = document.createElement('div');
@@ -599,10 +669,16 @@ body {
     img.src=AVATAR; img.className='wh-msg-avatar';
     const card=document.createElement('div');
     card.className='wh-faq-card';
+
+    const soalanHtml = item.soalan
+      ? `<div class="wh-faq-card-soalan">❓ ${whEsc(item.soalan)}</div>`
+      : '';
+
     card.innerHTML=`
       <div class="wh-faq-card-label">Jawapan Dijumpai</div>
-      <div class="wh-faq-card-title">${whEsc(item.tajuk)}</div>
-      <div class="wh-faq-card-body">${whHighlight(item.huraian, item.keywords||[])}</div>
+      <div class="wh-faq-card-cat">${whEsc(item.kategori)} › ${whEsc(item.tajuk)}</div>
+      ${soalanHtml}
+      <div class="wh-faq-card-body">${whHighlight(item.jawapan, item.keywords||[])}</div>
       <div class="wh-faq-card-time">${whNow()}</div>`;
     wrap.appendChild(img); wrap.appendChild(card);
     msgs.appendChild(wrap); whScroll();
@@ -630,12 +706,9 @@ body {
     msgs.appendChild(wrap); whScroll();
   }
 
-  /* ── CATEGORY MENU (dalam chat) ── */
+  /* ── CATEGORY MENU (DUA KATEGORI SAHAJA) ── */
   function whShowCategoryInChat() {
     const msgs=$('whMessages');
-    const catList = Object.keys(categories);
-    if (!catList.length) return;
-
     const wrap=document.createElement('div');
     wrap.style.cssText='display:flex;gap:8px;align-items:flex-end';
     const img=document.createElement('img');
@@ -645,11 +718,12 @@ body {
     card.className='wh-category-menu';
     card.innerHTML=`<div class="wh-category-menu-label">Pilih Kategori</div>`;
 
-    catList.forEach(kat => {
-      const icon = CAT_ICONS[kat] || CAT_ICONS['default'];
+    MAIN_CATEGORIES.forEach(kat => {
+      const icon = CAT_ICONS[kat] || '📋';
+      const count = faqData.filter(d => d.kategori === kat).length;
       const btn=document.createElement('button');
       btn.className='wh-cat-btn';
-      btn.innerHTML=`<span class="wh-cat-icon">${icon}</span> ${whEsc(kat)} <span style="margin-left:auto;color:var(--text-light);font-size:12px">${categories[kat].length} soalan ›</span>`;
+      btn.innerHTML=`<span class="wh-cat-icon">${icon}</span> ${whEsc(kat)} <span style="margin-left:auto;color:var(--text-light);font-size:12px">${count} entri ›</span>`;
       btn.onclick=()=>{ whCategorySelected(kat); };
       card.appendChild(btn);
     });
@@ -658,14 +732,14 @@ body {
     msgs.appendChild(wrap); whScroll();
   }
 
-  /* ── TOPIC LIST (selepas pilih kategori) ── */
+  /* ── TOPIC LIST (TAJUK dalam kategori) ── */
   function whCategorySelected(kat) {
     whAddUserBubble(whEsc(kat));
     whAddTyping();
     setTimeout(()=>{
       whRemoveTyping();
       const msgs=$('whMessages');
-      const topics = categories[kat] || [];
+      const tajukList = TAJUK_MAP[kat] || [];
 
       const wrap=document.createElement('div');
       wrap.style.cssText='display:flex;gap:8px;align-items:flex-start';
@@ -676,11 +750,12 @@ body {
       card.className='wh-topic-menu';
       card.innerHTML=`<div class="wh-topic-menu-label">${whEsc(kat)}</div>`;
 
-      topics.forEach(item => {
+      tajukList.forEach(tajuk => {
+        const faqCount = faqData.filter(d => d.kategori === kat && d.tajuk === tajuk).length;
         const btn=document.createElement('button');
         btn.className='wh-topic-btn';
-        btn.textContent=item.tajuk;
-        btn.onclick=()=>{ whTopicSelected(item); };
+        btn.innerHTML=`${whEsc(tajuk)} <span style="margin-left:auto;color:var(--text-light);font-size:11px;flex-shrink:0">${faqCount} soalan ›</span>`;
+        btn.onclick=()=>{ whTajukSelected(kat, tajuk); };
         card.appendChild(btn);
       });
 
@@ -688,7 +763,7 @@ body {
       backBtn.className='wh-back-btn';
       backBtn.innerHTML='← Kembali ke Kategori';
       backBtn.onclick=()=>{
-        whAddUserBubble('← Kembali');
+        whAddUserBubble('← Kembali ke Kategori');
         whAddTyping();
         setTimeout(()=>{ whRemoveTyping(); whShowCategoryInChat(); }, 600);
       };
@@ -699,9 +774,61 @@ body {
     }, 600);
   }
 
-  /* ── TOPIC SELECTED → Papar jawapan ── */
-  function whTopicSelected(item) {
-    whAddUserBubble(whEsc(item.tajuk));
+  /* ── SOALAN LIST (dalam tajuk) ── */
+  function whTajukSelected(kat, tajuk) {
+    whAddUserBubble(whEsc(tajuk));
+    whAddTyping();
+    setTimeout(()=>{
+      whRemoveTyping();
+      const soalanList = faqData.filter(d => d.kategori === kat && d.tajuk === tajuk);
+
+      if (!soalanList.length) {
+        whAddBotBubble('Tiada soalan ditemui untuk topik ini lagi. Sila hubungi terus melalui WhatsApp.');
+        return;
+      }
+
+      // Jika hanya 1 soalan — terus tunjuk jawapan
+      if (soalanList.length === 1) {
+        whAddFAQCard({ ...soalanList[0], keywords: [] });
+        return;
+      }
+
+      const msgs=$('whMessages');
+      const wrap=document.createElement('div');
+      wrap.style.cssText='display:flex;gap:8px;align-items:flex-start';
+      const img=document.createElement('img');
+      img.src=AVATAR; img.className='wh-msg-avatar';
+
+      const card=document.createElement('div');
+      card.className='wh-soalan-menu';
+      card.innerHTML=`<div class="wh-soalan-menu-label">${whEsc(tajuk)} — Pilih Soalan</div>`;
+
+      soalanList.forEach((item, idx) => {
+        const btn=document.createElement('button');
+        btn.className='wh-soalan-btn';
+        btn.innerHTML=`<span class="wh-soalan-num">${idx+1}</span> ${whEsc(item.soalan || item.jawapan.slice(0,60)+'...')}`;
+        btn.onclick=()=>{ whSoalanSelected(item); };
+        card.appendChild(btn);
+      });
+
+      const backBtn=document.createElement('button');
+      backBtn.className='wh-back-btn';
+      backBtn.innerHTML=`← Kembali ke ${whEsc(kat)}`;
+      backBtn.onclick=()=>{
+        whAddUserBubble(`← Kembali ke ${whEsc(kat)}`);
+        whAddTyping();
+        setTimeout(()=>{ whRemoveTyping(); whCategorySelected(kat); }, 600);
+      };
+      card.appendChild(backBtn);
+
+      wrap.appendChild(img); wrap.appendChild(card);
+      msgs.appendChild(wrap); whScroll();
+    }, 700);
+  }
+
+  /* ── SOALAN SELECTED → Papar Jawapan ── */
+  function whSoalanSelected(item) {
+    whAddUserBubble(whEsc(item.soalan || item.tajuk));
     whAddTyping();
     setTimeout(()=>{
       whRemoveTyping();
@@ -709,13 +836,13 @@ body {
     }, 800);
   }
 
-  /* ── SUGGESTION PILLS (kategori) ── */
+  /* ── SUGGESTION PILLS (DUA KATEGORI SAHAJA) ── */
   function whShowCategoryPills() {
     const c=$('whSuggestions'); c.innerHTML='';
-    Object.keys(categories).slice(0,5).forEach(kat => {
+    MAIN_CATEGORIES.forEach(kat => {
       const btn=document.createElement('button');
       btn.className='wh-suggestion-pill visible';
-      btn.textContent=kat.length>30?kat.slice(0,30)+'...':kat;
+      btn.textContent=kat;
       btn.onclick=()=>{ whCategorySelected(kat); };
       c.appendChild(btn);
     });
@@ -752,7 +879,7 @@ body {
 
   /* ── WELCOME ── */
   async function whWelcome() {
-    const msg='Assalamualaikum! Saya Assistant Wan Hasbullah. Sila pilih kategori di bawah atau taip soalan anda untuk mencari maklumat.';
+    const msg='Assalamualaikum! Saya Assistant Wan Hasbullah. Sila pilih kategori di bawah atau taip soalan anda untuk mencari maklumat berkaitan simpanan dan pelaburan emas.';
     whAddTyping();
     await new Promise(r=>setTimeout(r,1400));
     whRemoveTyping();
@@ -774,7 +901,6 @@ body {
     }
     cur.remove(); $('whTM').style.display='block'; whScroll();
 
-    // Load FAQ then show category menu in chat
     await whLoadFAQ();
     await new Promise(r=>setTimeout(r,400));
     whShowCategoryInChat();
