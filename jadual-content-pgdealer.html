@@ -302,6 +302,14 @@
     font-weight: 400;
   }
   .day-name.today { color: var(--accent); font-weight: 600; }
+
+  /* blink on today's day name */
+  .day-name.today.blink-day {
+    animation: text-blink 0.8s infinite;
+    color: var(--blink);
+    text-shadow: 0 0 8px var(--blink);
+  }
+
   .day-tag {
     font-size: 10px;
     background: rgba(255,255,255,0.06);
@@ -383,14 +391,14 @@
 <div class="container" id="main">
 
   <!-- ═══════════════════════════════════════════
-       KAD 1 : 10-16 May 2026
+       KAD 1 : Minggu 1 (bermula 3 Mei 2026 - Ahad)
   ═══════════════════════════════════════════ -->
   <div class="week-card" id="card-week1">
     <div class="card-header" onclick="toggleCard('week1-body')">
-      <span class="card-week-badge gold">Minggu 2</span>
+      <span class="card-week-badge gold">Minggu 1</span>
       <div>
-        <div class="card-title">Photomode &amp; Overlay</div>
-        <div class="card-dates">10 – 16 Mei 2026</div>
+        <div class="card-title" id="title-week1">&nbsp;</div>
+        <div class="card-dates" id="dates-week1">&nbsp;</div>
       </div>
       <div class="card-status" id="status-week1"></div>
     </div>
@@ -400,20 +408,21 @@
       <div class="time-slot" id="slot-week1-7">
         <div class="time-slot-header" onclick="toggleSlot('week1-7-content','week1-7')">
           <span class="time-badge" id="badge-week1-7">7:00am</span>
-          <span class="slot-label" id="label-week1-7">Nota Wan Hasbullah</span>
+          <span class="slot-label" id="label-week1-7">Thread &amp; Artikel</span>
           <span class="live-dot" id="dot-week1-7"></span>
           <span class="chevron" id="chev-week1-7">▶</span>
         </div>
         <div class="slot-content" id="week1-7-content">
-          <!-- Facebook -->
           <div class="category-block">
-            <div class="category-label">» Facebook</div>
-            <div id="fb-week1-7"></div>
+            <div class="category-label">» Thread</div>
+            <div id="thread-week1-7"></div>
           </div>
-          <!-- Blog -->
           <div class="category-block">
-            <div class="category-label">» Blog</div>
-            <div id="blog-week1-7"></div>
+            <div class="category-label">» Artikel</div>
+            <div class="sub-label">»&gt; Facebook</div>
+            <div id="artfb-week1-7"></div>
+            <div class="sub-label">»&gt; Blog</div>
+            <div id="artblog-week1-7"></div>
           </div>
         </div>
       </div>
@@ -487,14 +496,14 @@
 
 
   <!-- ═══════════════════════════════════════════
-       KAD 2 : 3-9 May 2026
+       KAD 2 : Minggu 2 (bermula 10 Mei 2026 - Ahad)
   ═══════════════════════════════════════════ -->
   <div class="week-card" id="card-week2">
     <div class="card-header" onclick="toggleCard('week2-body')">
-      <span class="card-week-badge">Minggu 1</span>
+      <span class="card-week-badge">Minggu 2</span>
       <div>
-        <div class="card-title">Artikel &amp; Blog</div>
-        <div class="card-dates">3 – 9 Mei 2026</div>
+        <div class="card-title" id="title-week2">&nbsp;</div>
+        <div class="card-dates" id="dates-week2">&nbsp;</div>
       </div>
       <div class="card-status" id="status-week2"></div>
     </div>
@@ -504,21 +513,18 @@
       <div class="time-slot" id="slot-week2-7">
         <div class="time-slot-header" onclick="toggleSlot('week2-7-content','week2-7')">
           <span class="time-badge" id="badge-week2-7">7:00am</span>
-          <span class="slot-label" id="label-week2-7">Thread &amp; Artikel</span>
+          <span class="slot-label" id="label-week2-7">Nota Wan Hasbullah</span>
           <span class="live-dot" id="dot-week2-7"></span>
           <span class="chevron" id="chev-week2-7">▶</span>
         </div>
         <div class="slot-content" id="week2-7-content">
           <div class="category-block">
-            <div class="category-label">» Thread</div>
-            <div id="thread-week2-7"></div>
+            <div class="category-label">» Facebook</div>
+            <div id="fb-week2-7"></div>
           </div>
           <div class="category-block">
-            <div class="category-label">» Artikel</div>
-            <div class="sub-label">»&gt; Facebook</div>
-            <div id="artfb-week2-7"></div>
-            <div class="sub-label">»&gt; Blog</div>
-            <div id="artblog-week2-7"></div>
+            <div class="category-label">» Blog</div>
+            <div id="blog-week2-7"></div>
           </div>
         </div>
       </div>
@@ -596,158 +602,186 @@
 
 <script>
 /* ────────────────────────────
+   HELPERS – TARIKH
+──────────────────────────── */
+const DAYS_MS = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
+const MONTHS_MS = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogos','Sep','Okt','Nov','Dis'];
+
+// Kembalikan Ahad (minggu semasa) berdasarkan tarikh hari ini
+function getSundayOfWeek(d) {
+  const copy = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const day = copy.getDay(); // 0=Ahad
+  copy.setDate(copy.getDate() - day);
+  return copy;
+}
+
+// Format tarikh: "3 Mei 2026"
+function fmtDate(d) {
+  return `${d.getDate()} ${MONTHS_MS[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+// Tambah hari
+function addDays(d, n) {
+  const r = new Date(d);
+  r.setDate(r.getDate() + n);
+  return r;
+}
+
+// Bandingkan tarikh sahaja (tanpa masa)
+function sameDay(a, b) {
+  return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+}
+
+/* ────────────────────────────
    DATA
 ──────────────────────────── */
-const DAYS = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
-
-// Week 1: 10-16 May 2026  (Sun=11, Mon=12 ... Sat=16) — actually Sun=10 May
-// Date index: 0=Ahad(10 May), 1=Isnin(11)...6=Sabtu(16)
-const WEEK1_START = new Date(2026, 4, 10); // May 10
-const WEEK1_END   = new Date(2026, 4, 16); // May 16
-
-// Week 2: 3-9 May 2026  Sun=3 May
-const WEEK2_START = new Date(2026, 4, 3);
-const WEEK2_END   = new Date(2026, 4, 9);
+// Kad 1: Minggu 1 bermula Ahad 3 Mei 2026
+// Kad 2: Minggu 2 bermula Ahad 10 Mei 2026
+// Tarikh dalam DATA adalah berdasarkan indeks 0=Ahad..6=Sabtu dalam minggu tersebut
 
 const DATA = {
   week1: {
+    // Kad 1: 3 Mei 2026 (Ahad) - 9 Mei 2026 (Sabtu)
+    weekStart: new Date(2026, 4, 3),
     '7': {
-      facebook: [
-        { day:'Ahad',   tag:'Nota',     url:'https://t.me/c/3858932014/64' },
-        { day:'Isnin',  tag:'Abnayadh', url:'https://t.me/c/3858932014/66' },
-        { day:'Selasa', tag:'Nota',     url:'https://t.me/c/3858932014/69' },
-        { day:'Rabu',   tag:'Abnayadh', url:'https://t.me/c/3858932014/71' },
-        { day:'Khamis', tag:'Nota',     url:'https://t.me/c/3858932014/73' },
-        { day:'Jumaat', tag:'Abnayadh', url:'' },
-        { day:'Sabtu',  tag:'Nota',     url:'' },
+      thread: [
+        { tag:'',               url:'https://t.me/c/2608705880/427' },
+        { tag:'',               url:'https://t.me/c/2608705880/433' },
+        { tag:'Kisah Inspirasi',url:'https://t.me/c/2608705880/439' },
+        { tag:'Kisah Inspirasi',url:'https://t.me/c/2608705880/445' },
+        { tag:'',               url:'https://t.me/c/2608705880/445' },
+        { tag:'',               url:'https://t.me/c/2608705880/451' },
+        { tag:'',               url:'https://t.me/c/2608705880/457' },
       ],
-      blog: [
-        { day:'Ahad',   tag:'', url:'https://t.me/c/3858932014/75' },
-        { day:'Isnin',  tag:'', url:'https://t.me/c/3858932014/76' },
-        { day:'Selasa', tag:'', url:'https://t.me/c/3858932014/77' },
-        { day:'Rabu',   tag:'', url:'https://t.me/c/3858932014/78' },
-        { day:'Khamis', tag:'', url:'https://t.me/c/3858932014/79' },
-        { day:'Jumaat', tag:'', url:'' },
-        { day:'Sabtu',  tag:'', url:'' },
+      artfb: [
+        { tag:'', url:'https://t.me/c/2217339903/243' },
+        { tag:'', url:'https://t.me/c/2217339903/245' },
+        { tag:'', url:'https://t.me/c/2217339903/247' },
+        { tag:'', url:'https://t.me/c/2217339903/249' },
+        { tag:'', url:'https://t.me/c/2217339903/251' },
+        { tag:'', url:'https://t.me/c/2217339903/1098' },
+        { tag:'', url:'https://t.me/c/2217339903/1100' },
+      ],
+      artblog: [
+        { tag:'', url:'https://t.me/c/2217339903/469' },
+        { tag:'', url:'https://t.me/c/2217339903/470' },
+        { tag:'', url:'https://t.me/c/2217339903/473' },
+        { tag:'', url:'https://t.me/c/2217339903/475' },
+        { tag:'', url:'https://t.me/c/2217339903/477' },
+        { tag:'', url:'https://t.me/c/2217339903/1104' },
+        { tag:'', url:'https://t.me/c/2217339903/1106' },
       ]
     },
     '10': {
       youtube: [
-        { day:'Ahad',   tag:'', url:'https://t.me/c/2217339903/902' },
-        { day:'Isnin',  tag:'', url:'https://t.me/c/2217339903/904' },
-        { day:'Selasa', tag:'', url:'https://t.me/c/2217339903/906' },
-        { day:'Rabu',   tag:'', url:'https://t.me/c/2217339903/908' },
-        { day:'Khamis', tag:'', url:'https://t.me/c/2217339903/910' },
-        { day:'Jumaat', tag:'', url:'https://t.me/c/2217339903/912' },
-        { day:'Sabtu',  tag:'', url:'https://t.me/c/2217339903/914' },
+        { tag:'', url:'https://t.me/c/2217339903/887' },
+        { tag:'', url:'https://t.me/c/2217339903/889' },
+        { tag:'', url:'https://t.me/c/2217339903/891' },
+        { tag:'', url:'https://t.me/c/2217339903/893' },
+        { tag:'', url:'https://t.me/c/2217339903/895' },
+        { tag:'', url:'https://t.me/c/2217339903/897' },
+        { tag:'', url:'https://t.me/c/2217339903/899' },
       ]
     },
     '12': {
       photomode: [
-        { day:'Ahad',   tag:'Overlay',   url:'https://t.me/c/2217339903/836' },
-        { day:'Isnin',  tag:'Photomode', url:'https://t.me/c/2217339903/838' },
-        { day:'Selasa', tag:'Overlay',   url:'https://t.me/c/2217339903/840' },
-        { day:'Rabu',   tag:'Photomode', url:'https://t.me/c/2217339903/842' },
-        { day:'Khamis', tag:'Overlay',   url:'https://t.me/c/2217339903/844' },
-        { day:'Jumaat', tag:'Photomode', url:'https://t.me/c/2217339903/846' },
-        { day:'Sabtu',  tag:'Poster',    url:'https://t.me/c/2217339903/848' },
+        { tag:'',               url:'https://t.me/c/2217339903/851' },
+        { tag:'Overlay',        url:'https://t.me/c/2217339903/853' },
+        { tag:'',               url:'https://t.me/c/2217339903/855' },
+        { tag:'Overlay',        url:'https://t.me/c/2217339903/857' },
+        { tag:'Kisah Inspirasi',url:'https://t.me/c/2217339903/859' },
+        { tag:'Overlay',        url:'https://t.me/c/2217339903/861' },
+        { tag:'Kisah Inspirasi',url:'https://t.me/c/2217339903/863' },
       ]
     },
     '17': {
       tem: [
-        { day:'Ahad',   tag:'Poster',        emoji:'🟢', url:'https://t.me/c/2217339903/1063' },
-        { day:'Isnin',  tag:'TEM',           emoji:'🔵', url:'https://t.me/c/2217339903/1065' },
-        { day:'Selasa', tag:'Poster',        emoji:'🟢', url:'https://t.me/c/2217339903/1067' },
-        { day:'Rabu',   tag:'G100 Talk Show',emoji:'🟡', url:'https://t.me/c/2217339903/1069' },
-        { day:'Khamis', tag:'TEM',           emoji:'🔵', url:'https://t.me/c/2217339903/1071' },
-        { day:'Jumaat', tag:'Poster',        emoji:'🟢', url:'https://t.me/c/2217339903/1073' },
-        { day:'Sabtu',  tag:'TEM',           emoji:'🔵', url:'https://t.me/c/2217339903/1075' },
+        { tag:'Poster',         emoji:'🟢', url:'https://t.me/c/2217339903/1078' },
+        { tag:'TEM',            emoji:'🔵', url:'https://t.me/c/2217339903/1080' },
+        { tag:'Poster',         emoji:'🟢', url:'https://t.me/c/2217339903/1082' },
+        { tag:'G100 Talk Show', emoji:'🟡', url:'https://t.me/c/2217339903/1069' },
+        { tag:'TEM',            emoji:'🔵', url:'https://t.me/c/2217339903/1085' },
+        { tag:'Poster',         emoji:'🟢', url:'https://t.me/c/2217339903/1087' },
+        { tag:'TEM',            emoji:'🔵', url:'https://t.me/c/2217339903/1089' },
       ]
     },
     '21': {
       video: [
-        { day:'Ahad',   tag:'', url:'https://t.me/c/2217339903/729' },
-        { day:'Isnin',  tag:'', url:'https://t.me/c/2217339903/731' },
-        { day:'Selasa', tag:'', url:'https://t.me/c/2217339903/733' },
-        { day:'Rabu',   tag:'', url:'https://t.me/c/2217339903/735' },
-        { day:'Khamis', tag:'', url:'https://t.me/c/2217339903/737' },
-        { day:'Jumaat', tag:'', url:'https://t.me/c/2217339903/739' },
-        { day:'Sabtu',  tag:'', url:'https://t.me/c/2217339903/741' },
+        { tag:'', url:'https://t.me/c/2217339903/1011' },
+        { tag:'', url:'https://t.me/c/2217339903/1014' },
+        { tag:'', url:'https://t.me/c/2217339903/1017' },
+        { tag:'', url:'https://t.me/c/2217339903/1020' },
+        { tag:'', url:'https://t.me/c/2217339903/1023' },
+        { tag:'', url:'https://t.me/c/2217339903/1026' },
+        { tag:'', url:'https://t.me/c/2217339903/1029' },
       ]
     }
   },
   week2: {
+    // Kad 2: 10 Mei 2026 (Ahad) - 16 Mei 2026 (Sabtu)
+    weekStart: new Date(2026, 4, 10),
     '7': {
-      thread: [
-        { day:'Ahad',   tag:'',              url:'https://t.me/c/2608705880/427' },
-        { day:'Isnin',  tag:'',              url:'https://t.me/c/2608705880/433' },
-        { day:'Selasa', tag:'Kisah Inspirasi',url:'https://t.me/c/2608705880/439' },
-        { day:'Rabu',   tag:'Kisah Inspirasi',url:'https://t.me/c/2608705880/445' },
-        { day:'Khamis', tag:'',              url:'https://t.me/c/2608705880/445' },
-        { day:'Jumaat', tag:'',              url:'https://t.me/c/2608705880/451' },
-        { day:'Sabtu',  tag:'',              url:'https://t.me/c/2608705880/457' },
+      facebook: [
+        { tag:'Nota',     url:'https://t.me/c/3858932014/64' },
+        { tag:'Abnayadh', url:'https://t.me/c/3858932014/66' },
+        { tag:'Nota',     url:'https://t.me/c/3858932014/69' },
+        { tag:'Abnayadh', url:'https://t.me/c/3858932014/71' },
+        { tag:'Nota',     url:'https://t.me/c/3858932014/73' },
+        { tag:'Abnayadh', url:'' },
+        { tag:'Nota',     url:'' },
       ],
-      artfb: [
-        { day:'Ahad',   tag:'', url:'https://t.me/c/2217339903/243' },
-        { day:'Isnin',  tag:'', url:'https://t.me/c/2217339903/245' },
-        { day:'Selasa', tag:'', url:'https://t.me/c/2217339903/247' },
-        { day:'Rabu',   tag:'', url:'https://t.me/c/2217339903/249' },
-        { day:'Khamis', tag:'', url:'https://t.me/c/2217339903/251' },
-        { day:'Jumaat', tag:'', url:'https://t.me/c/2217339903/1098' },
-        { day:'Sabtu',  tag:'', url:'https://t.me/c/2217339903/1100' },
-      ],
-      artblog: [
-        { day:'Ahad',   tag:'', url:'https://t.me/c/2217339903/469' },
-        { day:'Isnin',  tag:'', url:'https://t.me/c/2217339903/470' },
-        { day:'Selasa', tag:'', url:'https://t.me/c/2217339903/473' },
-        { day:'Rabu',   tag:'', url:'https://t.me/c/2217339903/475' },
-        { day:'Khamis', tag:'', url:'https://t.me/c/2217339903/477' },
-        { day:'Jumaat', tag:'', url:'https://t.me/c/2217339903/1104' },
-        { day:'Sabtu',  tag:'', url:'https://t.me/c/2217339903/1106' },
+      blog: [
+        { tag:'', url:'https://t.me/c/3858932014/75' },
+        { tag:'', url:'https://t.me/c/3858932014/76' },
+        { tag:'', url:'https://t.me/c/3858932014/77' },
+        { tag:'', url:'https://t.me/c/3858932014/78' },
+        { tag:'', url:'https://t.me/c/3858932014/79' },
+        { tag:'', url:'' },
+        { tag:'', url:'' },
       ]
     },
     '10': {
       youtube: [
-        { day:'Ahad',   tag:'', url:'https://t.me/c/2217339903/887' },
-        { day:'Isnin',  tag:'', url:'https://t.me/c/2217339903/889' },
-        { day:'Selasa', tag:'', url:'https://t.me/c/2217339903/891' },
-        { day:'Rabu',   tag:'', url:'https://t.me/c/2217339903/893' },
-        { day:'Khamis', tag:'', url:'https://t.me/c/2217339903/895' },
-        { day:'Jumaat', tag:'', url:'https://t.me/c/2217339903/897' },
-        { day:'Sabtu',  tag:'', url:'https://t.me/c/2217339903/899' },
+        { tag:'', url:'https://t.me/c/2217339903/902' },
+        { tag:'', url:'https://t.me/c/2217339903/904' },
+        { tag:'', url:'https://t.me/c/2217339903/906' },
+        { tag:'', url:'https://t.me/c/2217339903/908' },
+        { tag:'', url:'https://t.me/c/2217339903/910' },
+        { tag:'', url:'https://t.me/c/2217339903/912' },
+        { tag:'', url:'https://t.me/c/2217339903/914' },
       ]
     },
     '12': {
       photomode: [
-        { day:'Ahad',   tag:'',              url:'https://t.me/c/2217339903/851' },
-        { day:'Isnin',  tag:'Overlay',       url:'https://t.me/c/2217339903/853' },
-        { day:'Selasa', tag:'',              url:'https://t.me/c/2217339903/855' },
-        { day:'Rabu',   tag:'Overlay',       url:'https://t.me/c/2217339903/857' },
-        { day:'Khamis', tag:'Kisah Inspirasi',url:'https://t.me/c/2217339903/859' },
-        { day:'Jumaat', tag:'Overlay',       url:'https://t.me/c/2217339903/861' },
-        { day:'Sabtu',  tag:'Kisah Inspirasi',url:'https://t.me/c/2217339903/863' },
+        { tag:'Overlay',   url:'https://t.me/c/2217339903/836' },
+        { tag:'Photomode', url:'https://t.me/c/2217339903/838' },
+        { tag:'Overlay',   url:'https://t.me/c/2217339903/840' },
+        { tag:'Photomode', url:'https://t.me/c/2217339903/842' },
+        { tag:'Overlay',   url:'https://t.me/c/2217339903/844' },
+        { tag:'Photomode', url:'https://t.me/c/2217339903/846' },
+        { tag:'Poster',    url:'https://t.me/c/2217339903/848' },
       ]
     },
     '17': {
       tem: [
-        { day:'Ahad',   tag:'Poster',        emoji:'🟢', url:'https://t.me/c/2217339903/1078' },
-        { day:'Isnin',  tag:'TEM',           emoji:'🔵', url:'https://t.me/c/2217339903/1080' },
-        { day:'Selasa', tag:'Poster',        emoji:'🟢', url:'https://t.me/c/2217339903/1082' },
-        { day:'Rabu',   tag:'G100 Talk Show',emoji:'🟡', url:'https://t.me/c/2217339903/1069' },
-        { day:'Khamis', tag:'TEM',           emoji:'🔵', url:'https://t.me/c/2217339903/1085' },
-        { day:'Jumaat', tag:'Poster',        emoji:'🟢', url:'https://t.me/c/2217339903/1087' },
-        { day:'Sabtu',  tag:'TEM',           emoji:'🔵', url:'https://t.me/c/2217339903/1089' },
+        { tag:'Poster',         emoji:'🟢', url:'https://t.me/c/2217339903/1063' },
+        { tag:'TEM',            emoji:'🔵', url:'https://t.me/c/2217339903/1065' },
+        { tag:'Poster',         emoji:'🟢', url:'https://t.me/c/2217339903/1067' },
+        { tag:'G100 Talk Show', emoji:'🟡', url:'https://t.me/c/2217339903/1069' },
+        { tag:'TEM',            emoji:'🔵', url:'https://t.me/c/2217339903/1071' },
+        { tag:'Poster',         emoji:'🟢', url:'https://t.me/c/2217339903/1073' },
+        { tag:'TEM',            emoji:'🔵', url:'https://t.me/c/2217339903/1075' },
       ]
     },
     '21': {
       video: [
-        { day:'Ahad',   tag:'', url:'https://t.me/c/2217339903/1011' },
-        { day:'Isnin',  tag:'', url:'https://t.me/c/2217339903/1014' },
-        { day:'Selasa', tag:'', url:'https://t.me/c/2217339903/1017' },
-        { day:'Rabu',   tag:'', url:'https://t.me/c/2217339903/1020' },
-        { day:'Khamis', tag:'', url:'https://t.me/c/2217339903/1023' },
-        { day:'Jumaat', tag:'', url:'https://t.me/c/2217339903/1026' },
-        { day:'Sabtu',  tag:'', url:'https://t.me/c/2217339903/1029' },
+        { tag:'', url:'https://t.me/c/2217339903/729' },
+        { tag:'', url:'https://t.me/c/2217339903/731' },
+        { tag:'', url:'https://t.me/c/2217339903/733' },
+        { tag:'', url:'https://t.me/c/2217339903/735' },
+        { tag:'', url:'https://t.me/c/2217339903/737' },
+        { tag:'', url:'https://t.me/c/2217339903/739' },
+        { tag:'', url:'https://t.me/c/2217339903/741' },
       ]
     }
   }
@@ -755,23 +789,30 @@ const DATA = {
 
 /* ────────────────────────────
    BUILD ROWS
+   isActiveSlot = true  → slot ini AKTIF (blink pada hari semasa)
+   isActiveSlot = false → slot tidak aktif (hari semasa hanya highlight biasa)
 ──────────────────────────── */
 function buildRows(containerId, items, weekStart, todayDayIdx, isActiveSlot) {
   const el = document.getElementById(containerId);
   if (!el) return;
   el.innerHTML = '';
   items.forEach((item, i) => {
-    const isToday = (i === todayDayIdx) && isActiveSlot !== undefined;
+    const isToday = (i === todayDayIdx);
     const isNow   = isToday && isActiveSlot;
+
     const row = document.createElement('div');
     row.className = 'day-row' + (isNow ? ' today-row' : '');
 
-    const dateObj = new Date(weekStart);
-    dateObj.setDate(dateObj.getDate() + i);
+    const dateObj = addDays(weekStart, i);
     const dd = dateObj.getDate();
     const mm = dateObj.getMonth()+1;
 
-    let html = `<span class="day-name${isToday?' today':''}">${item.day} <span style="font-size:9px;color:#3b5270">${dd}/${mm}</span></span>`;
+    // Nama hari + tarikh
+    let dayClass = 'day-name';
+    if (isToday) dayClass += ' today';
+    if (isNow)   dayClass += ' blink-day'; // blink pada hari & masa aktif
+
+    let html = `<span class="${dayClass}">${DAYS_MS[i]} <span style="font-size:9px;color:#3b5270">${dd}/${mm}</span></span>`;
     if (item.emoji) html += `<span class="emoji-dot">${item.emoji}</span>`;
     if (item.tag)   html += `<span class="day-tag">${item.tag}</span>`;
     if (item.url) {
@@ -790,32 +831,15 @@ function buildRows(containerId, items, weekStart, todayDayIdx, isActiveSlot) {
 const SLOT_HOURS = [7, 10, 12, 17, 21];
 const SLOT_IDS   = ['7','10','12','17','21'];
 
-let activeSlotKey = null; // e.g. 'week1-7'
-
-function getSlotHour(slotId) {
-  return parseInt(slotId);
-}
+let activeSlotKey = null; // e.g. 'week1-7-content'
 
 function getCurrentSlotHour(now) {
   const h = now.getHours();
-  // active slot = the slot that has passed but next hasn't started
   let current = null;
   for (let i = 0; i < SLOT_HOURS.length; i++) {
     if (h >= SLOT_HOURS[i]) current = SLOT_HOURS[i];
   }
-  return current;
-}
-
-function dateInRange(d, start, end) {
-  const t = d.setHours(0,0,0,0);
-  return t >= start.setHours(0,0,0,0) && t <= end.setHours(0,0,0,0);
-}
-
-function getDayIndexFromDate(d, weekStart) {
-  // Ahad=0 in our array. weekStart is Sunday.
-  const startDay = weekStart.getDay(); // should be 0 (Sunday)
-  const diff = Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate()) - new Date(weekStart.getFullYear(),weekStart.getMonth(),weekStart.getDate())) / 86400000);
-  return diff; // 0..6
+  return current; // null sebelum 7am, 21 selepas 9pm
 }
 
 /* ────────────────────────────
@@ -823,21 +847,45 @@ function getDayIndexFromDate(d, weekStart) {
 ──────────────────────────── */
 function renderAll() {
   const now = new Date();
+  const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const currentHour = getCurrentSlotHour(now);
 
-  const inWeek1 = dateInRange(new Date(now), new Date(WEEK1_START), new Date(WEEK1_END));
-  const inWeek2 = dateInRange(new Date(now), new Date(WEEK2_START), new Date(WEEK2_END));
-
-  let reminderText = '';
   activeSlotKey = null;
+  let reminderText = '';
 
-  // ── WEEK 1
-  const dayIdx1 = inWeek1 ? getDayIndexFromDate(now, new Date(WEEK1_START)) : -1;
-  document.getElementById('status-week1').classList.toggle('live', inWeek1);
+  /* ── Kira minggu semasa dari sudut pandang jadual ──
+     Jadual bermula dari Ahad 3 Mei 2026.
+     Setiap minggu = 7 hari dari Ahad ke Sabtu.
+  */
+  const KAD1_START = DATA.week1.weekStart; // Ahad 3 Mei
+  const KAD1_END   = addDays(KAD1_START, 6); // Sabtu 9 Mei
+  const KAD2_START = DATA.week2.weekStart; // Ahad 10 Mei
+  const KAD2_END   = addDays(KAD2_START, 6); // Sabtu 16 Mei
+
+  const inWeek1 = todayDate >= KAD1_START && todayDate <= KAD1_END;
+  const inWeek2 = todayDate >= KAD2_START && todayDate <= KAD2_END;
+
+  // Kira dayIdx (0=Ahad..6=Sabtu) dalam minggu berkenaan
+  function getDayIdx(weekStart) {
+    return Math.round((todayDate - weekStart) / 86400000);
+  }
+
+  /* ── Update tajuk kad & tarikh secara live ── */
+  // Kad 1
+  document.getElementById('dates-week1').textContent =
+    `${fmtDate(KAD1_START)} – ${fmtDate(KAD1_END)}`;
+
+  // Kad 2
+  document.getElementById('dates-week2').textContent =
+    `${fmtDate(KAD2_START)} – ${fmtDate(KAD2_END)}`;
+
+  /* ── KAD 1 ── */
+  const dayIdx1 = inWeek1 ? getDayIdx(KAD1_START) : -1;
+  document.getElementById('status-week1').className = 'card-status' + (inWeek1 ? ' live' : '');
   document.getElementById('card-week1').classList.toggle('active-week', inWeek1);
 
   SLOT_IDS.forEach(sid => {
-    const h = getSlotHour(sid);
+    const h = parseInt(sid);
     const isActive = inWeek1 && currentHour === h;
     const badge = document.getElementById(`badge-week1-${sid}`);
     const dot   = document.getElementById(`dot-week1-${sid}`);
@@ -851,25 +899,25 @@ function renderAll() {
 
     if (isActive) {
       activeSlotKey = `week1-${sid}-content`;
-      reminderText = `📅 Minggu 1 (10-16 Mei) · Slot ${badge?.textContent} — Sila semak kandungan hari ini!`;
+      reminderText = `📅 Minggu 1 · Slot ${badge?.textContent} — Sila semak kandungan hari ini!`;
     }
   });
 
-  // Build week1 rows
-  buildRows('fb-week1-7',   DATA.week1['7'].facebook,  new Date(WEEK1_START), dayIdx1, inWeek1 && currentHour===7);
-  buildRows('blog-week1-7', DATA.week1['7'].blog,      new Date(WEEK1_START), dayIdx1, inWeek1 && currentHour===7);
-  buildRows('yt-week1-10',  DATA.week1['10'].youtube,  new Date(WEEK1_START), dayIdx1, inWeek1 && currentHour===10);
-  buildRows('pm-week1-12',  DATA.week1['12'].photomode,new Date(WEEK1_START), dayIdx1, inWeek1 && currentHour===12);
-  buildRows('tem-week1-17', DATA.week1['17'].tem,      new Date(WEEK1_START), dayIdx1, inWeek1 && currentHour===17);
-  buildRows('vid-week1-21', DATA.week1['21'].video,    new Date(WEEK1_START), dayIdx1, inWeek1 && currentHour===21);
+  buildRows('thread-week1-7',  DATA.week1['7'].thread,   KAD1_START, dayIdx1, inWeek1 && currentHour===7);
+  buildRows('artfb-week1-7',   DATA.week1['7'].artfb,    KAD1_START, dayIdx1, inWeek1 && currentHour===7);
+  buildRows('artblog-week1-7', DATA.week1['7'].artblog,  KAD1_START, dayIdx1, inWeek1 && currentHour===7);
+  buildRows('yt-week1-10',     DATA.week1['10'].youtube, KAD1_START, dayIdx1, inWeek1 && currentHour===10);
+  buildRows('pm-week1-12',     DATA.week1['12'].photomode,KAD1_START,dayIdx1, inWeek1 && currentHour===12);
+  buildRows('tem-week1-17',    DATA.week1['17'].tem,     KAD1_START, dayIdx1, inWeek1 && currentHour===17);
+  buildRows('vid-week1-21',    DATA.week1['21'].video,   KAD1_START, dayIdx1, inWeek1 && currentHour===21);
 
-  // ── WEEK 2
-  const dayIdx2 = inWeek2 ? getDayIndexFromDate(now, new Date(WEEK2_START)) : -1;
-  document.getElementById('status-week2').classList.toggle('live', inWeek2);
+  /* ── KAD 2 ── */
+  const dayIdx2 = inWeek2 ? getDayIdx(KAD2_START) : -1;
+  document.getElementById('status-week2').className = 'card-status' + (inWeek2 ? ' live' : '');
   document.getElementById('card-week2').classList.toggle('active-week', inWeek2);
 
   SLOT_IDS.forEach(sid => {
-    const h = getSlotHour(sid);
+    const h = parseInt(sid);
     const isActive = inWeek2 && currentHour === h;
     const badge = document.getElementById(`badge-week2-${sid}`);
     const dot   = document.getElementById(`dot-week2-${sid}`);
@@ -883,19 +931,18 @@ function renderAll() {
 
     if (isActive) {
       activeSlotKey = `week2-${sid}-content`;
-      reminderText = `📅 Minggu 2 (3-9 Mei) · Slot ${badge?.textContent} — Sila semak kandungan hari ini!`;
+      reminderText = `📅 Minggu 2 · Slot ${badge?.textContent} — Sila semak kandungan hari ini!`;
     }
   });
 
-  buildRows('thread-week2-7',  DATA.week2['7'].thread,   new Date(WEEK2_START), dayIdx2, inWeek2 && currentHour===7);
-  buildRows('artfb-week2-7',   DATA.week2['7'].artfb,    new Date(WEEK2_START), dayIdx2, inWeek2 && currentHour===7);
-  buildRows('artblog-week2-7', DATA.week2['7'].artblog,  new Date(WEEK2_START), dayIdx2, inWeek2 && currentHour===7);
-  buildRows('yt-week2-10',     DATA.week2['10'].youtube, new Date(WEEK2_START), dayIdx2, inWeek2 && currentHour===10);
-  buildRows('pm-week2-12',     DATA.week2['12'].photomode,new Date(WEEK2_START), dayIdx2, inWeek2 && currentHour===12);
-  buildRows('tem-week2-17',    DATA.week2['17'].tem,     new Date(WEEK2_START), dayIdx2, inWeek2 && currentHour===17);
-  buildRows('vid-week2-21',    DATA.week2['21'].video,   new Date(WEEK2_START), dayIdx2, inWeek2 && currentHour===21);
+  buildRows('fb-week2-7',   DATA.week2['7'].facebook,  KAD2_START, dayIdx2, inWeek2 && currentHour===7);
+  buildRows('blog-week2-7', DATA.week2['7'].blog,      KAD2_START, dayIdx2, inWeek2 && currentHour===7);
+  buildRows('yt-week2-10',  DATA.week2['10'].youtube,  KAD2_START, dayIdx2, inWeek2 && currentHour===10);
+  buildRows('pm-week2-12',  DATA.week2['12'].photomode,KAD2_START, dayIdx2, inWeek2 && currentHour===12);
+  buildRows('tem-week2-17', DATA.week2['17'].tem,      KAD2_START, dayIdx2, inWeek2 && currentHour===17);
+  buildRows('vid-week2-21', DATA.week2['21'].video,    KAD2_START, dayIdx2, inWeek2 && currentHour===21);
 
-  // ── REMINDER BANNER
+  /* ── REMINDER BANNER ── */
   const banner = document.getElementById('reminder-banner');
   if (activeSlotKey) {
     banner.classList.remove('hidden');
@@ -904,11 +951,16 @@ function renderAll() {
     banner.classList.remove('hidden');
     document.getElementById('reminder-body').textContent = '📌 Tiada jadual aktif hari ini. Semak minggu akan datang.';
   } else {
-    // inside a week but no active slot hour yet
     banner.classList.remove('hidden');
     const nextH = SLOT_HOURS.find(h => h > (currentHour || 0));
-    const nextLabel = nextH ? `${nextH < 12 ? nextH+':00am' : (nextH===12?'12:00pm':(nextH-12)+':00pm')}` : '—';
-    document.getElementById('reminder-body').textContent = `📌 Slot seterusnya: ${nextLabel} — Sentiasa pantau jadual ini.`;
+    function fmtH(h) {
+      if (!h) return '—';
+      if (h < 12) return `${h}:00am`;
+      if (h === 12) return '12:00pm';
+      return `${h-12}:00pm`;
+    }
+    document.getElementById('reminder-body').textContent =
+      `📌 Slot seterusnya: ${fmtH(nextH)} — Sentiasa pantau jadual ini.`;
   }
 }
 
@@ -942,16 +994,38 @@ function toggleSlot(contentId, slotId) {
   if (chev) chev.classList.toggle('open', !isOpen);
 }
 
+/* ────────────────────────────
+   JUMP TO ACTIVE SLOT
+   – buka kad & slot, scroll ke slot tersebut
+──────────────────────────── */
 function jumpToActive() {
   if (!activeSlotKey) return;
-  const el = document.getElementById(activeSlotKey);
-  if (!el) return;
-  el.classList.add('open');
-  // also open chevron
+
+  // Buka content slot
+  const contentEl = document.getElementById(activeSlotKey);
+  if (!contentEl) return;
+  contentEl.classList.add('open');
+
+  // Buka chevron
   const slotId = activeSlotKey.replace('-content','');
   const chev = document.getElementById('chev-' + slotId);
   if (chev) chev.classList.add('open');
-  el.scrollIntoView({ behavior:'smooth', block:'center' });
+
+  // Pastikan kad tidak disembunyikan
+  // (card body: week1-body atau week2-body)
+  const weekKey = activeSlotKey.startsWith('week1') ? 'week1-body' : 'week2-body';
+  const cardBody = document.getElementById(weekKey);
+  if (cardBody && cardBody.style.display === 'none') {
+    cardBody.style.display = '';
+  }
+
+  // Scroll ke time-slot-header (bukan content, supaya nampak tajuk slot)
+  const slotEl = document.getElementById('slot-' + slotId);
+  if (slotEl) {
+    slotEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    contentEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 }
 
 /* ────────────────────────────
