@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Admin | Public Gold Network</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --gold:#C9A84C;--gold-light:#F0D78C;--gold-dark:#8B6914;
+    --bg:#0B0D12;--bg2:#111420;--bg3:#181C2A;
+    --surface:#1A1F2E;--surface2:#212638;
+    --text:#F0EDE8;--text2:#9B9EA8;--text3:#5C6070;
+    --border:#2A2F42;--border2:#3A4058;
+    --success:#1DB87A;--success-bg:rgba(29,184,122,0.1);
+    --danger:#E05252;--danger-bg:rgba(224,82,82,0.1);
+    --warn:#F0A429;--warn-bg:rgba(240,164,41,0.1);
+    --radius:12px;--radius2:8px;
+  }
+  html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+  body::before{
+    content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(201,168,76,0.08) 0%,transparent 70%);
+    pointer-events:none;z-index:0
+  }
+
+  .admin-wrap{max-width:1200px;margin:0 auto;padding:32px 24px 80px;position:relative;z-index:1}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:40px;gap:16px;flex-wrap:wrap}
+  .logo-bar{display:flex;align-items:center;gap:12px}
+  .logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:9px;display:flex;align-items:center;justify-content:center}
+  .logo-icon svg{width:20px;height:20px;fill:none;stroke:#0B0D12;stroke-width:2}
+  .logo-text{font-family:'Sora',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.5px}
+  .logo-sub{font-size:11px;color:var(--text3);margin-top:1px}
+  .admin-badge{display:flex;align-items:center;gap:6px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--gold);font-weight:500}
+  .admin-badge::before{content:'';width:7px;height:7px;background:var(--gold);border-radius:50%;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+  /* Stats */
+  .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 24px;position:relative;overflow:hidden}
+  .stat-card::after{content:'';position:absolute;top:0;right:0;width:60px;height:60px;border-radius:0 16px 0 60px;opacity:0.06}
+  .stat-card.gold::after{background:var(--gold)}
+  .stat-card.green::after{background:var(--success)}
+  .stat-card.blue::after{background:#4A9EE0}
+  .stat-label{font-size:12px;color:var(--text3);font-weight:500;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:12px}
+  .stat-num{font-family:'Sora',sans-serif;font-size:36px;font-weight:700;line-height:1}
+  .stat-card.gold .stat-num{color:var(--gold)}
+  .stat-card.green .stat-num{color:var(--success)}
+  .stat-card.blue .stat-num{color:#4A9EE0}
+  .stat-sub{font-size:12px;color:var(--text3);margin-top:6px}
+
+  /* Notification banner */
+  .notif-banner{
+    display:none;background:rgba(240,164,41,0.06);border:1px solid rgba(240,164,41,0.2);
+    border-radius:14px;padding:16px 20px;margin-bottom:24px;
+  }
+  .notif-banner.show{display:block}
+  .notif-banner-title{font-size:13px;font-weight:600;color:var(--warn);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .notif-banner-title::before{content:'⚠';font-size:14px}
+  .notif-list{display:flex;flex-direction:column;gap:6px}
+  .notif-item{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border-radius:8px;padding:10px 14px;gap:12px;flex-wrap:wrap}
+  .notif-item-name{font-size:13px;font-weight:500}
+  .notif-item-time{font-size:11px;color:var(--text3)}
+  .notif-btn{padding:5px 12px;background:var(--warn-bg);border:1px solid rgba(240,164,41,0.3);border-radius:6px;color:var(--warn);font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.2s;white-space:nowrap}
+  .notif-btn:hover{background:rgba(240,164,41,0.2)}
+
+  /* Table area */
+  .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px}
+  .section-title{font-family:'Sora',sans-serif;font-size:17px;font-weight:700}
+  .search-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;width:220px;transition:border-color 0.2s}
+  .search-box::placeholder{color:var(--text3)}
+  .search-box:focus{border-color:var(--gold)}
+
+  .table-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:1000px}
+  thead tr{background:var(--bg3);border-bottom:1px solid var(--border)}
+  th{padding:13px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.8px;text-transform:uppercase;white-space:nowrap}
+  td{padding:13px 16px;font-size:13px;color:var(--text2);border-bottom:1px solid rgba(42,47,66,0.5);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:rgba(255,255,255,0.015)}
+  .td-name{font-weight:500;color:var(--text)}
+  .td-ref{color:var(--text3);font-size:12px}
+
+  /* Dropdowns */
+  .status-select{
+    padding:5px 10px;border-radius:6px;font-size:12px;font-weight:500;
+    border:none;cursor:pointer;font-family:'DM Sans',sans-serif;
+    -webkit-appearance:none;appearance:none;outline:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239B9EA8' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 8px center;padding-right:24px;
+    transition:background-color 0.2s
+  }
+  .status-select.daftar-ok{background-color:rgba(29,184,122,0.12);color:var(--success)}
+  .status-select.daftar-no{background-color:rgba(224,82,82,0.1);color:var(--danger)}
+  .status-select.bayar-ok{background-color:rgba(74,158,224,0.12);color:#4A9EE0}
+  .status-select.bayar-no{background-color:rgba(240,164,41,0.1);color:var(--warn)}
+  .status-select option{background:var(--bg3);color:var(--text)}
+
+  .btn-lihat{
+    padding:5px 12px;background:transparent;border:1px solid var(--border2);
+    border-radius:6px;color:var(--text2);font-size:12px;font-weight:500;
+    cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;white-space:nowrap
+  }
+  .btn-lihat:hover{border-color:var(--gold);color:var(--gold)}
+
+  .empty-state{padding:60px 20px;text-align:center;color:var(--text3)}
+  .empty-state svg{width:40px;height:40px;stroke:var(--text3);margin-bottom:12px;opacity:0.4}
+  .empty-state p{font-size:14px;margin-top:6px}
+
+  /* Detail Modal */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+  .modal-overlay.active{display:flex}
+  .modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:20px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;animation:slideUp 0.22s ease}
+  @keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .modal-head{padding:22px 22px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .modal-head-title{font-family:'Sora',sans-serif;font-size:16px;font-weight:700}
+  .modal-close{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;color:var(--text3);cursor:pointer;font-size:18px;line-height:1;transition:border-color 0.2s}
+  .modal-close:hover{border-color:var(--text3);color:var(--text)}
+  .modal-body{padding:20px 22px}
+  .detail-row{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(42,47,66,0.6);gap:16px}
+  .detail-row:last-child{border-bottom:none}
+  .detail-key{font-size:12px;color:var(--text3);font-weight:500;flex-shrink:0}
+  .detail-val{font-size:13px;color:var(--text);text-align:right;word-break:break-all}
+  .modal-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+  .btn-copy{padding:10px 18px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;display:flex;align-items:center;gap:6px}
+  .btn-copy:hover{border-color:var(--gold);color:var(--gold)}
+  .btn-copy svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+
+  /* Toast */
+  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:12px 18px;font-size:13px;color:var(--text);display:flex;align-items:center;gap:10px;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s;opacity:0;z-index:9999;white-space:nowrap;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,0.5)}
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  .toast-dot{width:7px;height:7px;background:var(--success);border-radius:50%;flex-shrink:0}
+
+  @media(max-width:640px){
+    .stats-grid{grid-template-columns:1fr}
+    .topbar{flex-direction:column;align-items:flex-start}
+  }
+
+  /* Highlight for scroll */
+  .row-highlight{animation:rowGlow 1.5s ease}
+  @keyframes rowGlow{0%{background:rgba(201,168,76,0.12)}100%{background:transparent}}
+</style>
+</head>
+<body>
+
+<div class="admin-wrap">
+  <div class="topbar">
+    <div class="logo-bar">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><polygon points="12,2 15.5,8.5 22,9.5 17,14.5 18,21 12,17.5 6,21 7,14.5 2,9.5 8.5,8.5"/></svg>
+      </div>
+      <div>
+        <div class="logo-text">PUBLIC GOLD NETWORK</div>
+        <div class="logo-sub">Dashboard Admin</div>
+      </div>
+    </div>
+    <div class="admin-badge">Admin Panel</div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card gold">
+      <div class="stat-label">Total Referrer</div>
+      <div class="stat-num" id="statReferrer">0</div>
+      <div class="stat-sub">Referrer unik</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Total Registered</div>
+      <div class="stat-num" id="statRegistered">0</div>
+      <div class="stat-sub">Jumlah pendaftaran</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-label">Total Paid</div>
+      <div class="stat-num" id="statPaid">0</div>
+      <div class="stat-sub">Insentif telah dibayar</div>
+    </div>
+  </div>
+
+  <!-- Notif banner -->
+  <div class="notif-banner" id="notifBanner">
+    <div class="notif-banner-title">Pendaftaran Baharu Belum Berjaya Daftar</div>
+    <div class="notif-list" id="notifList"></div>
+  </div>
+
+  <!-- Table -->
+  <div class="section-header">
+    <div class="section-title">Senarai Pendaftaran</div>
+    <input class="search-box" id="searchBox" placeholder="🔍  Cari nama anak, referrer..." oninput="renderTable()">
+  </div>
+
+  <div class="table-card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nama Anak</th>
+            <th>No IC Anak</th>
+            <th>Nama Ibu/Bapa</th>
+            <th>No Telefon</th>
+            <th>Referrer</th>
+            <th>Tarikh Daftar</th>
+            <th>Status Daftar</th>
+            <th>Status Bayar</th>
+            <th>Tindakan</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div class="empty-state" id="emptyState" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <p>Tiada rekod pendaftaran lagi.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-head-title">Maklumat Pendaftaran</div>
+      <button class="modal-close" onclick="tutupModal()">×</button>
+    </div>
+    <div class="modal-body" id="detailBody"></div>
+    <div class="modal-footer">
+      <button class="btn-copy" onclick="copyAll()">
+        <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy All
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><div class="toast-dot"></div><span id="toastMsg"></span></div>
+
+<script>
+// ─── Konfigurasi ───────────────────────────────────────────
+// ⬇ Gantikan dengan URL deployment Google Apps Script anda
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxugP0VSyGy_zReykUCW-4CGaNCGcf-U0cDotdn4ZpeyoqlqamkyWckrMhOyZf26CmY/exec';
+
+let currentDetailIdx = null;
+let DB = [];
+
+// ─── Muat Data Dari Google Sheet ────────────────────────────
+async function loadDataFromSheet(){
+  showLoadingState(true);
+  try{
+    const res=await fetch(GAS_URL+'?action=getData',{method:'GET'});
+    const json=await res.json();
+    if(json.ok && Array.isArray(json.data)){
+      DB=json.data.map(normaliseRow);
+    }
+  }catch(e){
+    showToast('Gagal sambung ke pangkalan data. Semak URL script.',true);
+    console.error(e);
+  }
+  showLoadingState(false);
+  updateStats();
+  checkNotif();
+  renderTable();
+}
+
+function normaliseRow(r){
+  return {
+    id           : r.iD || r.id || '',
+    namaAnak     : r.namaAnak || r.nama || '',
+    noIcAnak     : r.noIcAnak || '',
+    email        : r.eMel || r.email || '',
+    namaIbuBapa  : r.namaIbuBapa || '',
+    jenisId      : r.jenisId || '',
+    nomberId     : r.nomborId || r.nomberId || '',
+    telefon      : r.noTelefon || r.telefon || '',
+    tempat       : r.tempatTinggal || r.tempat || '',
+    referrer     : r.referrer || '-',
+    tarikh       : r.tarikhDaftar || r.tarikh || '',
+    statusDaftar : r.statusDaftar || 'Belum Daftar',
+    statusBayar  : r.statusBayar  || 'Belum Bayar',
+  };
+}
+
+function showLoadingState(on){
+  document.getElementById('tableBody').innerHTML=on
+    ?'<tr><td colspan="10" style="text-align:center;padding:40px;color:var(--text3)">Memuatkan data...</td></tr>'
+    :'';
+}
+
+// Simpan perubahan status ke Google Sheet
+async function simpanStatus(idx, field, value){
+  const record=DB[idx];
+  if(!record||!record.id)return false;
+  try{
+    const res=await fetch(GAS_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'updateStatus',id:record.id,field,value})
+    });
+    const json=await res.json();
+    return json.ok;
+  }catch(e){
+    console.error(e);return false;
+  }
+}
+
+function updateStats(){
+  const referrers=new Set(DB.map(r=>r.referrer).filter(r=>r&&r!=='-'));
+  document.getElementById('statReferrer').textContent=referrers.size;
+  document.getElementById('statRegistered').textContent=DB.length;
+  document.getElementById('statPaid').textContent=DB.filter(r=>r.statusBayar==='Sudah Bayar').length;
+}
+
+function checkNotif(){
+  const belum=DB.map((r,i)=>({...r,_idx:i})).filter(r=>r.statusDaftar!=='Berjaya Daftar');
+  const banner=document.getElementById('notifBanner');
+  const list=document.getElementById('notifList');
+  if(belum.length>0){
+    banner.classList.add('show');
+    list.innerHTML=belum.map(r=>`
+      <div class="notif-item">
+        <div>
+          <div class="notif-item-name">${r.namaAnak}</div>
+          <div class="notif-item-time">${r.tarikh} · Referrer: ${r.referrer}</div>
+        </div>
+        <button class="notif-btn" onclick="scrollToRow(${r._idx})">Lihat →</button>
+      </div>`).join('');
+  }else{
+    banner.classList.remove('show');
+  }
+}
+
+function scrollToRow(idx){
+  const row=document.getElementById('row-'+idx);
+  if(!row)return;
+  row.scrollIntoView({behavior:'smooth',block:'center'});
+  row.classList.remove('row-highlight');
+  void row.offsetWidth;
+  row.classList.add('row-highlight');
+}
+
+function renderTable(){
+  const q=document.getElementById('searchBox').value.toLowerCase();
+  const filtered=DB.map((r,i)=>({...r,_idx:i})).filter(r=>
+    !q||r.namaAnak.toLowerCase().includes(q)||r.namaIbuBapa.toLowerCase().includes(q)||r.referrer.toLowerCase().includes(q)||r.telefon.includes(q)
+  );
+  const tbody=document.getElementById('tableBody');
+  if(filtered.length===0){
+    tbody.innerHTML='';
+    document.getElementById('emptyState').style.display='block';
+    return;
+  }
+  document.getElementById('emptyState').style.display='none';
+  tbody.innerHTML=filtered.map(r=>{
+    const i=r._idx;
+    const dStatus=r.statusDaftar==='Berjaya Daftar'?'daftar-ok':'daftar-no';
+    const bStatus=r.statusBayar==='Sudah Bayar'?'bayar-ok':'bayar-no';
+    return `<tr id="row-${i}">
+      <td style="color:var(--text3)">${i+1}</td>
+      <td><div class="td-name">${r.namaAnak}</div><div class="td-ref">${r.email||''}</div></td>
+      <td style="font-size:12px">${r.noIcAnak||'-'}</td>
+      <td><div class="td-name" style="font-size:13px">${r.namaIbuBapa||'-'}</div><div class="td-ref">${r.jenisId||''}</div></td>
+      <td style="font-size:12px">${r.telefon}</td>
+      <td style="color:var(--text3);font-size:12px">${r.referrer}</td>
+      <td style="font-size:12px;color:var(--text3)">${r.tarikh}</td>
+      <td>
+        <select class="status-select ${dStatus}" onchange="ubahStatus(${i},'statusDaftar',this.value,this)">
+          <option ${r.statusDaftar==='Berjaya Daftar'?'selected':''}>Berjaya Daftar</option>
+          <option ${r.statusDaftar==='Belum Daftar'?'selected':''}>Belum Daftar</option>
+        </select>
+      </td>
+      <td>
+        <select class="status-select ${bStatus}" onchange="ubahStatus(${i},'statusBayar',this.value,this)">
+          <option ${r.statusBayar==='Sudah Bayar'?'selected':''}>Sudah Bayar</option>
+          <option ${r.statusBayar==='Belum Bayar'?'selected':''}>Belum Bayar</option>
+        </select>
+      </td>
+      <td><button class="btn-lihat" onclick="bukaDetail(${i})">Lihat →</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function ubahStatus(idx,field,val,sel){
+  const ok=await simpanStatus(idx,field,val);
+  if(ok){
+    DB[idx][field]=val;
+    if(field==='statusDaftar'){
+      sel.className='status-select '+(val==='Berjaya Daftar'?'daftar-ok':'daftar-no');
+    }else{
+      sel.className='status-select '+(val==='Sudah Bayar'?'bayar-ok':'bayar-no');
+    }
+    updateStats();checkNotif();
+    showToast(field==='statusDaftar'?'Status pendaftaran dikemaskini':'Status bayaran dikemaskini');
+  }else{
+    showToast('Gagal kemaskini. Cuba semula.',true);
+    sel.value=DB[idx][field];
+  }
+}
+
+function bukaDetail(idx){
+  currentDetailIdx=idx;
+  const r=DB[idx];
+  const fields=[
+    ['ID Rekod',r.id],
+    ['Nama Anak',r.namaAnak],
+    ['No IC Anak',r.noIcAnak],
+    ['Email',r.email],
+    ['Nama Ibu / Bapa',r.namaIbuBapa],
+    ['Jenis ID',r.jenisId],
+    ['Nombor ID',r.nomberId],
+    ['No Telefon',r.telefon],
+    ['Tempat Tinggal',r.tempat],
+    ['Referrer',r.referrer],
+    ['Tarikh Daftar',r.tarikh],
+    ['Status Daftar',r.statusDaftar],
+    ['Status Bayar',r.statusBayar]
+  ];
+  document.getElementById('detailBody').innerHTML=fields.map(([k,v])=>`
+    <div class="detail-row">
+      <span class="detail-key">${k}</span>
+      <span class="detail-val">${v||'-'}</span>
+    </div>`).join('');
+  document.getElementById('detailModal').classList.add('active');
+}
+
+function tutupModal(){
+  document.getElementById('detailModal').classList.remove('active');
+}
+
+function copyAll(){
+  const r=DB[currentDetailIdx];
+  const txt=`Nama Anak: ${r.namaAnak||'-'}
+No IC Anak: ${r.noIcAnak||'-'}
+Email: ${r.email||'-'}
+Nama Ibu/Bapa: ${r.namaIbuBapa||'-'}
+Jenis ID: ${r.jenisId||'-'}
+Nombor ID: ${r.nomberId||'-'}
+Mobile: ${r.telefon||'-'}`;
+  navigator.clipboard.writeText(txt).then(()=>showToast('Maklumat disalin!')).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=txt;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    showToast('Maklumat disalin!');
+  });
+}
+
+function showToast(msg, isErr){
+  const t=document.getElementById('toast');
+  const dot=t.querySelector('.toast-dot');
+  document.getElementById('toastMsg').textContent=msg;
+  dot.style.background=isErr?'var(--danger)':'var(--success)';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// Init — muat dari Google Sheet
+loadDataFromSheet();
+
+// Auto-refresh setiap 60 saat
+setInterval(loadDataFromSheet, 60000);
+</script>
+</body>
+</html>
