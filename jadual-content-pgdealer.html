@@ -127,6 +127,149 @@
   }
   .btn-jump:hover { background: #fbbf24; transform: scale(1.03); }
 
+  /* ── SWAP TOOLBAR ── */
+  .swap-toolbar {
+    max-width: 680px;
+    margin: 14px auto 0;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .swap-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .swap-status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent2);
+    box-shadow: 0 0 6px var(--accent2);
+    flex-shrink: 0;
+  }
+  .swap-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .swap-state-badge {
+    font-family: 'Syne', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(6,182,212,0.1);
+    color: var(--accent2);
+    border: 1px solid rgba(6,182,212,0.2);
+    transition: all 0.3s;
+  }
+  .swap-state-badge.swapped {
+    background: rgba(245,158,11,0.12);
+    color: var(--gold);
+    border-color: rgba(245,158,11,0.25);
+  }
+
+  /* ── BTN SWAP UTAMA ── */
+  .btn-swap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #1a2540 0%, #0f172a 100%);
+    border: 1px solid rgba(59,130,246,0.35);
+    border-radius: 9px;
+    padding: 8px 15px 8px 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--accent);
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.22s, box-shadow 0.22s, transform 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-swap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(6,182,212,0.07) 100%);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .btn-swap:hover::after { opacity: 1; }
+  .btn-swap:hover {
+    border-color: rgba(59,130,246,0.6);
+    box-shadow: 0 0 16px rgba(59,130,246,0.2), inset 0 0 0 1px rgba(59,130,246,0.08);
+    transform: translateY(-1px);
+  }
+  .btn-swap:active { transform: scale(0.97); }
+
+  /* ikon swap — dua anak panah bertentangan */
+  .swap-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    flex-shrink: 0;
+    transition: transform 0.4s cubic-bezier(.4,0,.2,1);
+  }
+  .swap-icon.spin { transform: rotate(180deg); }
+  .swap-arrow {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 10px;
+    line-height: 1;
+    color: var(--accent2);
+  }
+  .swap-arrow.up { color: var(--accent); }
+  .swap-text { position: relative; z-index: 1; }
+
+  /* divider kecil */
+  .swap-divider {
+    width: 1px; height: 28px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  /* pasangan pil urutan */
+  .order-pair {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .o-pip {
+    font-family: 'Syne', sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    padding: 3px 7px;
+    border-radius: 5px;
+    transition: all 0.35s;
+    white-space: nowrap;
+  }
+  .o-pip.w1 {
+    background: rgba(245,158,11,0.14);
+    color: var(--gold);
+    border: 1px solid rgba(245,158,11,0.3);
+  }
+  .o-pip.w2 {
+    background: rgba(59,130,246,0.12);
+    color: var(--accent);
+    border: 1px solid rgba(59,130,246,0.25);
+  }
+  .o-arrow { font-size: 9px; color: var(--muted); }
+
   /* ── MAIN ── */
   .container {
     max-width: 680px;
@@ -259,6 +402,13 @@
   .slot-content.open { display: block; }
   @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
 
+  /* ── SWAP FLASH EFFECT pada rows ── */
+  @keyframes swapFlash {
+    0%   { opacity: 0; transform: translateY(6px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .swap-flash { animation: swapFlash 0.3s ease forwards; }
+
   .category-block {
     margin-bottom: 10px;
   }
@@ -302,8 +452,6 @@
     font-weight: 400;
   }
   .day-name.today { color: var(--accent); font-weight: 600; }
-
-  /* blink on today's day name */
   .day-name.today.blink-day {
     animation: text-blink 0.8s infinite;
     color: var(--blink);
@@ -363,6 +511,8 @@
   @media (max-width: 480px) {
     .day-name { min-width: 50px; }
     .card-title { font-size: 12px; }
+    .swap-text { display: none; }
+    .btn-swap { padding: 8px 11px; }
   }
 </style>
 </head>
@@ -387,15 +537,37 @@
   <button class="btn-jump" onclick="jumpToActive()">Pergi ▸</button>
 </div>
 
+<!-- SWAP TOOLBAR -->
+<div class="swap-toolbar">
+  <div class="swap-info">
+    <div class="swap-status-dot"></div>
+    <span class="swap-label">Tugasan</span>
+    <span class="swap-state-badge" id="swap-badge">Asal</span>
+  </div>
+  <div class="order-pair" id="order-pair">
+    <span class="o-pip w1" id="opip-a">K1</span>
+    <span class="o-arrow">⇅</span>
+    <span class="o-pip w2" id="opip-b">K2</span>
+  </div>
+  <div class="swap-divider"></div>
+  <button class="btn-swap" id="btn-swap" onclick="swapTasks()" title="Tukar senarai tugasan">
+    <div class="swap-icon" id="swap-icon">
+      <span class="swap-arrow up">▲</span>
+      <span class="swap-arrow">▼</span>
+    </div>
+    <span class="swap-text">Tukar Tugasan</span>
+  </button>
+</div>
+
 <!-- MAIN -->
 <div class="container" id="main">
 
-  <!-- ═══════════════════════════════════════════
-       KAD 1 : Minggu 1 (bermula 3 Mei 2026 - Ahad)
-  ═══════════════════════════════════════════ -->
+  <!-- ═══════════════════════════
+       KAD 1
+  ═══════════════════════════ -->
   <div class="week-card" id="card-week1">
     <div class="card-header" onclick="toggleCard('week1-body')">
-      <span class="card-week-badge gold">Minggu 1</span>
+      <span class="card-week-badge gold">Kad 1</span>
       <div>
         <div class="card-title" id="title-week1">&nbsp;</div>
         <div class="card-dates" id="dates-week1">&nbsp;</div>
@@ -404,7 +576,6 @@
     </div>
     <div id="week1-body">
 
-      <!-- 7am -->
       <div class="time-slot" id="slot-week1-7">
         <div class="time-slot-header" onclick="toggleSlot('week1-7-content','week1-7')">
           <span class="time-badge" id="badge-week1-7">7:00am</span>
@@ -427,7 +598,6 @@
         </div>
       </div>
 
-      <!-- 10am -->
       <div class="time-slot" id="slot-week1-10">
         <div class="time-slot-header" onclick="toggleSlot('week1-10-content','week1-10')">
           <span class="time-badge" id="badge-week1-10">10:00am</span>
@@ -443,7 +613,6 @@
         </div>
       </div>
 
-      <!-- 12pm -->
       <div class="time-slot" id="slot-week1-12">
         <div class="time-slot-header" onclick="toggleSlot('week1-12-content','week1-12')">
           <span class="time-badge" id="badge-week1-12">12:00pm</span>
@@ -459,7 +628,6 @@
         </div>
       </div>
 
-      <!-- 5pm -->
       <div class="time-slot" id="slot-week1-17">
         <div class="time-slot-header" onclick="toggleSlot('week1-17-content','week1-17')">
           <span class="time-badge" id="badge-week1-17">5:00pm</span>
@@ -475,7 +643,6 @@
         </div>
       </div>
 
-      <!-- 9pm -->
       <div class="time-slot" id="slot-week1-21">
         <div class="time-slot-header" onclick="toggleSlot('week1-21-content','week1-21')">
           <span class="time-badge" id="badge-week1-21">9:00pm</span>
@@ -491,16 +658,16 @@
         </div>
       </div>
 
-    </div><!-- week1-body -->
-  </div><!-- card week1 -->
+    </div>
+  </div><!-- /card-week1 -->
 
 
-  <!-- ═══════════════════════════════════════════
-       KAD 2 : Minggu 2 (bermula 10 Mei 2026 - Ahad)
-  ═══════════════════════════════════════════ -->
+  <!-- ═══════════════════════════
+       KAD 2
+  ═══════════════════════════ -->
   <div class="week-card" id="card-week2">
     <div class="card-header" onclick="toggleCard('week2-body')">
-      <span class="card-week-badge">Minggu 2</span>
+      <span class="card-week-badge">Kad 2</span>
       <div>
         <div class="card-title" id="title-week2">&nbsp;</div>
         <div class="card-dates" id="dates-week2">&nbsp;</div>
@@ -509,7 +676,6 @@
     </div>
     <div id="week2-body">
 
-      <!-- 7am -->
       <div class="time-slot" id="slot-week2-7">
         <div class="time-slot-header" onclick="toggleSlot('week2-7-content','week2-7')">
           <span class="time-badge" id="badge-week2-7">7:00am</span>
@@ -529,7 +695,6 @@
         </div>
       </div>
 
-      <!-- 10am -->
       <div class="time-slot" id="slot-week2-10">
         <div class="time-slot-header" onclick="toggleSlot('week2-10-content','week2-10')">
           <span class="time-badge" id="badge-week2-10">10:00am</span>
@@ -545,7 +710,6 @@
         </div>
       </div>
 
-      <!-- 12pm -->
       <div class="time-slot" id="slot-week2-12">
         <div class="time-slot-header" onclick="toggleSlot('week2-12-content','week2-12')">
           <span class="time-badge" id="badge-week2-12">12:00pm</span>
@@ -561,7 +725,6 @@
         </div>
       </div>
 
-      <!-- 5pm -->
       <div class="time-slot" id="slot-week2-17">
         <div class="time-slot-header" onclick="toggleSlot('week2-17-content','week2-17')">
           <span class="time-badge" id="badge-week2-17">5:00pm</span>
@@ -577,7 +740,6 @@
         </div>
       </div>
 
-      <!-- 9pm -->
       <div class="time-slot" id="slot-week2-21">
         <div class="time-slot-header" onclick="toggleSlot('week2-21-content','week2-21')">
           <span class="time-badge" id="badge-week2-21">9:00pm</span>
@@ -593,206 +755,196 @@
         </div>
       </div>
 
-    </div><!-- week2-body -->
-  </div><!-- card week2 -->
+    </div>
+  </div><!-- /card-week2 -->
 
-</div><!-- container -->
+</div><!-- /container -->
 
 <div class="footer">© Content Marketing Schedule · Auto-refresh setiap minit</div>
 
 <script>
-/* ────────────────────────────
-   HELPERS – TARIKH
-──────────────────────────── */
-const DAYS_MS = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
+/* ─────────────────────────────────────────
+   HELPERS
+───────────────────────────────────────── */
+const DAYS_MS   = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
 const MONTHS_MS = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogos','Sep','Okt','Nov','Dis'];
 
-// Kembalikan Ahad (minggu semasa) berdasarkan tarikh hari ini
-function getSundayOfWeek(d) {
-  const copy = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  const day = copy.getDay(); // 0=Ahad
-  copy.setDate(copy.getDate() - day);
-  return copy;
-}
-
-// Format tarikh: "3 Mei 2026"
 function fmtDate(d) {
   return `${d.getDate()} ${MONTHS_MS[d.getMonth()]} ${d.getFullYear()}`;
 }
-
-// Tambah hari
 function addDays(d, n) {
-  const r = new Date(d);
-  r.setDate(r.getDate() + n);
-  return r;
+  const r = new Date(d); r.setDate(r.getDate() + n); return r;
 }
 
-// Bandingkan tarikh sahaja (tanpa masa)
-function sameDay(a, b) {
-  return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
-}
+/* ─────────────────────────────────────────
+   DATA — dua set data tugasan (D1 & D2)
+   Kad 1 papar D1 (atau D2 jika swapped)
+   Kad 2 papar D2 (atau D1 jika swapped)
+   weekStart & tarikh KAD tidak berubah langsung
+───────────────────────────────────────── */
 
-/* ────────────────────────────
-   DATA
-──────────────────────────── */
-// Kad 1: Minggu 1 bermula Ahad 3 Mei 2026
-// Kad 2: Minggu 2 bermula Ahad 10 Mei 2026
-// Tarikh dalam DATA adalah berdasarkan indeks 0=Ahad..6=Sabtu dalam minggu tersebut
-
-const DATA = {
-  week1: {
-    // Kad 1: 3 Mei 2026 (Ahad) - 9 Mei 2026 (Sabtu)
-    weekStart: new Date(2026, 4, 3),
-    '7': {
-      thread: [
-        { tag:'',               url:'https://t.me/c/2608705880/427' },
-        { tag:'',               url:'https://t.me/c/2608705880/433' },
-        { tag:'Kisah Inspirasi',url:'https://t.me/c/2608705880/439' },
-        { tag:'Kisah Inspirasi',url:'https://t.me/c/2608705880/445' },
-        { tag:'',               url:'https://t.me/c/2608705880/445' },
-        { tag:'',               url:'https://t.me/c/2608705880/451' },
-        { tag:'',               url:'https://t.me/c/2608705880/457' },
-      ],
-      artfb: [
-        { tag:'', url:'https://t.me/c/2217339903/243' },
-        { tag:'', url:'https://t.me/c/2217339903/245' },
-        { tag:'', url:'https://t.me/c/2217339903/247' },
-        { tag:'', url:'https://t.me/c/2217339903/249' },
-        { tag:'', url:'https://t.me/c/2217339903/251' },
-        { tag:'', url:'https://t.me/c/2217339903/1098' },
-        { tag:'', url:'https://t.me/c/2217339903/1100' },
-      ],
-      artblog: [
-        { tag:'', url:'https://t.me/c/2217339903/469' },
-        { tag:'', url:'https://t.me/c/2217339903/470' },
-        { tag:'', url:'https://t.me/c/2217339903/473' },
-        { tag:'', url:'https://t.me/c/2217339903/475' },
-        { tag:'', url:'https://t.me/c/2217339903/477' },
-        { tag:'', url:'https://t.me/c/2217339903/1104' },
-        { tag:'', url:'https://t.me/c/2217339903/1106' },
-      ]
-    },
-    '10': {
-      youtube: [
-        { tag:'', url:'https://t.me/c/2217339903/887' },
-        { tag:'', url:'https://t.me/c/2217339903/889' },
-        { tag:'', url:'https://t.me/c/2217339903/891' },
-        { tag:'', url:'https://t.me/c/2217339903/893' },
-        { tag:'', url:'https://t.me/c/2217339903/895' },
-        { tag:'', url:'https://t.me/c/2217339903/897' },
-        { tag:'', url:'https://t.me/c/2217339903/899' },
-      ]
-    },
-    '12': {
-      photomode: [
-        { tag:'',               url:'https://t.me/c/2217339903/851' },
-        { tag:'Overlay',        url:'https://t.me/c/2217339903/853' },
-        { tag:'',               url:'https://t.me/c/2217339903/855' },
-        { tag:'Overlay',        url:'https://t.me/c/2217339903/857' },
-        { tag:'Kisah Inspirasi',url:'https://t.me/c/2217339903/859' },
-        { tag:'Overlay',        url:'https://t.me/c/2217339903/861' },
-        { tag:'Kisah Inspirasi',url:'https://t.me/c/2217339903/863' },
-      ]
-    },
-    '17': {
-      tem: [
-        { tag:'Poster',         emoji:'🟢', url:'https://t.me/c/2217339903/1078' },
-        { tag:'TEM',            emoji:'🔵', url:'https://t.me/c/2217339903/1080' },
-        { tag:'Poster',         emoji:'🟢', url:'https://t.me/c/2217339903/1082' },
-        { tag:'G100 Talk Show', emoji:'🟡', url:'https://t.me/c/2217339903/1069' },
-        { tag:'TEM',            emoji:'🔵', url:'https://t.me/c/2217339903/1085' },
-        { tag:'Poster',         emoji:'🟢', url:'https://t.me/c/2217339903/1087' },
-        { tag:'TEM',            emoji:'🔵', url:'https://t.me/c/2217339903/1089' },
-      ]
-    },
-    '21': {
-      video: [
-        { tag:'', url:'https://t.me/c/2217339903/1011' },
-        { tag:'', url:'https://t.me/c/2217339903/1014' },
-        { tag:'', url:'https://t.me/c/2217339903/1017' },
-        { tag:'', url:'https://t.me/c/2217339903/1020' },
-        { tag:'', url:'https://t.me/c/2217339903/1023' },
-        { tag:'', url:'https://t.me/c/2217339903/1026' },
-        { tag:'', url:'https://t.me/c/2217339903/1029' },
-      ]
-    }
+/* ── DATASET 1 (Kad 1 asal) ── */
+const D1 = {
+  '7': {
+    thread: [
+      { tag:'',               url:'https://t.me/c/2608705880/427' },
+      { tag:'',               url:'https://t.me/c/2608705880/433' },
+      { tag:'Kisah Inspirasi',url:'https://t.me/c/2608705880/439' },
+      { tag:'Kisah Inspirasi',url:'https://t.me/c/2608705880/445' },
+      { tag:'',               url:'https://t.me/c/2608705880/445' },
+      { tag:'',               url:'https://t.me/c/2608705880/451' },
+      { tag:'',               url:'https://t.me/c/2608705880/457' },
+    ],
+    artfb: [
+      { tag:'', url:'https://t.me/c/2217339903/243' },
+      { tag:'', url:'https://t.me/c/2217339903/245' },
+      { tag:'', url:'https://t.me/c/2217339903/247' },
+      { tag:'', url:'https://t.me/c/2217339903/249' },
+      { tag:'', url:'https://t.me/c/2217339903/251' },
+      { tag:'', url:'https://t.me/c/2217339903/1098' },
+      { tag:'', url:'https://t.me/c/2217339903/1100' },
+    ],
+    artblog: [
+      { tag:'', url:'https://t.me/c/2217339903/469' },
+      { tag:'', url:'https://t.me/c/2217339903/470' },
+      { tag:'', url:'https://t.me/c/2217339903/473' },
+      { tag:'', url:'https://t.me/c/2217339903/475' },
+      { tag:'', url:'https://t.me/c/2217339903/477' },
+      { tag:'', url:'https://t.me/c/2217339903/1104' },
+      { tag:'', url:'https://t.me/c/2217339903/1106' },
+    ]
   },
-  week2: {
-    // Kad 2: 10 Mei 2026 (Ahad) - 16 Mei 2026 (Sabtu)
-    weekStart: new Date(2026, 4, 10),
-    '7': {
-      facebook: [
-        { tag:'Nota',     url:'https://t.me/c/3858932014/64' },
-        { tag:'Abnayadh', url:'https://t.me/c/3858932014/66' },
-        { tag:'Nota',     url:'https://t.me/c/3858932014/69' },
-        { tag:'Abnayadh', url:'https://t.me/c/3858932014/71' },
-        { tag:'Nota',     url:'https://t.me/c/3858932014/73' },
-        { tag:'Abnayadh', url:'' },
-        { tag:'Nota',     url:'' },
-      ],
-      blog: [
-        { tag:'', url:'https://t.me/c/3858932014/75' },
-        { tag:'', url:'https://t.me/c/3858932014/76' },
-        { tag:'', url:'https://t.me/c/3858932014/77' },
-        { tag:'', url:'https://t.me/c/3858932014/78' },
-        { tag:'', url:'https://t.me/c/3858932014/79' },
-        { tag:'', url:'' },
-        { tag:'', url:'' },
-      ]
-    },
-    '10': {
-      youtube: [
-        { tag:'', url:'https://t.me/c/2217339903/902' },
-        { tag:'', url:'https://t.me/c/2217339903/904' },
-        { tag:'', url:'https://t.me/c/2217339903/906' },
-        { tag:'', url:'https://t.me/c/2217339903/908' },
-        { tag:'', url:'https://t.me/c/2217339903/910' },
-        { tag:'', url:'https://t.me/c/2217339903/912' },
-        { tag:'', url:'https://t.me/c/2217339903/914' },
-      ]
-    },
-    '12': {
-      photomode: [
-        { tag:'Overlay',   url:'https://t.me/c/2217339903/836' },
-        { tag:'Photomode', url:'https://t.me/c/2217339903/838' },
-        { tag:'Overlay',   url:'https://t.me/c/2217339903/840' },
-        { tag:'Photomode', url:'https://t.me/c/2217339903/842' },
-        { tag:'Overlay',   url:'https://t.me/c/2217339903/844' },
-        { tag:'Photomode', url:'https://t.me/c/2217339903/846' },
-        { tag:'Poster',    url:'https://t.me/c/2217339903/848' },
-      ]
-    },
-    '17': {
-      tem: [
-        { tag:'Poster',         emoji:'🟢', url:'https://t.me/c/2217339903/1063' },
-        { tag:'TEM',            emoji:'🔵', url:'https://t.me/c/2217339903/1065' },
-        { tag:'Poster',         emoji:'🟢', url:'https://t.me/c/2217339903/1067' },
-        { tag:'G100 Talk Show', emoji:'🟡', url:'https://t.me/c/2217339903/1069' },
-        { tag:'TEM',            emoji:'🔵', url:'https://t.me/c/2217339903/1071' },
-        { tag:'Poster',         emoji:'🟢', url:'https://t.me/c/2217339903/1073' },
-        { tag:'TEM',            emoji:'🔵', url:'https://t.me/c/2217339903/1075' },
-      ]
-    },
-    '21': {
-      video: [
-        { tag:'', url:'https://t.me/c/2217339903/729' },
-        { tag:'', url:'https://t.me/c/2217339903/731' },
-        { tag:'', url:'https://t.me/c/2217339903/733' },
-        { tag:'', url:'https://t.me/c/2217339903/735' },
-        { tag:'', url:'https://t.me/c/2217339903/737' },
-        { tag:'', url:'https://t.me/c/2217339903/739' },
-        { tag:'', url:'https://t.me/c/2217339903/741' },
-      ]
-    }
+  '10': {
+    youtube: [
+      { tag:'', url:'https://t.me/c/2217339903/887' },
+      { tag:'', url:'https://t.me/c/2217339903/889' },
+      { tag:'', url:'https://t.me/c/2217339903/891' },
+      { tag:'', url:'https://t.me/c/2217339903/893' },
+      { tag:'', url:'https://t.me/c/2217339903/895' },
+      { tag:'', url:'https://t.me/c/2217339903/897' },
+      { tag:'', url:'https://t.me/c/2217339903/899' },
+    ]
+  },
+  '12': {
+    photomode: [
+      { tag:'',               url:'https://t.me/c/2217339903/851' },
+      { tag:'Overlay',        url:'https://t.me/c/2217339903/853' },
+      { tag:'',               url:'https://t.me/c/2217339903/855' },
+      { tag:'Overlay',        url:'https://t.me/c/2217339903/857' },
+      { tag:'Kisah Inspirasi',url:'https://t.me/c/2217339903/859' },
+      { tag:'Overlay',        url:'https://t.me/c/2217339903/861' },
+      { tag:'Kisah Inspirasi',url:'https://t.me/c/2217339903/863' },
+    ]
+  },
+  '17': {
+    tem: [
+      { tag:'Poster',         emoji:'🟢', url:'https://t.me/c/2217339903/1078' },
+      { tag:'TEM',            emoji:'🔵', url:'https://t.me/c/2217339903/1080' },
+      { tag:'Poster',         emoji:'🟢', url:'https://t.me/c/2217339903/1082' },
+      { tag:'G100 Talk Show', emoji:'🟡', url:'https://t.me/c/2217339903/1069' },
+      { tag:'TEM',            emoji:'🔵', url:'https://t.me/c/2217339903/1085' },
+      { tag:'Poster',         emoji:'🟢', url:'https://t.me/c/2217339903/1087' },
+      { tag:'TEM',            emoji:'🔵', url:'https://t.me/c/2217339903/1089' },
+    ]
+  },
+  '21': {
+    video: [
+      { tag:'', url:'https://t.me/c/2217339903/1011' },
+      { tag:'', url:'https://t.me/c/2217339903/1014' },
+      { tag:'', url:'https://t.me/c/2217339903/1017' },
+      { tag:'', url:'https://t.me/c/2217339903/1020' },
+      { tag:'', url:'https://t.me/c/2217339903/1023' },
+      { tag:'', url:'https://t.me/c/2217339903/1026' },
+      { tag:'', url:'https://t.me/c/2217339903/1029' },
+    ]
   }
 };
 
-/* ────────────────────────────
+/* ── DATASET 2 (Kad 2 asal) ── */
+const D2 = {
+  '7': {
+    facebook: [
+      { tag:'Nota',     url:'https://t.me/c/3858932014/64' },
+      { tag:'Abnayadh', url:'https://t.me/c/3858932014/66' },
+      { tag:'Nota',     url:'https://t.me/c/3858932014/69' },
+      { tag:'Abnayadh', url:'https://t.me/c/3858932014/71' },
+      { tag:'Nota',     url:'https://t.me/c/3858932014/73' },
+      { tag:'Abnayadh', url:'' },
+      { tag:'Nota',     url:'' },
+    ],
+    blog: [
+      { tag:'', url:'https://t.me/c/3858932014/75' },
+      { tag:'', url:'https://t.me/c/3858932014/76' },
+      { tag:'', url:'https://t.me/c/3858932014/77' },
+      { tag:'', url:'https://t.me/c/3858932014/78' },
+      { tag:'', url:'https://t.me/c/3858932014/79' },
+      { tag:'', url:'' },
+      { tag:'', url:'' },
+    ]
+  },
+  '10': {
+    youtube: [
+      { tag:'', url:'https://t.me/c/2217339903/902' },
+      { tag:'', url:'https://t.me/c/2217339903/904' },
+      { tag:'', url:'https://t.me/c/2217339903/906' },
+      { tag:'', url:'https://t.me/c/2217339903/908' },
+      { tag:'', url:'https://t.me/c/2217339903/910' },
+      { tag:'', url:'https://t.me/c/2217339903/912' },
+      { tag:'', url:'https://t.me/c/2217339903/914' },
+    ]
+  },
+  '12': {
+    photomode: [
+      { tag:'Overlay',   url:'https://t.me/c/2217339903/836' },
+      { tag:'Photomode', url:'https://t.me/c/2217339903/838' },
+      { tag:'Overlay',   url:'https://t.me/c/2217339903/840' },
+      { tag:'Photomode', url:'https://t.me/c/2217339903/842' },
+      { tag:'Overlay',   url:'https://t.me/c/2217339903/844' },
+      { tag:'Photomode', url:'https://t.me/c/2217339903/846' },
+      { tag:'Poster',    url:'https://t.me/c/2217339903/848' },
+    ]
+  },
+  '17': {
+    tem: [
+      { tag:'Poster',         emoji:'🟢', url:'https://t.me/c/2217339903/1063' },
+      { tag:'TEM',            emoji:'🔵', url:'https://t.me/c/2217339903/1065' },
+      { tag:'Poster',         emoji:'🟢', url:'https://t.me/c/2217339903/1067' },
+      { tag:'G100 Talk Show', emoji:'🟡', url:'https://t.me/c/2217339903/1069' },
+      { tag:'TEM',            emoji:'🔵', url:'https://t.me/c/2217339903/1071' },
+      { tag:'Poster',         emoji:'🟢', url:'https://t.me/c/2217339903/1073' },
+      { tag:'TEM',            emoji:'🔵', url:'https://t.me/c/2217339903/1075' },
+    ]
+  },
+  '21': {
+    video: [
+      { tag:'', url:'https://t.me/c/2217339903/729' },
+      { tag:'', url:'https://t.me/c/2217339903/731' },
+      { tag:'', url:'https://t.me/c/2217339903/733' },
+      { tag:'', url:'https://t.me/c/2217339903/735' },
+      { tag:'', url:'https://t.me/c/2217339903/737' },
+      { tag:'', url:'https://t.me/c/2217339903/739' },
+      { tag:'', url:'https://t.me/c/2217339903/741' },
+    ]
+  }
+};
+
+/* ── Tarikh tetap untuk setiap kad (TIDAK berubah walau swap) ── */
+const KAD1_START = new Date(2026, 4, 3);   // 3 Mei 2026
+const KAD2_START = new Date(2026, 4, 10);  // 10 Mei 2026
+const KAD1_END   = addDays(KAD1_START, 6);
+const KAD2_END   = addDays(KAD2_START, 6);
+
+/* ─────────────────────────────────────────
+   STATE SWAP
+   isSwapped = false → Kad1 papar D1, Kad2 papar D2
+   isSwapped = true  → Kad1 papar D2, Kad2 papar D1
+───────────────────────────────────────── */
+let isSwapped = false;
+
+/* ─────────────────────────────────────────
    BUILD ROWS
-   isActiveSlot = true  → slot ini AKTIF (blink pada hari semasa)
-   isActiveSlot = false → slot tidak aktif (hari semasa hanya highlight biasa)
-──────────────────────────── */
-function buildRows(containerId, items, weekStart, todayDayIdx, isActiveSlot) {
+───────────────────────────────────────── */
+function buildRows(containerId, items, weekStart, todayDayIdx, isActiveSlot, animate) {
   const el = document.getElementById(containerId);
   if (!el) return;
   el.innerHTML = '';
@@ -801,16 +953,16 @@ function buildRows(containerId, items, weekStart, todayDayIdx, isActiveSlot) {
     const isNow   = isToday && isActiveSlot;
 
     const row = document.createElement('div');
-    row.className = 'day-row' + (isNow ? ' today-row' : '');
+    row.className = 'day-row' + (isNow ? ' today-row' : '') + (animate ? ' swap-flash' : '');
+    if (animate) row.style.animationDelay = (i * 28) + 'ms';
 
     const dateObj = addDays(weekStart, i);
     const dd = dateObj.getDate();
     const mm = dateObj.getMonth()+1;
 
-    // Nama hari + tarikh
     let dayClass = 'day-name';
     if (isToday) dayClass += ' today';
-    if (isNow)   dayClass += ' blink-day'; // blink pada hari & masa aktif
+    if (isNow)   dayClass += ' blink-day';
 
     let html = `<span class="${dayClass}">${DAYS_MS[i]} <span style="font-size:9px;color:#3b5270">${dd}/${mm}</span></span>`;
     if (item.emoji) html += `<span class="emoji-dot">${item.emoji}</span>`;
@@ -825,13 +977,112 @@ function buildRows(containerId, items, weekStart, todayDayIdx, isActiveSlot) {
   });
 }
 
-/* ────────────────────────────
-   STATE
-──────────────────────────── */
+/* ─────────────────────────────────────────
+   FILL KAD 1 dengan dataset pilihan
+   Slot label header juga dikemas kini mengikut dataset
+───────────────────────────────────────── */
+function fillKad1(data, weekStart, dayIdx, activeHour, animate) {
+  const sid7  = activeHour === 7;
+  const sid10 = activeHour === 10;
+  const sid12 = activeHour === 12;
+  const sid17 = activeHour === 17;
+  const sid21 = activeHour === 21;
+
+  const inWeek = dayIdx >= 0;
+
+  /* Kemas kini label slot 7am mengikut dataset */
+  const label7 = document.getElementById('label-week1-7');
+
+  if (data['7'].thread) {
+    /* Dataset D1: ada thread, artfb, artblog */
+    if (label7) label7.textContent = 'Thread & Artikel';
+    buildRows('thread-week1-7',  data['7'].thread,  weekStart, dayIdx, inWeek && sid7, animate);
+    buildRows('artfb-week1-7',   data['7'].artfb,   weekStart, dayIdx, inWeek && sid7, animate);
+    buildRows('artblog-week1-7', data['7'].artblog, weekStart, dayIdx, inWeek && sid7, animate);
+
+    /* Kemas kini sub-label & category-label untuk D1 */
+    const catLabel = document.querySelector('#week1-7-content .category-block:first-child .category-label');
+    if (catLabel) catLabel.textContent = '» Thread';
+    const catLabel2 = document.querySelector('#week1-7-content .category-block:nth-child(2) .category-label');
+    if (catLabel2) catLabel2.textContent = '» Artikel';
+    const subFb = document.querySelector('#week1-7-content .sub-label:first-of-type');
+    if (subFb) subFb.style.display = '';
+    const subBlog = document.querySelector('#week1-7-content .sub-label:nth-of-type(2)');
+    if (subBlog) subBlog.style.display = '';
+    document.getElementById('artblog-week1-7').style.display = '';
+
+  } else {
+    /* Dataset D2 dipasang ke Kad1: ada facebook & blog */
+    if (label7) label7.textContent = 'Nota Wan Hasbullah';
+    buildRows('thread-week1-7',  data['7'].facebook || [], weekStart, dayIdx, inWeek && sid7, animate);
+    buildRows('artfb-week1-7',   data['7'].blog     || [], weekStart, dayIdx, inWeek && sid7, animate);
+    buildRows('artblog-week1-7', [], weekStart, dayIdx, false, false);
+
+    const catLabel = document.querySelector('#week1-7-content .category-block:first-child .category-label');
+    if (catLabel) catLabel.textContent = '» Facebook';
+    const catLabel2 = document.querySelector('#week1-7-content .category-block:nth-child(2) .category-label');
+    if (catLabel2) catLabel2.textContent = '» Blog';
+    const subFb = document.querySelector('#week1-7-content .sub-label:first-of-type');
+    if (subFb) subFb.style.display = 'none';
+    const subBlog = document.querySelector('#week1-7-content .sub-label:nth-of-type(2)');
+    if (subBlog) subBlog.style.display = 'none';
+    document.getElementById('artblog-week1-7').style.display = 'none';
+  }
+
+  buildRows('yt-week1-10',  data['10'].youtube,   weekStart, dayIdx, inWeek && sid10, animate);
+  buildRows('pm-week1-12',  data['12'].photomode, weekStart, dayIdx, inWeek && sid12, animate);
+  buildRows('tem-week1-17', data['17'].tem,       weekStart, dayIdx, inWeek && sid17, animate);
+  buildRows('vid-week1-21', data['21'].video,     weekStart, dayIdx, inWeek && sid21, animate);
+}
+
+/* ─────────────────────────────────────────
+   FILL KAD 2 dengan dataset pilihan
+───────────────────────────────────────── */
+function fillKad2(data, weekStart, dayIdx, activeHour, animate) {
+  const inWeek = dayIdx >= 0;
+  const sid7  = activeHour === 7;
+  const sid10 = activeHour === 10;
+  const sid12 = activeHour === 12;
+  const sid17 = activeHour === 17;
+  const sid21 = activeHour === 21;
+
+  const label7 = document.getElementById('label-week2-7');
+
+  if (data['7'].facebook) {
+    /* Dataset D2 asal */
+    if (label7) label7.textContent = 'Nota Wan Hasbullah';
+    buildRows('fb-week2-7',   data['7'].facebook, weekStart, dayIdx, inWeek && sid7, animate);
+    buildRows('blog-week2-7', data['7'].blog,     weekStart, dayIdx, inWeek && sid7, animate);
+
+    const catFb = document.querySelector('#week2-7-content .category-block:first-child .category-label');
+    if (catFb) catFb.textContent = '» Facebook';
+    const catBlog = document.querySelector('#week2-7-content .category-block:nth-child(2) .category-label');
+    if (catBlog) catBlog.textContent = '» Blog';
+
+  } else {
+    /* Dataset D1 dipasang ke Kad2: ada thread, artfb, artblog */
+    if (label7) label7.textContent = 'Thread & Artikel';
+    buildRows('fb-week2-7',   data['7'].thread || [], weekStart, dayIdx, inWeek && sid7, animate);
+    buildRows('blog-week2-7', data['7'].artfb  || [], weekStart, dayIdx, inWeek && sid7, animate);
+
+    const catFb = document.querySelector('#week2-7-content .category-block:first-child .category-label');
+    if (catFb) catFb.textContent = '» Thread';
+    const catBlog = document.querySelector('#week2-7-content .category-block:nth-child(2) .category-label');
+    if (catBlog) catBlog.textContent = '» Artikel (FB)';
+  }
+
+  buildRows('yt-week2-10',  data['10'].youtube,   weekStart, dayIdx, inWeek && sid10, animate);
+  buildRows('pm-week2-12',  data['12'].photomode, weekStart, dayIdx, inWeek && sid12, animate);
+  buildRows('tem-week2-17', data['17'].tem,       weekStart, dayIdx, inWeek && sid17, animate);
+  buildRows('vid-week2-21', data['21'].video,     weekStart, dayIdx, inWeek && sid21, animate);
+}
+
+/* ─────────────────────────────────────────
+   SLOT HOURS
+───────────────────────────────────────── */
 const SLOT_HOURS = [7, 10, 12, 17, 21];
 const SLOT_IDS   = ['7','10','12','17','21'];
-
-let activeSlotKey = null; // e.g. 'week1-7-content'
+let activeSlotKey = null;
 
 function getCurrentSlotHour(now) {
   const h = now.getHours();
@@ -839,117 +1090,117 @@ function getCurrentSlotHour(now) {
   for (let i = 0; i < SLOT_HOURS.length; i++) {
     if (h >= SLOT_HOURS[i]) current = SLOT_HOURS[i];
   }
-  return current; // null sebelum 7am, 21 selepas 9pm
+  return current;
 }
 
-/* ────────────────────────────
+/* ─────────────────────────────────────────
+   SWAP TASKS — hanya data bertukar,
+   "Kad X" + tarikh kad KEKAL
+───────────────────────────────────────── */
+function swapTasks() {
+  isSwapped = !isSwapped;
+
+  /* animasi ikon */
+  const icon = document.getElementById('swap-icon');
+  icon.classList.add('spin');
+  setTimeout(() => icon.classList.remove('spin'), 420);
+
+  /* kemas kini badge & pil */
+  const badge = document.getElementById('swap-badge');
+  const pipA  = document.getElementById('opip-a');
+  const pipB  = document.getElementById('opip-b');
+
+  if (isSwapped) {
+    badge.textContent = 'Ditukar';
+    badge.classList.add('swapped');
+    pipA.textContent = 'T2';
+    pipB.textContent = 'T1';
+    pipA.style.cssText = 'background:rgba(6,182,212,0.12);color:var(--accent2);border:1px solid rgba(6,182,212,0.25)';
+    pipB.style.cssText = 'background:rgba(245,158,11,0.14);color:var(--gold);border:1px solid rgba(245,158,11,0.3)';
+  } else {
+    badge.textContent = 'Asal';
+    badge.classList.remove('swapped');
+    pipA.textContent = 'K1';
+    pipB.textContent = 'K2';
+    pipA.style.cssText = '';
+    pipB.style.cssText = '';
+  }
+
+  /* render semula dengan animate=true */
+  renderAll(true);
+}
+
+/* ─────────────────────────────────────────
    RENDER ALL
-──────────────────────────── */
-function renderAll() {
-  const now = new Date();
+───────────────────────────────────────── */
+function renderAll(animate) {
+  const now       = new Date();
   const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const currentHour = getCurrentSlotHour(now);
 
+  animate = !!animate;
   activeSlotKey = null;
   let reminderText = '';
-
-  /* ── Kira minggu semasa dari sudut pandang jadual ──
-     Jadual bermula dari Ahad 3 Mei 2026.
-     Setiap minggu = 7 hari dari Ahad ke Sabtu.
-  */
-  const KAD1_START = DATA.week1.weekStart; // Ahad 3 Mei
-  const KAD1_END   = addDays(KAD1_START, 6); // Sabtu 9 Mei
-  const KAD2_START = DATA.week2.weekStart; // Ahad 10 Mei
-  const KAD2_END   = addDays(KAD2_START, 6); // Sabtu 16 Mei
 
   const inWeek1 = todayDate >= KAD1_START && todayDate <= KAD1_END;
   const inWeek2 = todayDate >= KAD2_START && todayDate <= KAD2_END;
 
-  // Kira dayIdx (0=Ahad..6=Sabtu) dalam minggu berkenaan
-  function getDayIdx(weekStart) {
-    return Math.round((todayDate - weekStart) / 86400000);
+  function getDayIdx(ws) {
+    return Math.round((todayDate - ws) / 86400000);
   }
 
-  /* ── Update tajuk kad & tarikh secara live ── */
-  // Kad 1
-  document.getElementById('dates-week1').textContent =
-    `${fmtDate(KAD1_START)} – ${fmtDate(KAD1_END)}`;
+  /* ── Tarikh kad — SENTIASA tetap ── */
+  document.getElementById('dates-week1').textContent = `${fmtDate(KAD1_START)} – ${fmtDate(KAD1_END)}`;
+  document.getElementById('dates-week2').textContent = `${fmtDate(KAD2_START)} – ${fmtDate(KAD2_END)}`;
 
-  // Kad 2
-  document.getElementById('dates-week2').textContent =
-    `${fmtDate(KAD2_START)} – ${fmtDate(KAD2_END)}`;
-
-  /* ── KAD 1 ── */
-  const dayIdx1 = inWeek1 ? getDayIdx(KAD1_START) : -1;
+  /* ── Status live kad (bergantung pada tarikh sebenar) ── */
   document.getElementById('status-week1').className = 'card-status' + (inWeek1 ? ' live' : '');
-  document.getElementById('card-week1').classList.toggle('active-week', inWeek1);
-
-  SLOT_IDS.forEach(sid => {
-    const h = parseInt(sid);
-    const isActive = inWeek1 && currentHour === h;
-    const badge = document.getElementById(`badge-week1-${sid}`);
-    const dot   = document.getElementById(`dot-week1-${sid}`);
-    const label = document.getElementById(`label-week1-${sid}`);
-    const header= badge?.closest('.time-slot-header');
-
-    badge?.classList.toggle('blink-time', isActive);
-    dot?.classList.toggle('show', isActive);
-    label?.classList.toggle('active-label', isActive);
-    header?.classList.toggle('active-slot', isActive);
-
-    if (isActive) {
-      activeSlotKey = `week1-${sid}-content`;
-      reminderText = `📅 Minggu 1 · Slot ${badge?.textContent} — Sila semak kandungan hari ini!`;
-    }
-  });
-
-  buildRows('thread-week1-7',  DATA.week1['7'].thread,   KAD1_START, dayIdx1, inWeek1 && currentHour===7);
-  buildRows('artfb-week1-7',   DATA.week1['7'].artfb,    KAD1_START, dayIdx1, inWeek1 && currentHour===7);
-  buildRows('artblog-week1-7', DATA.week1['7'].artblog,  KAD1_START, dayIdx1, inWeek1 && currentHour===7);
-  buildRows('yt-week1-10',     DATA.week1['10'].youtube, KAD1_START, dayIdx1, inWeek1 && currentHour===10);
-  buildRows('pm-week1-12',     DATA.week1['12'].photomode,KAD1_START,dayIdx1, inWeek1 && currentHour===12);
-  buildRows('tem-week1-17',    DATA.week1['17'].tem,     KAD1_START, dayIdx1, inWeek1 && currentHour===17);
-  buildRows('vid-week1-21',    DATA.week1['21'].video,   KAD1_START, dayIdx1, inWeek1 && currentHour===21);
-
-  /* ── KAD 2 ── */
-  const dayIdx2 = inWeek2 ? getDayIdx(KAD2_START) : -1;
   document.getElementById('status-week2').className = 'card-status' + (inWeek2 ? ' live' : '');
+  document.getElementById('card-week1').classList.toggle('active-week', inWeek1);
   document.getElementById('card-week2').classList.toggle('active-week', inWeek2);
 
+  /* ── Blink slot aktif — bergantung pada tarikh sebenar ── */
   SLOT_IDS.forEach(sid => {
     const h = parseInt(sid);
-    const isActive = inWeek2 && currentHour === h;
-    const badge = document.getElementById(`badge-week2-${sid}`);
-    const dot   = document.getElementById(`dot-week2-${sid}`);
-    const label = document.getElementById(`label-week2-${sid}`);
-    const header= badge?.closest('.time-slot-header');
 
-    badge?.classList.toggle('blink-time', isActive);
-    dot?.classList.toggle('show', isActive);
-    label?.classList.toggle('active-label', isActive);
-    header?.classList.toggle('active-slot', isActive);
+    ['week1','week2'].forEach(wk => {
+      const inW = wk === 'week1' ? inWeek1 : inWeek2;
+      const isActive = inW && currentHour === h;
+      const badge  = document.getElementById(`badge-${wk}-${sid}`);
+      const dot    = document.getElementById(`dot-${wk}-${sid}`);
+      const label  = document.getElementById(`label-${wk}-${sid}`);
+      const header = badge?.closest('.time-slot-header');
 
-    if (isActive) {
-      activeSlotKey = `week2-${sid}-content`;
-      reminderText = `📅 Minggu 2 · Slot ${badge?.textContent} — Sila semak kandungan hari ini!`;
-    }
+      badge?.classList.toggle('blink-time', isActive);
+      dot?.classList.toggle('show', isActive);
+      label?.classList.toggle('active-label', isActive);
+      header?.classList.toggle('active-slot', isActive);
+
+      if (isActive) {
+        activeSlotKey = `${wk}-${sid}-content`;
+        reminderText  = `📅 ${wk === 'week1' ? 'Kad 1' : 'Kad 2'} · Slot ${badge?.textContent} — Sila semak kandungan hari ini!`;
+      }
+    });
   });
 
-  buildRows('fb-week2-7',   DATA.week2['7'].facebook,  KAD2_START, dayIdx2, inWeek2 && currentHour===7);
-  buildRows('blog-week2-7', DATA.week2['7'].blog,      KAD2_START, dayIdx2, inWeek2 && currentHour===7);
-  buildRows('yt-week2-10',  DATA.week2['10'].youtube,  KAD2_START, dayIdx2, inWeek2 && currentHour===10);
-  buildRows('pm-week2-12',  DATA.week2['12'].photomode,KAD2_START, dayIdx2, inWeek2 && currentHour===12);
-  buildRows('tem-week2-17', DATA.week2['17'].tem,      KAD2_START, dayIdx2, inWeek2 && currentHour===17);
-  buildRows('vid-week2-21', DATA.week2['21'].video,    KAD2_START, dayIdx2, inWeek2 && currentHour===21);
+  /* ── Pilih dataset untuk setiap kad mengikut swap state ── */
+  const dataForKad1 = isSwapped ? D2 : D1;
+  const dataForKad2 = isSwapped ? D1 : D2;
 
-  /* ── REMINDER BANNER ── */
+  const dayIdx1 = inWeek1 ? getDayIdx(KAD1_START) : -1;
+  const dayIdx2 = inWeek2 ? getDayIdx(KAD2_START) : -1;
+
+  fillKad1(dataForKad1, KAD1_START, dayIdx1, currentHour, animate);
+  fillKad2(dataForKad2, KAD2_START, dayIdx2, currentHour, animate);
+
+  /* ── Reminder banner ── */
   const banner = document.getElementById('reminder-banner');
   if (activeSlotKey) {
     banner.classList.remove('hidden');
     document.getElementById('reminder-body').textContent = reminderText;
   } else if (!inWeek1 && !inWeek2) {
     banner.classList.remove('hidden');
-    document.getElementById('reminder-body').textContent = '📌 Tiada jadual aktif hari ini. Semak minggu akan datang.';
+    document.getElementById('reminder-body').textContent = '📌 Tiada jadual aktif hari ini. Semak kad akan datang.';
   } else {
     banner.classList.remove('hidden');
     const nextH = SLOT_HOURS.find(h => h > (currentHour || 0));
@@ -964,21 +1215,21 @@ function renderAll() {
   }
 }
 
-/* ────────────────────────────
+/* ─────────────────────────────────────────
    CLOCK
-──────────────────────────── */
+───────────────────────────────────────── */
 function updateClock() {
-  const now = new Date();
-  const h = now.getHours();
-  const m = String(now.getMinutes()).padStart(2,'0');
+  const now  = new Date();
+  const h    = now.getHours();
+  const m    = String(now.getMinutes()).padStart(2,'0');
   const ampm = h >= 12 ? 'PM' : 'AM';
-  const h12 = h % 12 || 12;
+  const h12  = h % 12 || 12;
   document.getElementById('clock').textContent = `${h12}:${m} ${ampm}`;
 }
 
-/* ────────────────────────────
+/* ─────────────────────────────────────────
    TOGGLE HELPERS
-──────────────────────────── */
+───────────────────────────────────────── */
 function toggleCard(bodyId) {
   const el = document.getElementById(bodyId);
   if (!el) return;
@@ -987,53 +1238,42 @@ function toggleCard(bodyId) {
 
 function toggleSlot(contentId, slotId) {
   const content = document.getElementById(contentId);
-  const chev = document.getElementById('chev-' + slotId);
+  const chev    = document.getElementById('chev-' + slotId);
   if (!content) return;
   const isOpen = content.classList.contains('open');
   content.classList.toggle('open', !isOpen);
   if (chev) chev.classList.toggle('open', !isOpen);
 }
 
-/* ────────────────────────────
-   JUMP TO ACTIVE SLOT
-   – buka kad & slot, scroll ke slot tersebut
-──────────────────────────── */
+/* ─────────────────────────────────────────
+   JUMP TO ACTIVE
+───────────────────────────────────────── */
 function jumpToActive() {
   if (!activeSlotKey) return;
 
-  // Buka content slot
   const contentEl = document.getElementById(activeSlotKey);
   if (!contentEl) return;
   contentEl.classList.add('open');
 
-  // Buka chevron
   const slotId = activeSlotKey.replace('-content','');
-  const chev = document.getElementById('chev-' + slotId);
+  const chev   = document.getElementById('chev-' + slotId);
   if (chev) chev.classList.add('open');
 
-  // Pastikan kad tidak disembunyikan
-  // (card body: week1-body atau week2-body)
   const weekKey = activeSlotKey.startsWith('week1') ? 'week1-body' : 'week2-body';
   const cardBody = document.getElementById(weekKey);
-  if (cardBody && cardBody.style.display === 'none') {
-    cardBody.style.display = '';
-  }
+  if (cardBody && cardBody.style.display === 'none') cardBody.style.display = '';
 
-  // Scroll ke time-slot-header (bukan content, supaya nampak tajuk slot)
   const slotEl = document.getElementById('slot-' + slotId);
-  if (slotEl) {
-    slotEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  } else {
-    contentEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
+  if (slotEl) slotEl.scrollIntoView({ behavior:'smooth', block:'start' });
+  else contentEl.scrollIntoView({ behavior:'smooth', block:'center' });
 }
 
-/* ────────────────────────────
+/* ─────────────────────────────────────────
    INIT
-──────────────────────────── */
+───────────────────────────────────────── */
 updateClock();
-renderAll();
-setInterval(() => { updateClock(); renderAll(); }, 60000);
+renderAll(false);
+setInterval(() => { updateClock(); renderAll(false); }, 60000);
 </script>
 </body>
 </html>
