@@ -243,7 +243,7 @@
           <option value="+49">🇩🇪 Jerman (+49)</option>
           <option value="+33">🇫🇷 Perancis (+33)</option>
         </select>
-        <input class="field-input" id="telefon" type="tel" placeholder="1112345678">
+        <input class="field-input" id="telefon" type="tel" placeholder="111234 5678">
       </div>
       <p class="field-note">Berikan no telefon &amp; WhatsApp yang aktif untuk pengesahan no TAC</p>
     </div>
@@ -422,8 +422,9 @@ async function hantarDaftar(){
   }
 
   // Buka WhatsApp
-  const skrip=`*🔔 Pendaftaran Ahli Baru*\n\n👤 *Nama Penuh:* ${d.nama}\n🪪 *Jenis ID:* ${d.jenisId}\n🔢 *Nombor ID:* ${d.nomberId}\n📧 *Email:* ${d.email}\n📱 *No Telefon:* ${d.telefon}\n📍 *Tempat Tinggal:* ${d.tempat}\n👥 *Referrer:* ${d.referrer}\n🕐 *Tarikh Daftar:* ${d.tarikh}\n\nSementara menunggu, boleh download app Public Gold di bawah dulu :-\n\n● Android\nhttps://play.google.com/store/apps/details?id=com.pgmapp.publicgold\n\n● iOS/iPhone\nhttps://apps.apple.com/my/app/public-gold/id1591580964`;
-  const url='https://api.whatsapp.com/send?phone='+WHATSAPP_NO+'&text='+encodeURIComponent(skrip);
+  const noWa=d.telefon.replace(/^\+/,'').replace(/\s/g,'');
+  const skrip=`*Pendaftaran Baru*\n\nNama : ${d.nama}\nWhatsapp : ${d.telefon}\nReferal : ${d.referrer}`;
+  const url='https://api.whatsapp.com/send?phone=60112670489&text='+encodeURIComponent(skrip);
   const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';document.body.appendChild(a);a.click();document.body.removeChild(a);
 
   tutupModal();
