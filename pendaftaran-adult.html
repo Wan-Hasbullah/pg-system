@@ -424,7 +424,7 @@ async function hantarDaftar(){
   // Buka WhatsApp
   const noWa=d.telefon.replace(/^\+/,'').replace(/\s/g,'');
   const skrip=`*Pendaftaran Baru*\n\nNama : ${d.nama}\nWhatsapp : ${d.telefon}\nReferal : ${d.referrer}`;
-  const url='https://api.whatsapp.com/send?phone=60112670489&text='+encodeURIComponent(skrip);
+  const url='https://api.whatsapp.com/send?phone=601126704897&text='+encodeURIComponent(skrip);
   const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';document.body.appendChild(a);a.click();document.body.removeChild(a);
 
   tutupModal();
