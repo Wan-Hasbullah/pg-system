@@ -297,26 +297,52 @@ html, body {
   const whScroll = () => setTimeout(() => $('whMessages').scrollTo({ top: $('whMessages').scrollHeight, behavior: 'smooth' }), 80);
   const sleep    = ms => new Promise(r => setTimeout(r, ms));
 
-  /* ─── STORAGE KEY ─── */
-  const STORAGE_KEY = 'assistwan_closing_chat_html';
+  /* ─── STORAGE ─── */
+  const STORAGE_KEY   = 'assistwan_closing_chat_html';
+  const STORAGE_STATE = 'assistwan_closing_chat_state';
 
-  /* ─── SIMPAN HTML MESEJ KE LOCALSTORAGE ─── */
-  function whSaveChat() {
+  const ACTION_MAP = () => ({
+    'flow_boleh1'  : whFlow_AfterBoleh1,
+    'flow_setuju'  : whFlow_AfterSetuju,
+    'flow_boleh2'  : whFlow_AfterBoleh2,
+  });
+
+  function whSaveChat(activeButtons) {
     try {
       localStorage.setItem(STORAGE_KEY, $('whMessages').innerHTML);
+      if (activeButtons) {
+        localStorage.setItem(STORAGE_STATE, JSON.stringify(activeButtons));
+      }
     } catch(e) {}
   }
 
-  /* ─── PULIHKAN MESEJ DARI LOCALSTORAGE ─── */
   function whRestoreChat() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        $('whMessages').innerHTML = saved;
-        $('whMessages').querySelectorAll('.wh-qr-btn').forEach(b => b.classList.add('disabled'));
-        whScroll();
-        return true;
+      if (!saved) return false;
+      $('whMessages').innerHTML = saved;
+      $('whMessages').querySelectorAll('.wh-qr-btn').forEach(b => b.classList.add('disabled'));
+      const stateRaw = localStorage.getItem(STORAGE_STATE);
+      if (stateRaw) {
+        const state = JSON.parse(stateRaw);
+        const allWraps = $('whMessages').querySelectorAll('.wh-quick-replies');
+        const lastWrap = allWraps[allWraps.length - 1];
+        if (lastWrap) {
+          const map = ACTION_MAP();
+          lastWrap.querySelectorAll('.wh-qr-btn').forEach(btn => {
+            const actionKey = btn.dataset.action;
+            if (actionKey && map[actionKey]) {
+              btn.classList.remove('disabled');
+              btn.onclick = () => {
+                lastWrap.querySelectorAll('.wh-qr-btn').forEach(b => b.classList.add('disabled'));
+                map[actionKey]();
+              };
+            }
+          });
+        }
       }
+      whScroll();
+      return true;
     } catch(e) {}
     return false;
   }
@@ -374,17 +400,22 @@ html, body {
     const msgs = $('whMessages');
     const wrap = document.createElement('div');
     wrap.className = 'wh-quick-replies';
+    const stateToSave = [];
     buttons.forEach(btn => {
       const el = document.createElement('button');
-      el.className   = 'wh-qr-btn';
-      el.textContent = btn.label;
+      el.className      = 'wh-qr-btn';
+      el.textContent    = btn.label;
+      el.dataset.action = btn.actionKey;
+      stateToSave.push({ label: btn.label, action: btn.actionKey });
       el.onclick = () => {
         wrap.querySelectorAll('.wh-qr-btn').forEach(b => b.classList.add('disabled'));
         btn.action();
       };
       wrap.appendChild(el);
     });
-    msgs.appendChild(wrap); whScroll(); whSaveChat();
+    msgs.appendChild(wrap);
+    whScroll();
+    whSaveChat(stateToSave);
   }
 
   /* ─── TYPING THEN BOT ─── */
@@ -431,7 +462,7 @@ html, body {
       Anda bersetuju?
     `, 1000);
     whAddQuickReplies([
-      { label: '✅ Setuju', action: whFlow_AfterSetuju }
+      { label: '✅ Setuju', actionKey: 'flow_setuju', action: whFlow_AfterSetuju }
     ]);
   }
 
@@ -478,7 +509,7 @@ html, body {
     `, 1000);
 
     whAddQuickReplies([
-      { label: '✅ Boleh', action: whFlow_AfterBoleh2 }
+      { label: '✅ Boleh', actionKey: 'flow_boleh2', action: whFlow_AfterBoleh2 }
     ]);
   }
 
@@ -586,7 +617,7 @@ html, body {
     `);
 
     whAddQuickReplies([
-      { label: '✅ Boleh', action: whFlow_AfterBoleh1 }
+      { label: '✅ Boleh', actionKey: 'flow_boleh1', action: whFlow_AfterBoleh1 }
     ]);
   }
 
