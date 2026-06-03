@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Assistant Wan Hasbullah</title>
+  <title>Assist Wan</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
 <style>
@@ -454,10 +454,9 @@ body {
   <div class="wh-header">
     <div class="wh-avatar-wrap">
       <img alt="Avatar" class="wh-avatar" src="https://blogger.googleusercontent.com/img/a/AVvXsEjH8kKw3_SWdf96cjqIx_j4exadqr0togYGxXJxWA8D7z40VpkkLeyeyRDrZRCdVXdKPA2LuOtxXZ-eRffWfnM0_UPa6g7KGkCLAx0Br1DoJO3MC3P7jZXg6EZ3FsL0zdiI-RRzcf9ArG87YT4WvpQ5V1PEpe7kCQc0C3SePyxBo5ONOFkmAgYKXDOFTyo=s16000" />
-      <div class="wh-status-dot"></div>
     </div>
     <div class="wh-header-info">
-      <div class="wh-header-name">Assistant Wan Hasbullah</div>
+      <div class="wh-header-name">Assist Wan</div>
       <div class="wh-header-status">Online</div>
     </div>
     <div class="wh-header-actions">
@@ -546,6 +545,34 @@ body {
   const whNow = () => new Date().toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'});
   const whEsc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const whScroll = () => setTimeout(()=>$('whMessages').scrollTo({top:$('whMessages').scrollHeight,behavior:'smooth'}),80);
+
+  /* ─── STORAGE KEY ─── */
+  const STORAGE_KEY = 'assistwan_faq_chat_html';
+
+  /* ─── SIMPAN HTML MESEJ KE LOCALSTORAGE ─── */
+  /* Hanya simpan mesej statik (bubbles, FAQ cards) — bukan menu navigasi interaktif */
+  function whSaveChat() {
+    try {
+      const msgs = $('whMessages');
+      /* Klon node, buang semua elemen menu interaktif yang ada onclick supaya tidak simpan orphan handlers */
+      const clone = msgs.cloneNode(true);
+      clone.querySelectorAll('.wh-category-menu,.wh-topic-menu,.wh-soalan-menu').forEach(el => el.closest('div[style*="flex"]')?.remove() || el.remove());
+      localStorage.setItem(STORAGE_KEY, clone.innerHTML);
+    } catch(e) {}
+  }
+
+  /* ─── PULIHKAN MESEJ DARI LOCALSTORAGE ─── */
+  function whRestoreChat() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        $('whMessages').innerHTML = saved;
+        whScroll();
+        return true;
+      }
+    } catch(e) {}
+    return false;
+  }
 
   // Auto-linkify URL dalam teks
   function autoLink(text) {
@@ -645,11 +672,11 @@ body {
     row.innerHTML=`<img src="${AVATAR}" class="wh-msg-avatar">
       <div class="wh-bubble-wrap">
         <div class="wh-bubble bot">
-          <span class="wh-sender">Wan Assist</span>${html}
+          <span class="wh-sender">Assist Wan</span>${html}
           <span class="wh-time">${whNow()}</span>
         </div>
       </div>`;
-    msgs.appendChild(row); whScroll();
+    msgs.appendChild(row); whScroll(); whSaveChat();
   }
 
   function whAddUserBubble(text) {
@@ -658,7 +685,7 @@ body {
     row.innerHTML=`<div class="wh-bubble-wrap">
       <div class="wh-bubble user">${text}<span class="wh-time">${whNow()} ✓✓</span>
       </div></div>`;
-    msgs.appendChild(row); whScroll();
+    msgs.appendChild(row); whScroll(); whSaveChat();
   }
 
   function whAddFAQCard(item) {
@@ -681,7 +708,7 @@ body {
       <div class="wh-faq-card-body">${whHighlight(item.jawapan, item.keywords||[])}</div>
       <div class="wh-faq-card-time">${whNow()}</div>`;
     wrap.appendChild(img); wrap.appendChild(card);
-    msgs.appendChild(wrap); whScroll();
+    msgs.appendChild(wrap); whScroll(); whSaveChat();
   }
 
   function whAddNotFound(query) {
@@ -703,7 +730,7 @@ body {
       </a>
       <div class="wh-notfound-time">${whNow()}</div>`;
     wrap.appendChild(img); wrap.appendChild(card);
-    msgs.appendChild(wrap); whScroll();
+    msgs.appendChild(wrap); whScroll(); whSaveChat();
   }
 
   /* ── CATEGORY MENU (DUA KATEGORI SAHAJA) ── */
@@ -888,7 +915,7 @@ body {
     row.className='wh-msg-row bot';
     row.innerHTML=`<img src="${AVATAR}" class="wh-msg-avatar">
       <div class="wh-bubble-wrap"><div class="wh-bubble bot">
-        <span class="wh-sender">Wan Assist</span>
+        <span class="wh-sender">Assist Wan</span>
         <span id="whWT"></span><span id="whC" style="animation:whBlink 0.8s step-end infinite">▎</span>
         <span class="wh-time" id="whTM" style="display:none">${whNow()}</span>
       </div></div>`;
@@ -899,14 +926,27 @@ body {
       typed.textContent=msg.slice(0,i); whScroll();
       await new Promise(r=>setTimeout(r,22));
     }
-    cur.remove(); $('whTM').style.display='block'; whScroll();
+    cur.remove(); $('whTM').style.display='block'; whScroll(); whSaveChat();
 
     await whLoadFAQ();
     await new Promise(r=>setTimeout(r,400));
     whShowCategoryInChat();
   }
 
-  setTimeout(whWelcome, 600);
+  /* ─── INIT: Pulihkan chat lama atau mula baru ─── */
+  setTimeout(async () => {
+    const restored = whRestoreChat();
+    if (restored) {
+      /* FAQ data perlu diload semula supaya search masih berfungsi */
+      await whLoadFAQ();
+      /* Tunjuk semula category pills */
+      whShowCategoryPills();
+      /* Tunjuk semula category menu di bawah mesej yang dipulihkan */
+      whShowCategoryInChat();
+    } else {
+      whWelcome();
+    }
+  }, 300);
 })();
 </script>
 
