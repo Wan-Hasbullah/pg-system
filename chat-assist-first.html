@@ -297,27 +297,64 @@ html, body {
   const whScroll = () => setTimeout(() => $('whMessages').scrollTo({ top: $('whMessages').scrollHeight, behavior: 'smooth' }), 80);
   const sleep    = ms => new Promise(r => setTimeout(r, ms));
 
-  /* ─── STORAGE KEY ─── */
-  const STORAGE_KEY = 'assistwan_chat_html';
+  /* ─── STORAGE ─── */
+  const STORAGE_KEY      = 'assistwan_chat_html';
+  const STORAGE_STATE    = 'assistwan_chat_state';
 
-  /* ─── SIMPAN HTML MESEJ KE LOCALSTORAGE ─── */
-  function whSaveChat() {
+  /* Peta action name → fungsi sebenar (untuk re-attach selepas restore) */
+  const ACTION_MAP = () => ({
+    'flow_register'     : () => { window.open('https://pgolink.com/chat-assistant-faq', '_blank'); },
+    'flow_belum'        : whFlow_BelumRegister,
+    'flow_bajetTinggi'  : whFlow_BajetTinggi,
+    'flow_bajetRendah'  : whFlow_BajetRendah,
+    'flow_simpanSendiri': whFlow_SimpanSendiri,
+    'flow_pgSimpan'     : whFlow_PGSimpan,
+    'flow_ada'          : whFlow_AdaSoalan,
+    'flow_cara'         : whFlow_CaraBermula,
+  });
+
+  function whSaveChat(activeButtons) {
     try {
       localStorage.setItem(STORAGE_KEY, $('whMessages').innerHTML);
+      if (activeButtons) {
+        localStorage.setItem(STORAGE_STATE, JSON.stringify(activeButtons));
+      }
     } catch(e) {}
   }
 
-  /* ─── PULIHKAN MESEJ DARI LOCALSTORAGE ─── */
   function whRestoreChat() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        $('whMessages').innerHTML = saved;
-        /* Lumpuhkan semua butang quick reply yang lama supaya tidak boleh tekan semula */
-        $('whMessages').querySelectorAll('.wh-qr-btn').forEach(b => b.classList.add('disabled'));
-        whScroll();
-        return true;
+      if (!saved) return false;
+
+      $('whMessages').innerHTML = saved;
+
+      /* Semua butang dalam chat — lumpuhkan dulu semua */
+      $('whMessages').querySelectorAll('.wh-qr-btn').forEach(b => b.classList.add('disabled'));
+
+      /* Cari set butang terakhir yang aktif (ada data-action) dan re-attach */
+      const stateRaw = localStorage.getItem(STORAGE_STATE);
+      if (stateRaw) {
+        const state = JSON.parse(stateRaw);  /* [{label, action}] */
+        const allWraps = $('whMessages').querySelectorAll('.wh-quick-replies');
+        const lastWrap = allWraps[allWraps.length - 1];
+        if (lastWrap) {
+          const map = ACTION_MAP();
+          lastWrap.querySelectorAll('.wh-qr-btn').forEach(btn => {
+            const actionKey = btn.dataset.action;
+            if (actionKey && map[actionKey]) {
+              btn.classList.remove('disabled');
+              btn.onclick = () => {
+                lastWrap.querySelectorAll('.wh-qr-btn').forEach(b => b.classList.add('disabled'));
+                map[actionKey]();
+              };
+            }
+          });
+        }
       }
+
+      whScroll();
+      return true;
     } catch(e) {}
     return false;
   }
@@ -375,17 +412,22 @@ html, body {
     const msgs = $('whMessages');
     const wrap = document.createElement('div');
     wrap.className = 'wh-quick-replies';
+    const stateToSave = [];
     buttons.forEach(btn => {
       const el = document.createElement('button');
-      el.className   = 'wh-qr-btn';
-      el.textContent = btn.label;
+      el.className     = 'wh-qr-btn';
+      el.textContent   = btn.label;
+      el.dataset.action = btn.actionKey;
+      stateToSave.push({ label: btn.label, action: btn.actionKey });
       el.onclick = () => {
         wrap.querySelectorAll('.wh-qr-btn').forEach(b => b.classList.add('disabled'));
         btn.action();
       };
       wrap.appendChild(el);
     });
-    msgs.appendChild(wrap); whScroll(); whSaveChat();
+    msgs.appendChild(wrap);
+    whScroll();
+    whSaveChat(stateToSave);
   }
 
   /* ─── TYPING THEN BOT ─── */
@@ -464,8 +506,8 @@ html, body {
     `, 1000);
 
     whAddQuickReplies([
-      { label: '🏠 Simpan Sendiri', action: whFlow_SimpanSendiri },
-      { label: '🏦 Public Gold simpankan secara percuma', action: whFlow_PGSimpan }
+      { label: '🏠 Simpan Sendiri',                       actionKey: 'flow_simpanSendiri', action: whFlow_SimpanSendiri },
+      { label: '🏦 Public Gold simpankan secara percuma', actionKey: 'flow_pgSimpan',     action: whFlow_PGSimpan }
     ]);
   }
 
@@ -524,8 +566,8 @@ html, body {
     `, 1000);
 
     whAddQuickReplies([
-      { label: '❓ Ada', action: whFlow_AdaSoalan },
-      { label: '🚀 Tidak, bagaimana cara bermula', action: whFlow_CaraBermula }
+      { label: '❓ Ada',                        actionKey: 'flow_ada',  action: whFlow_AdaSoalan },
+      { label: '🚀 Tidak, bagaimana cara bermula', actionKey: 'flow_cara', action: whFlow_CaraBermula }
     ]);
   }
 
@@ -536,8 +578,8 @@ html, body {
     `, 1000);
 
     whAddQuickReplies([
-      { label: '💰 RM1,000 ke atas', action: whFlow_BajetTinggi },
-      { label: '💵 Bawah RM1,000', action: whFlow_BajetRendah }
+      { label: '💰 RM1,000 ke atas', actionKey: 'flow_bajetTinggi', action: whFlow_BajetTinggi },
+      { label: '💵 Bawah RM1,000',   actionKey: 'flow_bajetRendah', action: whFlow_BajetRendah }
     ]);
   }
 
@@ -564,9 +606,10 @@ html, body {
     whAddQuickReplies([
       {
         label: '✅ Dah pernah register',
+        actionKey: 'flow_register',
         action: () => { window.open('https://pgolink.com/chat-assistant-faq', '_blank'); }
       },
-      { label: '❌ Belum lagi', action: whFlow_BelumRegister }
+      { label: '❌ Belum lagi', actionKey: 'flow_belum', action: whFlow_BelumRegister }
     ]);
   }
 
