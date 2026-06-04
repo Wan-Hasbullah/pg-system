@@ -746,20 +746,29 @@ body {
     return safe.replace(/(https?:\/\/[^\s<>"]+)/gi, '<a href="$1" target="_blank" rel="noopener">$1</a>');
   }
 
-  /* ── CSV PARSER ── */
+  /* ── CSV PARSER — handle newline dalam quoted cell ── */
   function parseCSV(text) {
     const rows = [];
-    for (const line of text.trim().split('\n')) {
-      const cols = []; let cur = '', inQ = false;
-      for (let i = 0; i < line.length; i++) {
-        const c = line[i];
-        if (c === '"') { if (inQ && line[i+1]==='"'){cur+='"';i++;} else inQ=!inQ; }
-        else if (c===',' && !inQ) { cols.push(cur.trim()); cur=''; }
-        else cur += c;
+    let cur = '', inQ = false, cols = [];
+    const src = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    for (let i = 0; i < src.length; i++) {
+      const c = src[i];
+      if (c === '"') {
+        if (inQ && src[i+1] === '"') { cur += '"'; i++; }
+        else inQ = !inQ;
+      } else if (c === ',' && !inQ) {
+        cols.push(cur); cur = '';
+      } else if (c === '\n' && !inQ) {
+        cols.push(cur); cur = '';
+        if (cols.some(x => x !== '')) rows.push(cols);
+        cols = [];
+      } else {
+        cur += c;
       }
-      cols.push(cur.trim()); rows.push(cols);
     }
-    return rows;
+    cols.push(cur);
+    if (cols.some(x => x !== '')) rows.push(cols);
+    return rows.map(row => row.map(cell => cell.replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g, '')));
   }
 
   /* ── LOAD FAQ ──
