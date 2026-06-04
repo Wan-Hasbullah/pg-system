@@ -446,6 +446,171 @@ body {
 }
 
 @keyframes whBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ══════════════════════════════════════
+   FINTECH PREMIUM POLISH + MOBILE
+   ══════════════════════════════════════ */
+
+/* Header — deeper gradient & shimmer line */
+#wh-chat-app .wh-header {
+  background: linear-gradient(135deg, #061829 0%, #0A2342 45%, #1B3E6E 100%);
+  box-shadow: 0 2px 28px rgba(0,20,60,0.35), inset 0 1px 0 rgba(0,180,216,0.12);
+}
+#wh-chat-app .wh-header::after {
+  background: linear-gradient(90deg, transparent 0%, rgba(0,180,216,0.55) 40%, rgba(244,168,0,0.3) 60%, transparent 100%);
+  height: 1.5px;
+}
+
+/* Avatar glow ring */
+#wh-chat-app .wh-avatar {
+  box-shadow: 0 0 0 2.5px var(--accent-light), 0 0 14px rgba(0,180,216,0.35);
+}
+
+/* Status pulse animation */
+#wh-chat-app .wh-status-dot {
+  box-shadow: 0 0 0 0 rgba(46,204,113,0.6);
+  animation: whStatusPulse 2.4s ease-in-out infinite;
+}
+@keyframes whStatusPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(46,204,113,0.55); }
+  60%  { box-shadow: 0 0 0 5px rgba(46,204,113,0); }
+  100% { box-shadow: 0 0 0 0 rgba(46,204,113,0); }
+}
+
+/* Bot bubble — glass card feel */
+#wh-chat-app .wh-bubble.bot {
+  background: linear-gradient(145deg, #ffffff 0%, #f7faff 100%);
+  border: 1px solid rgba(0,60,120,0.09);
+  box-shadow: 0 3px 14px rgba(10,35,66,0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+/* User bubble — richer gradient */
+#wh-chat-app .wh-bubble.user {
+  background: linear-gradient(135deg, #00C6E0 0%, #0095C8 50%, #0066A8 100%);
+  box-shadow: 0 5px 20px rgba(0,100,180,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+/* FAQ card — premium border glow */
+#wh-chat-app .wh-faq-card {
+  background: linear-gradient(145deg, #ffffff 0%, #f5f9ff 100%);
+  border: 1px solid rgba(0,60,120,0.09);
+  border-left: 3px solid var(--accent);
+  box-shadow: 0 4px 20px rgba(10,35,66,0.09), inset 0 1px 0 rgba(255,255,255,0.95);
+}
+
+/* Category card */
+#wh-chat-app .wh-category-menu,
+#wh-chat-app .wh-topic-menu,
+#wh-chat-app .wh-soalan-menu {
+  background: linear-gradient(145deg, #ffffff 0%, #f5f9ff 100%);
+  box-shadow: 0 4px 20px rgba(10,35,66,0.09), inset 0 1px 0 rgba(255,255,255,0.95);
+}
+
+/* Category / topic buttons — lifted on hover */
+#wh-chat-app .wh-cat-btn:hover,
+#wh-chat-app .wh-topic-btn:hover,
+#wh-chat-app .wh-soalan-btn:hover {
+  transform: translateX(3px);
+  box-shadow: 0 3px 12px rgba(0,180,216,0.14);
+}
+#wh-chat-app .wh-cat-btn,
+#wh-chat-app .wh-topic-btn,
+#wh-chat-app .wh-soalan-btn {
+  transition: all 0.2s cubic-bezier(.34,1.56,.64,1);
+}
+
+/* Input bar — glass effect */
+#wh-chat-app .wh-input-bar {
+  background: rgba(255,255,255,0.98);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(0,60,120,0.08);
+  box-shadow: 0 -6px 28px rgba(10,35,66,0.07);
+}
+
+/* Suggestion pills — premium */
+#wh-chat-app .wh-suggestion-pill {
+  background: linear-gradient(135deg, #ffffff 0%, #f0f6ff 100%);
+  box-shadow: 0 2px 8px rgba(0,60,120,0.08);
+  transition: all 0.2s cubic-bezier(.34,1.56,.64,1);
+}
+#wh-chat-app .wh-suggestion-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 16px rgba(0,180,216,0.2);
+}
+
+/* Notfound card */
+#wh-chat-app .wh-notfound-bubble {
+  background: linear-gradient(145deg, #fffdf5 0%, #fff8e5 100%);
+  border: 1px solid rgba(244,168,0,0.2);
+  border-left: 3px solid var(--gold);
+  box-shadow: 0 4px 20px rgba(244,168,0,0.09);
+}
+
+/* Typing bubble */
+#wh-chat-app .wh-typing-bubble {
+  background: linear-gradient(145deg, #ffffff 0%, #f5f9ff 100%);
+  box-shadow: 0 3px 14px rgba(10,35,66,0.08);
+}
+
+/* Scrollbar refined */
+#wh-chat-app .wh-messages::-webkit-scrollbar { width: 3px; }
+#wh-chat-app .wh-messages::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--accent-light), var(--border));
+  border-radius: 3px;
+}
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 480px) {
+  #wh-chat-app .wh-header { height: 64px; padding: 0 1rem; gap: 10px; }
+  #wh-chat-app .wh-avatar { width: 40px; height: 40px; }
+  #wh-chat-app .wh-header-name { font-size: 14px; }
+  #wh-chat-app .wh-header-btn { width: 34px; height: 34px; border-radius: 9px; }
+  #wh-chat-app .wh-header-btn svg { width: 16px; height: 16px; }
+
+  #wh-chat-app .wh-messages { padding: 1rem 0.875rem; gap: 8px; }
+
+  #wh-chat-app .wh-bubble-wrap { max-width: 82%; }
+  #wh-chat-app .wh-bubble { font-size: 13.5px; padding: 0.65rem 0.9rem; }
+
+  #wh-chat-app .wh-faq-card,
+  #wh-chat-app .wh-category-menu,
+  #wh-chat-app .wh-topic-menu,
+  #wh-chat-app .wh-soalan-menu,
+  #wh-chat-app .wh-notfound-bubble { max-width: 88%; padding: 0.75rem 0.875rem; }
+
+  #wh-chat-app .wh-faq-card-body,
+  #wh-chat-app .wh-faq-card-title { font-size: 13px; }
+
+  #wh-chat-app .wh-cat-btn,
+  #wh-chat-app .wh-topic-btn,
+  #wh-chat-app .wh-soalan-btn { font-size: 13px; padding: 8px 11px; }
+
+  #wh-chat-app .wh-input-bar { padding: 0.75rem 0.875rem; gap: 8px; }
+  #wh-chat-app #whUserInput { font-size: 14px; }
+  #wh-chat-app .wh-send-btn { width: 44px; height: 44px; }
+
+  #wh-chat-app .wh-suggestions { padding: 0 0.875rem 0.65rem; gap: 6px; }
+  #wh-chat-app .wh-suggestion-pill { font-size: 12px; padding: 5px 12px; }
+
+  #wh-chat-app .wh-msg-avatar { width: 28px; height: 28px; }
+  #wh-chat-app .wh-msg-row { gap: 6px; }
+}
+
+@media (max-width: 360px) {
+  #wh-chat-app .wh-bubble-wrap { max-width: 86%; }
+  #wh-chat-app .wh-faq-card,
+  #wh-chat-app .wh-category-menu,
+  #wh-chat-app .wh-topic-menu,
+  #wh-chat-app .wh-soalan-menu { max-width: 92%; }
+}
+
+/* Safe area for notched phones */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  #wh-chat-app .wh-input-bar {
+    padding-bottom: calc(0.875rem + env(safe-area-inset-bottom));
+  }
+}
 </style>
 </head>
 <body>
@@ -576,7 +741,8 @@ body {
 
   // Auto-linkify URL dalam teks
   function autoLink(text) {
-    const safe = whEsc(text);
+    // Tukar \n kepada placeholder, escape HTML, kembalikan placeholder kepada <br>
+    const safe = whEsc(text).replace(/\n/g, '<br>');
     return safe.replace(/(https?:\/\/[^\s<>"]+)/gi, '<a href="$1" target="_blank" rel="noopener">$1</a>');
   }
 
