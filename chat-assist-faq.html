@@ -619,6 +619,7 @@ body {
   <div class="wh-header">
     <div class="wh-avatar-wrap">
       <img alt="Avatar" class="wh-avatar" src="https://blogger.googleusercontent.com/img/a/AVvXsEjH8kKw3_SWdf96cjqIx_j4exadqr0togYGxXJxWA8D7z40VpkkLeyeyRDrZRCdVXdKPA2LuOtxXZ-eRffWfnM0_UPa6g7KGkCLAx0Br1DoJO3MC3P7jZXg6EZ3FsL0zdiI-RRzcf9ArG87YT4WvpQ5V1PEpe7kCQc0C3SePyxBo5ONOFkmAgYKXDOFTyo=s16000" />
+      <div class="wh-status-dot"></div>
     </div>
     <div class="wh-header-info">
       <div class="wh-header-name">Assist Wan</div>
@@ -715,11 +716,9 @@ body {
   const STORAGE_KEY = 'assistwan_faq_chat_html';
 
   /* ─── SIMPAN HTML MESEJ KE LOCALSTORAGE ─── */
-  /* Hanya simpan mesej statik (bubbles, FAQ cards) — bukan menu navigasi interaktif */
   function whSaveChat() {
     try {
       const msgs = $('whMessages');
-      /* Klon node, buang semua elemen menu interaktif yang ada onclick supaya tidak simpan orphan handlers */
       const clone = msgs.cloneNode(true);
       clone.querySelectorAll('.wh-category-menu,.wh-topic-menu,.wh-soalan-menu').forEach(el => el.closest('div[style*="flex"]')?.remove() || el.remove());
       localStorage.setItem(STORAGE_KEY, clone.innerHTML);
@@ -739,11 +738,71 @@ body {
     return false;
   }
 
-  // Auto-linkify URL dalam teks
-  function autoLink(text) {
-    // Tukar \n kepada placeholder, escape HTML, kembalikan placeholder kepada <br>
-    const safe = whEsc(text).replace(/\n/g, '<br>');
-    return safe.replace(/(https?:\/\/[^\s<>"]+)/gi, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+  /* ══════════════════════════════════════════════════════════
+     AUTO-LINK + HIGHLIGHT — BETULKAN: highlight TIDAK masuk
+     dalam href URL supaya link kekal bersih.
+     ══════════════════════════════════════════════════════════
+
+     Strategi:
+     1. Pisahkan teks kepada segmen: URL vs teks biasa
+     2. URL → bungkus dengan <a> terus, JANGAN highlight
+     3. Teks biasa → escape HTML dulu, kemudian highlight keywords
+     4. Gabungkan semula
+  */
+
+  // Regex untuk kesan URL
+  const URL_REGEX = /(https?:\/\/[^\s<>"]+)/g;
+
+  /**
+   * autoLinkAndHighlight(rawText, keywords)
+   * - rawText   : teks mentah (belum di-escape)
+   * - keywords  : array string kata kunci untuk highlight (boleh kosong)
+   * Returns HTML string selamat untuk dimasukkan ke innerHTML
+   */
+  function autoLinkAndHighlight(rawText, keywords) {
+    if (!rawText) return '';
+
+    // Pisah teks kepada bahagian: URL & teks biasa
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+    URL_REGEX.lastIndex = 0; // reset regex state
+
+    while ((match = URL_REGEX.exec(rawText)) !== null) {
+      // Teks biasa sebelum URL ini
+      if (match.index > lastIndex) {
+        parts.push({ type: 'text', value: rawText.slice(lastIndex, match.index) });
+      }
+      // URL
+      parts.push({ type: 'url', value: match[0] });
+      lastIndex = match.index + match[0].length;
+    }
+    // Baki teks selepas URL terakhir
+    if (lastIndex < rawText.length) {
+      parts.push({ type: 'text', value: rawText.slice(lastIndex) });
+    }
+
+    // Bina HTML
+    return parts.map(part => {
+      if (part.type === 'url') {
+        // URL: escape untuk paparkan, gunakan nilai asal untuk href
+        const safeDisplay = whEsc(part.value);
+        const safeHref    = part.value.replace(/"/g, '%22');
+        return `<a href="${safeHref}" target="_blank" rel="noopener">${safeDisplay}</a>`;
+      } else {
+        // Teks biasa: escape HTML, tukar newline, kemudian highlight
+        let safe = whEsc(part.value).replace(/\n/g, '<br>');
+        if (keywords && keywords.length) {
+          keywords.forEach(kw => {
+            if (!kw) return;
+            const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const re = new RegExp('(' + escaped + ')', 'gi');
+            safe = safe.replace(re, '<mark>$1</mark>');
+          });
+        }
+        return safe;
+      }
+    }).join('');
   }
 
   /* ── CSV PARSER — handle newline dalam quoted cell ── */
@@ -771,17 +830,13 @@ body {
     return rows.map(row => row.map(cell => cell.replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g, '')));
   }
 
-  /* ── LOAD FAQ ──
-     Format CSV dijangka: Timestamp | Kategori | Tajuk | Soalan | Jawapan
-     (sama seperti yang Apps Script simpan)
-  */
+  /* ── LOAD FAQ ── */
   async function whLoadFAQ() {
     try {
       const text = await (await fetch(SHEET_URL)).text();
       const rows = parseCSV(text).slice(1); // skip header
       faqData = [];
       rows.forEach(c => {
-        // Jangkakan: col[0]=Timestamp, col[1]=Kategori, col[2]=Tajuk, col[3]=Soalan, col[4]=Jawapan
         const timestamp = (c[0]||'').trim();
         const kategori  = (c[1]||'').trim();
         const tajuk     = (c[2]||'').trim();
@@ -814,17 +869,6 @@ body {
       return { ...item, score, keywords };
     }).filter(i => i.score > 0);
     return scored.sort((a,b)=>b.score-a.score).slice(0,3);
-  }
-
-  /* ── HIGHLIGHT ── */
-  function whHighlight(text, keywords) {
-    let safe = autoLink(text);
-    if (!keywords || !keywords.length) return safe;
-    keywords.forEach(kw => {
-      const re = new RegExp('(?<!["\'])(' + kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')(?!["\'])', 'gi');
-      safe = safe.replace(re, '<mark>$1</mark>');
-    });
-    return safe;
   }
 
   /* ── TYPING ── */
@@ -872,15 +916,19 @@ body {
     const card=document.createElement('div');
     card.className='wh-faq-card';
 
+    // Soalan: escape sahaja (tiada highlight, tiada link)
     const soalanHtml = item.soalan
       ? `<div class="wh-faq-card-soalan">❓ ${whEsc(item.soalan)}</div>`
       : '';
+
+    // Jawapan: autolink + highlight dengan fungsi baru yang selamat
+    const jawapanHtml = autoLinkAndHighlight(item.jawapan, item.keywords || []);
 
     card.innerHTML=`
       <div class="wh-faq-card-label">Jawapan Dijumpai</div>
       <div class="wh-faq-card-cat">${whEsc(item.kategori)} › ${whEsc(item.tajuk)}</div>
       ${soalanHtml}
-      <div class="wh-faq-card-body">${whHighlight(item.jawapan, item.keywords||[])}</div>
+      <div class="wh-faq-card-body">${jawapanHtml}</div>
       <div class="wh-faq-card-time">${whNow()}</div>`;
     wrap.appendChild(img); wrap.appendChild(card);
     msgs.appendChild(wrap); whScroll(); whSaveChat();
@@ -1112,11 +1160,8 @@ body {
   setTimeout(async () => {
     const restored = whRestoreChat();
     if (restored) {
-      /* FAQ data perlu diload semula supaya search masih berfungsi */
       await whLoadFAQ();
-      /* Tunjuk semula category pills */
       whShowCategoryPills();
-      /* Tunjuk semula category menu di bawah mesej yang dipulihkan */
       whShowCategoryInChat();
     } else {
       whWelcome();
