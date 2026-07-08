@@ -160,6 +160,8 @@
   .cell-nama{ font-weight:600; color:var(--text-hi); }
   .cell-nick{ color:var(--text-mid); font-size:.82rem; }
   .cell-phone, .cell-wa{ font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--text-mid); }
+  
+  /* ---------- Butang Pil WhatsApp Premium ---------- */
   .wa-link{
     display:inline-flex; align-items:center; gap:6px;
     background:linear-gradient(135deg, rgba(43,196,138,.20), rgba(43,196,138,.07));
@@ -179,6 +181,7 @@
   }
   .wa-link:active{ transform:translateY(0); box-shadow:0 2px 8px -6px rgba(43,196,138,.5); }
   .wa-empty{ color:var(--text-lo); font-family:'IBM Plex Mono',monospace; font-size:.8rem; }
+  
   .badge{
     display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:999px;
     font-size:.72rem; font-weight:600; white-space:nowrap;
@@ -206,40 +209,6 @@
   .skeleton-row{ padding:12px 20px; border-bottom:1px solid var(--border); }
   .sk-bar{ height:12px; border-radius:6px; background:linear-gradient(90deg, var(--surface-raised), var(--surface-hover), var(--surface-raised)); background-size:200% 100%; animation:shimmer 1.4s infinite; }
   @keyframes shimmer{ 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
-
-  /* ---------- Modal ---------- */
-  .modal-backdrop{
-    position:fixed; inset:0; background:rgba(4,6,10,.68); backdrop-filter:blur(3px);
-    display:none; align-items:center; justify-content:center; z-index:60; padding:20px;
-  }
-  .modal-backdrop.open{ display:flex; }
-  .modal{
-    width:100%; max-width:480px; background:var(--surface-raised); border:1px solid var(--border-strong);
-    border-radius:var(--radius); padding:24px; box-shadow:var(--shadow-lift);
-    max-height:88vh; overflow-y:auto;
-  }
-  .modal h3{ font-family:'Sora',sans-serif; font-size:1.05rem; margin-bottom:4px; }
-  .modal .modal-sub{ font-size:.78rem; color:var(--text-lo); margin-bottom:18px; }
-  .field{ margin-bottom:14px; }
-  .field label{ display:block; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-lo); font-weight:600; margin-bottom:6px; }
-  .field input, .field select{
-    width:100%; background:var(--surface); border:1px solid var(--border-strong); color:var(--text-hi);
-    border-radius:var(--radius-sm); padding:10px 12px; font-size:.88rem; outline:none;
-  }
-  .field input:focus, .field select:focus{ border-color:var(--gold); }
-  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .modal-actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:18px; }
-
-  /* ---------- Toast ---------- */
-  .toast-region{ position:fixed; bottom:20px; right:20px; display:flex; flex-direction:column; gap:8px; z-index:80; }
-  .toast{
-    background:var(--surface-raised); border:1px solid var(--border-strong); color:var(--text-hi);
-    padding:12px 16px; border-radius:var(--radius-sm); font-size:.85rem; box-shadow:var(--shadow-lift);
-    display:flex; align-items:center; gap:10px; min-width:220px; animation:toastIn .25s ease;
-  }
-  .toast.success{ border-color:var(--emerald); }
-  .toast.error{ border-color:var(--coral); }
-  @keyframes toastIn{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:none; } }
 
   /* ---------- Responsive: collapse grid to cards ---------- */
   @media (max-width: 920px){
@@ -311,7 +280,6 @@
 <script>
 /* ============================================================
    CONFIG — ganti dengan URL Web App Google Apps Script anda
-   (Deploy > New deployment > Web app > Who has access: Anyone)
    ============================================================ */
 const CONFIG = {
   API_URL: 'https://script.google.com/macros/s/AKfycbxyKzyQaos-_iPWTbpiySIA-KyBbtje2gbABSmdjg2FeDB56htfd6F5aixB29F690XpuQ/exec'
@@ -322,7 +290,7 @@ const FIELD_ORDER = ['no','nama','noHp','whatsapp','nickname','rank','circle','t
 
 const state = {
   currentDay: 'Ahad',
-  cache: {},        // day -> payload
+  cache: {},
   search: ''
 };
 
@@ -377,7 +345,7 @@ async function loadDay(day, force){
 async function apiPost(body){
   const res = await fetch(CONFIG.API_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids CORS preflight on Apps Script
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify(body)
   });
   const json = await res.json();
@@ -469,20 +437,43 @@ function emptyStateHtml(isStranger){
   </div>`;
 }
 
-function waLink(r){
-  // Kolum Whatsapp dalam sheet guna formula =HYPERLINK("https://wa.me/"&C,B),
-  // jadi r.whatsapp yang dibaca sebagai nilai sel sebenarnya teks Nama (bukan nombor).
-  // Backend (waLink field) hantar URL sebenar; jika tiada, fallback ke No Hp / whatsapp.
-  let url = (r.waLink && /^https?:\/\//i.test(r.waLink)) ? r.waLink : '';
-  if(!url){
-    const digits = (r.whatsapp||'').replace(/\D/g,'') || (r.noHp||'').replace(/\D/g,'');
-    if(digits) url = `https://wa.me/${digits}`;
+/* ---------- Fungsi waLink yang Dikemaskini & Selamat ---------- */
+function waLink(r) {
+  if (!r) return '<div class="wa-empty">—</div>';
+  
+  // Paksa tukar kepada String dahulu supaya .replace() tidak ralat jika data berbentuk nombor bulat
+  const whatsappStr = r.whatsapp ? String(r.whatsapp) : '';
+  const noHpStr = r.noHp ? String(r.noHp) : '';
+  
+  // Ekstrak digit sahaja
+  const digits = whatsappStr.replace(/\D/g, '') || noHpStr.replace(/\D/g, '');
+  
+  // Jika tiada nombor langsung, paparkan gaya kosong premium
+  if (!digits) {
+    return `<div class="wa-empty">—</div>`;
   }
-  if(!url) return '<span class="wa-empty">—</span>';
-  const label = (r.noHp||'').replace(/\D/g,'') || (url.match(/wa\.me\/(\d+)/)||[])[1] || 'WhatsApp';
-  return `<a class="wa-link" href="${url}" target="_blank" rel="noopener">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.6.1-.2.3-.7.9-.9 1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.5-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.1 0 1.2.9 2.4 1 2.6.1.2 1.7 2.6 4.2 3.6.6.3 1 .4 1.4.5.6.2 1.1.2 1.5.1.5-.1 1.7-.7 1.9-1.3.2-.6.2-1.2.2-1.3-.1-.1-.2-.2-.5-.3z"/></svg>
-    ${escapeHtml(label)}</a>`;
+  
+  // Pastikan format antarabangsa yang betul (tambah kod negara 6)
+  let formattedDigits = digits;
+  if (formattedDigits.startsWith('0')) {
+    formattedDigits = '6' + formattedDigits;
+  } else if (formattedDigits.startsWith('1')) {
+    formattedDigits = '60' + formattedDigits;
+  }
+  
+  // Bina URL WhatsApp
+  const url = `https://wa.me/${formattedDigits}`;
+  const label = noHpStr ? `+${noHpStr.replace(/\D/g, '')}` : 'WhatsApp';
+
+  // Rekaan butang pil premium fintech gelapan
+  return `
+    <a href="${url}" target="_blank" class="wa-link" title="Hubungi ${r.nama || 'Pelanggan'} via WhatsApp">
+      <svg class="wa-icon" width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.703 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="currentColor"/>
+      </svg>
+      <span>${escapeHtml(label)}</span>
+    </a>
+  `;
 }
 
 function renderRow(day, sectionKey, r){
