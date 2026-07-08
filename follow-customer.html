@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Ledger — Referral Circle CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#090b10;
+    --surface:#11141c;
+    --surface-raised:#171b25;
+    --surface-hover:#1d2230;
+    --border:#242a38;
+    --border-strong:#333b4d;
+    --gold:#c9a46b;
+    --gold-soft:rgba(201,164,107,.12);
+    --gold-strong:#e0bd85;
+    --emerald:#2bc48a;
+    --emerald-soft:rgba(43,196,138,.13);
+    --coral:#e2645a;
+    --coral-soft:rgba(226,100,90,.13);
+    --text-hi:#f2f4f7;
+    --text-mid:#a6aec0;
+    --text-lo:#666f83;
+    --radius:14px;
+    --radius-sm:9px;
+    --shadow-lift: 0 20px 50px -20px rgba(0,0,0,.6);
+    font-size:16px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(201,164,107,.08), transparent 60%),
+      radial-gradient(900px 500px at -10% 10%, rgba(43,196,138,.05), transparent 55%),
+      var(--ink);
+    color:var(--text-hi);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--gold-soft); color:var(--gold-strong); }
+  ::-webkit-scrollbar{ height:8px; width:8px; }
+  ::-webkit-scrollbar-thumb{ background:var(--border-strong); border-radius:8px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+
+  a{ color:inherit; }
+  button{ font-family:inherit; cursor:pointer; }
+  input, select{ font-family:inherit; }
+
+  .app{ max-width:1180px; margin:0 auto; padding:20px 20px 90px; }
+
+  /* ---------- Orbit mark (signature element) ---------- */
+  .orbit{ display:inline-block; }
+  .orbit circle.ring{ fill:none; stroke:currentColor; stroke-width:1.6; opacity:.55; }
+  .orbit circle.core{ fill:currentColor; }
+
+  /* ---------- Topbar ---------- */
+  .topbar{
+    display:flex; align-items:center; gap:18px;
+    padding:18px 4px 22px;
+    flex-wrap:wrap;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; color:var(--gold); }
+  .brand .wordmark{
+    font-family:'Sora',sans-serif; font-weight:700; font-size:1.15rem;
+    color:var(--text-hi); letter-spacing:.01em;
+  }
+  .brand .wordmark span{ color:var(--gold); }
+  .brand .tagline{ font-size:.7rem; color:var(--text-lo); letter-spacing:.14em; text-transform:uppercase; margin-left:2px; }
+
+  .day-tabs{
+    display:flex; gap:6px; overflow-x:auto; padding:4px;
+    background:var(--surface); border:1px solid var(--border); border-radius:999px;
+    margin-left:auto;
+    -ms-overflow-style:none; scrollbar-width:none;
+  }
+  .day-tabs::-webkit-scrollbar{ display:none; }
+  .day-tab{
+    border:none; background:transparent; color:var(--text-mid);
+    font-size:.82rem; font-weight:600; padding:8px 15px; border-radius:999px;
+    white-space:nowrap; transition:.2s ease;
+  }
+  .day-tab:hover{ color:var(--text-hi); }
+  .day-tab.active{ background:var(--gold); color:#1a1305; }
+
+  .topbar-actions{ display:flex; gap:10px; width:100%; }
+  .search-box{
+    flex:1; display:flex; align-items:center; gap:8px;
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm);
+    padding:10px 14px; color:var(--text-mid);
+  }
+  .search-box input{
+    flex:1; background:transparent; border:none; outline:none; color:var(--text-hi); font-size:.9rem;
+  }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; justify-content:center;
+    border:1px solid var(--border-strong); background:var(--surface-raised); color:var(--text-hi);
+    font-size:.85rem; font-weight:600; padding:10px 16px; border-radius:var(--radius-sm);
+    transition:.15s ease; white-space:nowrap;
+  }
+  .btn:hover{ background:var(--surface-hover); border-color:var(--gold); }
+  .btn-gold{ background:var(--gold); border-color:var(--gold); color:#1a1305; }
+  .btn-gold:hover{ background:var(--gold-strong); border-color:var(--gold-strong); }
+  .btn-ghost{ background:transparent; border-color:transparent; color:var(--text-mid); padding:8px 10px;}
+  .btn-ghost:hover{ background:var(--surface-hover); color:var(--text-hi); }
+  .btn-danger{ color:var(--coral); }
+
+  /* ---------- Stats strip ---------- */
+  .stats-strip{
+    display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin:6px 0 28px;
+  }
+  .stat-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:16px 16px 14px;
+  }
+  .stat-card .label{ font-size:.68rem; text-transform:uppercase; letter-spacing:.1em; color:var(--text-lo); font-weight:600;}
+  .stat-card .value{ font-family:'Sora',sans-serif; font-size:1.6rem; font-weight:700; margin-top:6px; }
+  .stat-card.gold .value{ color:var(--gold); }
+  .stat-card.emerald .value{ color:var(--emerald); }
+  .stat-card.coral .value{ color:var(--coral); }
+
+  /* ---------- Section blocks ---------- */
+  .circle-block{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    margin-bottom:22px; overflow:hidden; box-shadow:var(--shadow-lift);
+  }
+  .circle-block-head{
+    display:flex; align-items:center; gap:12px; padding:18px 20px;
+    border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg, rgba(255,255,255,.02), transparent);
+  }
+  .circle-block-head .orbit{ color:var(--text-mid); }
+  .circle-block[data-circle="stranger"] .circle-block-head .orbit{ color:var(--gold); }
+  .circle-block[data-circle="inner"] .circle-block-head .orbit{ color:var(--emerald); }
+  .circle-block-head h2{ font-family:'Sora',sans-serif; font-size:1.02rem; font-weight:600; }
+  .circle-block-head .sub{ font-size:.76rem; color:var(--text-lo); margin-top:2px; }
+  .count-pill{
+    margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:.78rem;
+    background:var(--surface-raised); border:1px solid var(--border-strong); color:var(--text-mid);
+    padding:5px 11px; border-radius:999px;
+  }
+  .add-row-btn{ margin-left:8px; }
+
+  .grid-header, .row-item{
+    display:grid;
+    grid-template-columns: 44px 1.4fr 1.1fr 1fr 1fr .9fr .95fr 1fr .9fr 78px;
+    gap:10px; align-items:center; padding:12px 20px;
+  }
+  .grid-header{
+    font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-lo); font-weight:600;
+    border-bottom:1px solid var(--border);
+  }
+  .row-item{ border-bottom:1px solid var(--border); font-size:.86rem; transition:background .15s ease; }
+  .row-item:last-child{ border-bottom:none; }
+  .row-item:hover{ background:var(--surface-hover); }
+  .cell-no{ font-family:'IBM Plex Mono',monospace; color:var(--text-lo); }
+  .cell-nama{ font-weight:600; color:var(--text-hi); }
+  .cell-nick{ color:var(--text-mid); font-size:.82rem; }
+  .cell-phone, .cell-wa{ font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--text-mid); }
+  .wa-link{ display:inline-flex; align-items:center; gap:5px; color:var(--emerald); text-decoration:none; }
+  .wa-link:hover{ text-decoration:underline; }
+  .badge{
+    display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:999px;
+    font-size:.72rem; font-weight:600; white-space:nowrap;
+  }
+  .badge-stranger{ background:var(--gold-soft); color:var(--gold-strong); }
+  .badge-inner{ background:var(--emerald-soft); color:var(--emerald); }
+  .badge-topik{ background:var(--surface-raised); color:var(--text-mid); border:1px solid var(--border-strong); }
+  .tick-toggle{
+    border:none; border-radius:999px; padding:5px 12px; font-size:.72rem; font-weight:700;
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .tick-done{ background:var(--emerald-soft); color:var(--emerald); }
+  .tick-tiada{ background:var(--coral-soft); color:var(--coral); }
+  .row-actions{ display:flex; gap:2px; justify-content:flex-end; }
+  .icon-btn{
+    width:28px; height:28px; border-radius:8px; border:1px solid transparent; background:transparent;
+    color:var(--text-lo); display:flex; align-items:center; justify-content:center;
+  }
+  .icon-btn:hover{ background:var(--surface-hover); color:var(--text-hi); border-color:var(--border-strong); }
+
+  .empty-state{ padding:46px 20px; text-align:center; color:var(--text-lo); }
+  .empty-state .orbit{ color:var(--border-strong); margin-bottom:10px; }
+  .empty-state strong{ display:block; color:var(--text-mid); font-size:.92rem; margin-bottom:4px; }
+
+  .skeleton-row{ padding:12px 20px; border-bottom:1px solid var(--border); }
+  .sk-bar{ height:12px; border-radius:6px; background:linear-gradient(90deg, var(--surface-raised), var(--surface-hover), var(--surface-raised)); background-size:200% 100%; animation:shimmer 1.4s infinite; }
+  @keyframes shimmer{ 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
+
+  /* ---------- Modal ---------- */
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(4,6,10,.68); backdrop-filter:blur(3px);
+    display:none; align-items:center; justify-content:center; z-index:60; padding:20px;
+  }
+  .modal-backdrop.open{ display:flex; }
+  .modal{
+    width:100%; max-width:480px; background:var(--surface-raised); border:1px solid var(--border-strong);
+    border-radius:var(--radius); padding:24px; box-shadow:var(--shadow-lift);
+    max-height:88vh; overflow-y:auto;
+  }
+  .modal h3{ font-family:'Sora',sans-serif; font-size:1.05rem; margin-bottom:4px; }
+  .modal .modal-sub{ font-size:.78rem; color:var(--text-lo); margin-bottom:18px; }
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-lo); font-weight:600; margin-bottom:6px; }
+  .field input, .field select{
+    width:100%; background:var(--surface); border:1px solid var(--border-strong); color:var(--text-hi);
+    border-radius:var(--radius-sm); padding:10px 12px; font-size:.88rem; outline:none;
+  }
+  .field input:focus, .field select:focus{ border-color:var(--gold); }
+  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .modal-actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:18px; }
+
+  /* ---------- Toast ---------- */
+  .toast-region{ position:fixed; bottom:20px; right:20px; display:flex; flex-direction:column; gap:8px; z-index:80; }
+  .toast{
+    background:var(--surface-raised); border:1px solid var(--border-strong); color:var(--text-hi);
+    padding:12px 16px; border-radius:var(--radius-sm); font-size:.85rem; box-shadow:var(--shadow-lift);
+    display:flex; align-items:center; gap:10px; min-width:220px; animation:toastIn .25s ease;
+  }
+  .toast.success{ border-color:var(--emerald); }
+  .toast.error{ border-color:var(--coral); }
+  @keyframes toastIn{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:none; } }
+
+  /* ---------- Responsive: collapse grid to cards ---------- */
+  @media (max-width: 920px){
+    .stats-strip{ grid-template-columns:repeat(2,1fr); }
+    .stat-card:nth-child(5){ grid-column:span 2; }
+
+    .grid-header{ display:none; }
+    .row-item{
+      grid-template-columns:1fr; gap:6px; padding:16px 18px; position:relative;
+    }
+    .row-item > div{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+    .row-item > div::before{
+      content:attr(data-label); font-size:.65rem; text-transform:uppercase; letter-spacing:.08em;
+      color:var(--text-lo); font-weight:600; flex:0 0 auto;
+    }
+    .cell-no{ position:absolute; top:14px; right:18px; }
+    .cell-no::before{ content:'' !important; }
+    .cell-nama{ font-size:.98rem; }
+    .cell-nama::before{ content:'' !important; }
+    .row-actions{ justify-content:flex-start; margin-top:6px; }
+    .row-actions::before{ content:'' !important; }
+  }
+  @media (max-width: 560px){
+    .app{ padding:14px 12px 90px; }
+    .topbar{ gap:12px; }
+    .day-tabs{ margin-left:0; width:100%; justify-content:flex-start; }
+    .topbar-actions{ flex-wrap:wrap; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <svg class="orbit" width="30" height="30" viewBox="0 0 30 30">
+        <circle class="ring" cx="15" cy="15" r="12"/>
+        <circle class="core" cx="15" cy="15" r="4.5"/>
+      </svg>
+      <div>
+        <div class="wordmark">LEDGER<span>.</span></div>
+        <div class="tagline">Referral Circle</div>
+      </div>
+    </div>
+    <div class="day-tabs" id="dayTabs"></div>
+    <div class="topbar-actions">
+      <div class="search-box">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input id="searchInput" placeholder="Cari nama, no. hp atau nickname…">
+      </div>
+      <button class="btn" id="refreshBtn" title="Muat semula">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M20 12a8 8 0 10-2.6 5.9M20 4v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <section class="stats-strip" id="statsStrip"></section>
+
+  <main id="mainContent"></main>
+
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" id="modalBox"></div>
+</div>
+
+<div class="toast-region" id="toastRegion"></div>
+
+<script>
+/* ============================================================
+   CONFIG — ganti dengan URL Web App Google Apps Script anda
+   (Deploy > New deployment > Web app > Who has access: Anyone)
+   ============================================================ */
+const CONFIG = {
+  API_URL: 'https://script.google.com/macros/s/AKfycbywLAqfCo7mpc_5Kq0VZXK6mYxwyS0Hu3HklGhRBJMLe6PPP9iozRmiVmFNLIKbuNtLfw/exec'
+};
+
+const DAYS = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
+const FIELD_ORDER = ['no','nama','noHp','whatsapp','nickname','rank','circle','topik','tick'];
+
+const state = {
+  currentDay: 'Ahad',
+  cache: {},        // day -> payload
+  search: ''
+};
+
+/* ---------------- Bootstrapping ---------------- */
+function init(){
+  renderDayTabs();
+  bindGlobalEvents();
+  loadDay(state.currentDay);
+}
+
+function renderDayTabs(){
+  const el = document.getElementById('dayTabs');
+  el.innerHTML = DAYS.map(d =>
+    `<button class="day-tab ${d===state.currentDay?'active':''}" data-day="${d}">${d}</button>`
+  ).join('');
+  el.querySelectorAll('.day-tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.currentDay = btn.dataset.day;
+      renderDayTabs();
+      loadDay(state.currentDay);
+    });
+  });
+}
+
+function bindGlobalEvents(){
+  document.getElementById('refreshBtn').addEventListener('click', ()=> loadDay(state.currentDay, true));
+  document.getElementById('searchInput').addEventListener('input', (e)=>{
+    state.search = e.target.value.trim().toLowerCase();
+    if(state.cache[state.currentDay]) renderMain(state.cache[state.currentDay]);
+  });
+  document.getElementById('modalBackdrop').addEventListener('click', (e)=>{
+    if(e.target.id === 'modalBackdrop') closeModal();
+  });
+}
+
+/* ---------------- Data loading ---------------- */
+async function loadDay(day, force){
+  if(state.cache[day] && !force){ renderMain(state.cache[day]); return; }
+  renderSkeleton();
+  try{
+    const res = await fetch(`${CONFIG.API_URL}?action=getDay&day=${encodeURIComponent(day)}`);
+    const payload = await res.json();
+    if(!payload || payload.error){ throw new Error(payload && payload.error || 'Ralat tidak diketahui'); }
+    state.cache[day] = payload;
+    renderMain(payload);
+  }catch(err){
+    renderError(err.message);
+    toast('Gagal memuatkan data: ' + err.message, 'error');
+  }
+}
+
+async function apiPost(body){
+  const res = await fetch(CONFIG.API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids CORS preflight on Apps Script
+    body: JSON.stringify(body)
+  });
+  const json = await res.json();
+  if(!json.success) throw new Error(json.error || 'Ralat pelayan');
+  return json.data;
+}
+
+/* ---------------- Rendering: skeleton / error ---------------- */
+function renderSkeleton(){
+  document.getElementById('statsStrip').innerHTML = Array(5).fill(0).map(()=>`
+    <div class="stat-card"><div class="sk-bar" style="width:60%"></div><div class="sk-bar" style="width:40%;margin-top:10px;height:20px"></div></div>
+  `).join('');
+  document.getElementById('mainContent').innerHTML = Array(2).fill(0).map(()=>`
+    <div class="circle-block">
+      <div class="circle-block-head"><div class="sk-bar" style="width:180px;height:16px"></div></div>
+      ${Array(4).fill(0).map(()=>`<div class="skeleton-row"><div class="sk-bar" style="width:100%"></div></div>`).join('')}
+    </div>
+  `).join('');
+}
+
+function renderError(msg){
+  document.getElementById('mainContent').innerHTML = `
+    <div class="circle-block"><div class="empty-state">
+      <svg class="orbit" width="34" height="34" viewBox="0 0 30 30"><circle class="ring" cx="15" cy="15" r="12"/><circle class="core" cx="15" cy="15" r="4.5"/></svg>
+      <strong>Tidak dapat menyambung ke Ledger</strong>
+      ${msg}<br><span style="font-size:.75rem">Semak URL API di dalam CONFIG.API_URL.</span>
+    </div></div>`;
+}
+
+/* ---------------- Rendering: stats + sections ---------------- */
+function renderMain(payload){
+  const allRows = payload.sections.flatMap(s => s.rows.map(r => ({...r, _sectionKey:s.key})));
+  const done = allRows.filter(r => (r.tick||'').toLowerCase()==='done').length;
+  const pending = allRows.filter(r => (r.tick||'').toLowerCase()!=='done' && r.nama).length;
+  const strangerCount = payload.sections.find(s=>s.key==='stranger')?.rows.length || 0;
+  const innerCount = payload.sections.find(s=>s.key==='inner')?.rows.length || 0;
+
+  document.getElementById('statsStrip').innerHTML = `
+    <div class="stat-card"><div class="label">Jumlah Kenalan</div><div class="value">${allRows.length}</div></div>
+    <div class="stat-card gold"><div class="label">Stranger</div><div class="value">${strangerCount}</div></div>
+    <div class="stat-card emerald"><div class="label">Inner Circle</div><div class="value">${innerCount}</div></div>
+    <div class="stat-card emerald"><div class="label">Done</div><div class="value">${done}</div></div>
+    <div class="stat-card coral"><div class="label">Pending / Tiada</div><div class="value">${pending}</div></div>
+  `;
+
+  document.getElementById('mainContent').innerHTML = payload.sections.map(section => renderSection(payload.day, section)).join('');
+  bindRowEvents(payload.day);
+}
+
+function filterRows(rows){
+  if(!state.search) return rows;
+  return rows.filter(r =>
+    (r.nama||'').toLowerCase().includes(state.search) ||
+    (r.noHp||'').toLowerCase().includes(state.search) ||
+    (r.nickname||'').toLowerCase().includes(state.search)
+  );
+}
+
+function renderSection(day, section){
+  const rows = filterRows(section.rows);
+  const isStranger = section.key === 'stranger';
+  const iconInner = isStranger
+    ? `<circle class="ring" cx="15" cy="15" r="11"/>`
+    : `<circle class="ring" cx="15" cy="15" r="11"/><circle class="core" cx="15" cy="15" r="5"/>`;
+
+  return `
+  <section class="circle-block" data-circle="${section.key}">
+    <div class="circle-block-head">
+      <svg class="orbit" width="26" height="26" viewBox="0 0 30 30">${iconInner}</svg>
+      <div>
+        <h2>${section.label}</h2>
+        <div class="sub">${isStranger ? 'Prospek luar — belum masuk lingkungan dalaman' : 'Kenalan rapat — sudah dalam lingkaran dalaman'}</div>
+      </div>
+      <span class="count-pill">${rows.length}/10</span>
+      <button class="btn btn-gold add-row-btn" data-action="add" data-section="${section.key}" data-day="${day}">+ Kenalan</button>
+    </div>
+    <div class="grid-header">
+      <div>No</div><div>Nama</div><div>No Hp</div><div>Whatsapp</div><div>Nickname</div><div>Rank</div><div>Circle</div><div>Topik</div><div>Tick</div><div></div>
+    </div>
+    ${rows.length ? rows.map(r => renderRow(day, section.key, r)).join('') : emptyStateHtml(isStranger)}
+  </section>`;
+}
+
+function emptyStateHtml(isStranger){
+  return `<div class="empty-state">
+    <svg class="orbit" width="30" height="30" viewBox="0 0 30 30"><circle class="ring" cx="15" cy="15" r="12"/>${isStranger?'':'<circle class="core" cx="15" cy="15" r="4.5"/>'}</svg>
+    <strong>Tiada kenalan lagi</strong>
+    Klik "+ Kenalan" untuk tambah rekod baharu.
+  </div>`;
+}
+
+function waLink(whatsapp){
+  const digits = (whatsapp||'').replace(/\D/g,'');
+  if(!digits) return '<span class="cell-wa">—</span>';
+  return `<a class="wa-link" href="https://wa.me/${digits}" target="_blank" rel="noopener">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.6.1-.2.3-.7.9-.9 1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.5-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.1 0 1.2.9 2.4 1 2.6.1.2 1.7 2.6 4.2 3.6.6.3 1 .4 1.4.5.6.2 1.1.2 1.5.1.5-.1 1.7-.7 1.9-1.3.2-.6.2-1.2.2-1.3-.1-.1-.2-.2-.5-.3z"/></svg>
+    ${digits}</a>`;
+}
+
+function renderRow(day, sectionKey, r){
+  const tickState = (r.tick||'').toLowerCase()==='done' ? 'done' : 'tiada';
+  return `
+  <div class="row-item" data-row="${r.rowNumber}">
+    <div class="cell-no" data-label="No">${r.no || ''}</div>
+    <div class="cell-nama" data-label="Nama">${escapeHtml(r.nama)}</div>
+    <div class="cell-phone" data-label="No Hp">${escapeHtml(r.noHp)}</div>
+    <div class="cell-wa" data-label="Whatsapp">${waLink(r.whatsapp)}</div>
+    <div class="cell-nick" data-label="Nickname">${escapeHtml(r.nickname)}</div>
+    <div data-label="Rank"><span class="badge badge-topik">${escapeHtml(r.rank)||'—'}</span></div>
+    <div data-label="Circle"><span class="badge ${sectionKey==='stranger'?'badge-stranger':'badge-inner'}">${escapeHtml(r.circle)}</span></div>
+    <div data-label="Topik"><span class="badge badge-topik">${escapeHtml(r.topik)||'—'}</span></div>
+    <div data-label="Tick">
+      <button class="tick-toggle ${tickState==='done'?'tick-done':'tick-tiada'}" data-action="tick" data-row="${r.rowNumber}" data-day="${day}" data-current="${tickState}">
+        ${tickState==='done'?'● Done':'○ Tiada'}
+      </button>
+    </div>
+    <div class="row-actions">
+      <button class="icon-btn" data-action="edit" data-row="${r.rowNumber}" data-day="${day}" data-section="${sectionKey}" title="Sunting">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M16.5 3.5l4 4L7 21l-4.5.5.5-4.5L16.5 3.5z" stroke="currentColor" stroke-width="1.8"/></svg>
+      </button>
+      <button class="icon-btn" data-action="delete" data-row="${r.rowNumber}" data-day="${day}" title="Padam">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V4h6v3m-9 0l1 13h10l1-13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>`;
+}
+
+function escapeHtml(v){
+  if(v===undefined || v===null) return '';
+  return String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ---------------- Row-level interactions ---------------- */
+function bindRowEvents(day){
+  document.querySelectorAll('[data-action="tick"]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const next = btn.dataset.current === 'done' ? 'Tiada' : 'Done';
+      btn.disabled = true;
+      try{
+        await apiPost({ action:'updateField', day, row:Number(btn.dataset.row), field:'tick', value: next });
+        await loadDay(day, true);
+        toast(`Status dikemaskini: ${next}`, 'success');
+      }catch(err){ toast('Gagal kemaskini: '+err.message, 'error'); }
+      finally{ btn.disabled = false; }
+    });
+  });
+
+  document.querySelectorAll('[data-action="delete"]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      if(!confirm('Padam kenalan ini? Tindakan ini tidak boleh diundur.')) return;
+      try{
+        await apiPost({ action:'deleteContact', day, row:Number(btn.dataset.row) });
+        await loadDay(day, true);
+        toast('Kenalan dipadam', 'success');
+      }catch(err){ toast('Gagal padam: '+err.message, 'error'); }
+    });
+  });
+
+  document.querySelectorAll('[data-action="edit"]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const rowNum = Number(btn.dataset.row);
+      const section = btn.dataset.section;
+      const payload = state.cache[day];
+      const row = payload.sections.find(s=>s.key===section).rows.find(r=>r.rowNumber===rowNum);
+      openEditModal(day, section, row);
+    });
+  });
+
+  document.querySelectorAll('[data-action="add"]').forEach(btn=>{
+    btn.addEventListener('click', ()=> openAddModal(day, btn.dataset.section));
+  });
+}
+
+/* ---------------- Modal: edit ---------------- */
+function openEditModal(day, sectionKey, row){
+  const isStranger = sectionKey === 'stranger';
+  const box = document.getElementById('modalBox');
+  box.innerHTML = `
+    <h3>Sunting Kenalan</h3>
+    <div class="modal-sub">${row.nama || 'Rekod'} · Baris ${row.rowNumber}</div>
+    <div class="field"><label>Nama</label><input id="f_nama" value="${escapeHtml(row.nama)}"></div>
+    <div class="field-row">
+      <div class="field"><label>No Hp</label><input id="f_nohp" value="${escapeHtml(row.noHp)}"></div>
+      <div class="field"><label>Whatsapp</label><input id="f_wa" value="${escapeHtml(row.whatsapp)}"></div>
+    </div>
+    <div class="field"><label>Nickname</label><input id="f_nick" value="${escapeHtml(row.nickname)}"></div>
+    <div class="field-row">
+      <div class="field"><label>Rank</label><input id="f_rank" value="${escapeHtml(row.rank)}"></div>
+      <div class="field"><label>Topik</label><input id="f_topik" value="${escapeHtml(row.topik)}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Circle</label>
+        <select id="f_circle">
+          <option value="Stranger" ${isStranger?'selected':''}>Stranger</option>
+          <option value="Inner Circle" ${!isStranger?'selected':''}>Inner Circle</option>
+        </select>
+      </div>
+      <div class="field"><label>Tick</label>
+        <select id="f_tick">
+          <option value="Done" ${row.tick==='Done'?'selected':''}>Done</option>
+          <option value="Tiada" ${row.tick==='Tiada'?'selected':''}>Tiada</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="cancelBtn">Batal</button>
+      <button class="btn btn-gold" id="saveBtn">Simpan</button>
+    </div>
+  `;
+  openModal();
+  document.getElementById('cancelBtn').addEventListener('click', closeModal);
+  document.getElementById('saveBtn').addEventListener('click', async ()=>{
+    const updates = {
+      nama: val('f_nama'), noHp: val('f_nohp'), whatsapp: val('f_wa'),
+      nickname: val('f_nick'), rank: val('f_rank'), topik: val('f_topik'),
+      circle: val('f_circle'), tick: val('f_tick')
+    };
+    try{
+      await apiPost({ action:'updateRow', day, row: row.rowNumber, data: updates });
+      closeModal();
+      await loadDay(day, true);
+      toast('Rekod dikemaskini', 'success');
+    }catch(err){ toast('Gagal simpan: '+err.message, 'error'); }
+  });
+}
+
+/* ---------------- Modal: add ---------------- */
+function openAddModal(day, sectionKey){
+  const isStranger = sectionKey === 'stranger';
+  const box = document.getElementById('modalBox');
+  box.innerHTML = `
+    <h3>Tambah Kenalan Baharu</h3>
+    <div class="modal-sub">${isStranger ? 'Siang · Stranger' : 'Malam · Inner Circle'} — ${day}</div>
+    <div class="field"><label>Nama</label><input id="f_nama" placeholder="Nama penuh"></div>
+    <div class="field-row">
+      <div class="field"><label>No Hp</label><input id="f_nohp" placeholder="601xxxxxxxx"></div>
+      <div class="field"><label>Whatsapp</label><input id="f_wa" placeholder="601xxxxxxxx"></div>
+    </div>
+    <div class="field"><label>Nickname</label><input id="f_nick" placeholder="Nama panggilan"></div>
+    <div class="field-row">
+      <div class="field"><label>Rank</label><input id="f_rank" placeholder="Contoh: Customer"></div>
+      <div class="field"><label>Topik</label><input id="f_topik" placeholder="Contoh: Referrer"></div>
+    </div>
+    <div class="field"><label>Tick</label>
+      <select id="f_tick"><option value="Tiada">Tiada</option><option value="Done">Done</option></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="cancelBtn">Batal</button>
+      <button class="btn btn-gold" id="saveBtn">Tambah</button>
+    </div>
+  `;
+  openModal();
+  document.getElementById('cancelBtn').addEventListener('click', closeModal);
+  document.getElementById('saveBtn').addEventListener('click', async ()=>{
+    if(!val('f_nama')){ toast('Nama wajib diisi', 'error'); return; }
+    const data = {
+      nama: val('f_nama'), noHp: val('f_nohp'), whatsapp: val('f_wa'),
+      nickname: val('f_nick'), rank: val('f_rank'), topik: val('f_topik'),
+      circle: isStranger ? 'Stranger' : 'Inner Circle', tick: val('f_tick')
+    };
+    try{
+      await apiPost({ action:'addContact', day, section: sectionKey, data });
+      closeModal();
+      await loadDay(day, true);
+      toast('Kenalan baharu ditambah', 'success');
+    }catch(err){ toast('Gagal tambah: '+err.message, 'error'); }
+  });
+}
+
+function val(id){ return document.getElementById(id).value.trim(); }
+
+function openModal(){ document.getElementById('modalBackdrop').classList.add('open'); }
+function closeModal(){ document.getElementById('modalBackdrop').classList.remove('open'); }
+
+/* ---------------- Toast ---------------- */
+function toast(msg, type='success'){
+  const region = document.getElementById('toastRegion');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  region.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); }, 2800);
+}
+
+init();
+</script>
+</body>
+</html>
