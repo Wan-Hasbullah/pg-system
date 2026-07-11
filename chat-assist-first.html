@@ -215,7 +215,20 @@ html, body {
   box-shadow: 0 4px 12px rgba(0,180,216,0.2);
 }
 #wh-chat-app .wh-qr-btn:active { transform: translateY(0); }
-#wh-chat-app .wh-qr-btn.disabled { opacity: 0.4; pointer-events: none; }
+
+/* Butang yang pernah dipilih — masih AKTIF & boleh diklik semula,
+   cuma diberi penanda visual gold-premium supaya kelihatan eksklusif */
+#wh-chat-app .wh-qr-btn.wh-selected {
+  background: linear-gradient(135deg, rgba(212,175,55,0.14) 0%, rgba(0,180,216,0.14) 100%);
+  border-color: var(--accent);
+  color: var(--primary);
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0,180,216,0.18);
+}
+#wh-chat-app .wh-qr-btn.wh-selected::before {
+  content: '✓ ';
+  color: var(--accent);
+}
 
 /* ─── INPUT BAR (display only, not functional) ─── */
 #wh-chat-app .wh-input-bar {
@@ -298,8 +311,7 @@ html, body {
   const sleep    = ms => new Promise(r => setTimeout(r, ms));
 
   /* ─── STORAGE ─── */
-  const STORAGE_KEY      = 'assistwan_chat_html';
-  const STORAGE_STATE    = 'assistwan_chat_state';
+  const STORAGE_KEY = 'assistwan_chat_html';
 
   /* Peta action name → fungsi sebenar (untuk re-attach selepas restore) */
   const ACTION_MAP = () => ({
@@ -313,15 +325,14 @@ html, body {
     'flow_cara'         : whFlow_CaraBermula,
   });
 
-  function whSaveChat(activeButtons) {
+  function whSaveChat() {
     try {
       localStorage.setItem(STORAGE_KEY, $('whMessages').innerHTML);
-      if (activeButtons) {
-        localStorage.setItem(STORAGE_STATE, JSON.stringify(activeButtons));
-      }
     } catch(e) {}
   }
 
+  /* Pulihkan chat lama & pastikan SEMUA set butang (bukan hanya yang terakhir)
+     kekal berfungsi untuk diklik semula, sekiranya pengguna tersalah tekan */
   function whRestoreChat() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -329,29 +340,21 @@ html, body {
 
       $('whMessages').innerHTML = saved;
 
-      /* Semua butang dalam chat — lumpuhkan dulu semua */
-      $('whMessages').querySelectorAll('.wh-qr-btn').forEach(b => b.classList.add('disabled'));
-
-      /* Cari set butang terakhir yang aktif (ada data-action) dan re-attach */
-      const stateRaw = localStorage.getItem(STORAGE_STATE);
-      if (stateRaw) {
-        const state = JSON.parse(stateRaw);  /* [{label, action}] */
-        const allWraps = $('whMessages').querySelectorAll('.wh-quick-replies');
-        const lastWrap = allWraps[allWraps.length - 1];
-        if (lastWrap) {
-          const map = ACTION_MAP();
-          lastWrap.querySelectorAll('.wh-qr-btn').forEach(btn => {
-            const actionKey = btn.dataset.action;
-            if (actionKey && map[actionKey]) {
-              btn.classList.remove('disabled');
-              btn.onclick = () => {
-                lastWrap.querySelectorAll('.wh-qr-btn').forEach(b => b.classList.add('disabled'));
-                map[actionKey]();
-              };
-            }
-          });
-        }
-      }
+      const map = ACTION_MAP();
+      $('whMessages').querySelectorAll('.wh-qr-btn[data-action]').forEach(btn => {
+        const actionKey = btn.dataset.action;
+        const fn = map[actionKey];
+        if (!fn) return;
+        const wrap = btn.closest('.wh-quick-replies');
+        btn.onclick = () => {
+          if (wrap) {
+            wrap.querySelectorAll('.wh-qr-btn').forEach(b => b.classList.remove('wh-selected'));
+          }
+          btn.classList.add('wh-selected');
+          fn();
+          whSaveChat();
+        };
+      });
 
       whScroll();
       return true;
@@ -407,27 +410,30 @@ html, body {
     msgs.appendChild(wrap); whScroll(); whSaveChat();
   }
 
-  /* ─── QUICK REPLY BUTTONS ─── */
+  /* ─── QUICK REPLY BUTTONS ───
+     Butang KEKAL AKTIF selepas diklik (bukan disabled), supaya pengguna
+     boleh betulkan pilihan sekiranya tersalah tekan. Hanya ditandakan
+     secara visual (wh-selected) untuk tunjuk pilihan terkini. */
   function whAddQuickReplies(buttons) {
     const msgs = $('whMessages');
     const wrap = document.createElement('div');
     wrap.className = 'wh-quick-replies';
-    const stateToSave = [];
     buttons.forEach(btn => {
       const el = document.createElement('button');
-      el.className     = 'wh-qr-btn';
-      el.textContent   = btn.label;
+      el.className      = 'wh-qr-btn';
+      el.textContent    = btn.label;
       el.dataset.action = btn.actionKey;
-      stateToSave.push({ label: btn.label, action: btn.actionKey });
       el.onclick = () => {
-        wrap.querySelectorAll('.wh-qr-btn').forEach(b => b.classList.add('disabled'));
+        wrap.querySelectorAll('.wh-qr-btn').forEach(b => b.classList.remove('wh-selected'));
+        el.classList.add('wh-selected');
         btn.action();
+        whSaveChat();
       };
       wrap.appendChild(el);
     });
     msgs.appendChild(wrap);
     whScroll();
-    whSaveChat(stateToSave);
+    whSaveChat();
   }
 
   /* ─── TYPING THEN BOT ─── */
