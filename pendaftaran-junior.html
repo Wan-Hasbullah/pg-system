@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pendaftaran | Public Gold Network</title>
+<title>Pendaftaran Junior</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
@@ -122,6 +122,12 @@
   }
   .btn-submit:hover{opacity:0.9}
   .btn-submit:disabled{opacity:0.5;cursor:not-allowed}
+
+  /* Modal Pengesahan Awal (baru) */
+  .confirm-box{max-width:420px}
+  .confirm-header{padding:28px 24px 0}
+  .confirm-body{padding:20px 24px 4px}
+  .confirm-footer{padding:20px 24px 24px;display:grid;grid-template-columns:1fr;gap:10px}
 
   /* Toast */
   .toast{
@@ -271,7 +277,7 @@
     <div style="margin-top:28px">
       <button class="btn-check" onclick="bukaModal()">
         <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-        Semak Maklumat
+        Hantar
       </button>
     </div>
   </div>
@@ -297,7 +303,26 @@
   </div>
 </div>
 
-<!-- Modal Semak Maklumat -->
+<!-- Modal Pengesahan Awal (BARU) -->
+<div class="modal-overlay" id="modalConfirmOverlay">
+  <div class="modal-box confirm-box">
+    <div class="confirm-header">
+      <div class="modal-warning" style="margin-bottom:0">
+        <span class="modal-warning-icon">⚠️</span>
+        <div class="modal-warning-text">
+          <strong>Sila sahkan maklumat anda sebelum hantar</strong> supaya sistem berjalan lancar.
+          Jika ada detail yang tidak tepat, sistem boleh terganggu dan perlu tunggu sehingga 24 jam.
+          Boleh double check dan sahkan semula.
+        </div>
+      </div>
+    </div>
+    <div class="confirm-footer">
+      <button class="btn-submit" onclick="teruskanKeSemakan()">Semak Semula Maklumat</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Semak Maklumat (SEDIA ADA — tidak diubah) -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box">
     <div class="modal-header">
@@ -378,8 +403,21 @@ function getData(){
   };
 }
 
+// STEP 1 (baru): Klik "Hantar" -> validate -> buka popup pengesahan
 function bukaModal(){
   if(!validate())return;
+  document.getElementById('modalConfirmOverlay').classList.add('active');
+  document.getElementById('progressBar').style.width='75%';
+}
+
+function tutupModalPengesahan(){
+  document.getElementById('modalConfirmOverlay').classList.remove('active');
+  document.getElementById('progressBar').style.width='50%';
+}
+
+// STEP 2 (baru): Dari popup pengesahan -> teruskan ke kad "Semakan Maklumat Anda" (sedia ada)
+function teruskanKeSemakan(){
+  document.getElementById('modalConfirmOverlay').classList.remove('active');
   const d=getData();
   const rows=[
     ['Nama Anak',d.namaAnak],
