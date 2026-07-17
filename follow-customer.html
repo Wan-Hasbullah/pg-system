@@ -108,6 +108,20 @@
   .btn-ghost:hover{ background:var(--surface-hover); color:var(--text-hi); }
   .btn-danger{ color:var(--coral); }
 
+  /* ---------- Butang Sheet (pautan terus ke Google Sheet) ---------- */
+  .btn-sheet{
+    background:var(--emerald-soft);
+    border-color:rgba(43,196,138,.4);
+    color:var(--emerald);
+    text-decoration:none;
+    flex-shrink:0;
+  }
+  .btn-sheet:hover{
+    background:rgba(43,196,138,.22);
+    border-color:var(--emerald);
+    color:var(--emerald);
+  }
+
   /* ---------- Stats strip ---------- */
   .stats-strip{
     display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin:6px 0 28px;
@@ -230,12 +244,31 @@
     .cell-nama::before{ content:'' !important; }
     .row-actions{ justify-content:flex-start; margin-top:6px; }
     .row-actions::before{ content:'' !important; }
+
+    /* Susun semula supaya WhatsApp & Tick (aksi follow-up utama) berada paling atas & mudah ditekan */
+    .cell-nama{ order:1; }
+    .row-item [data-label="Whatsapp"]{ order:2; padding:6px 0; }
+    .row-item [data-label="Tick"]{ order:3; padding:6px 0; }
+    .row-item [data-label="No Hp"]{ order:4; }
+    .row-item [data-label="Nickname"]{ order:5; }
+    .row-item [data-label="Rank"]{ order:6; }
+    .row-item [data-label="Circle"]{ order:7; }
+    .row-item [data-label="Topik"]{ order:8; }
+    .row-item .row-actions{ order:9; }
+
+    /* Sasaran sentuhan lebih besar untuk follow-up pantas di mobile */
+    .wa-link{ padding:10px 16px 10px 13px; font-size:.85rem; border-radius:12px; }
+    .wa-link svg{ width:15px; height:15px; }
+    .tick-toggle{ padding:9px 16px; font-size:.78rem; border-radius:12px; }
+    .icon-btn{ width:34px; height:34px; border-radius:9px; }
   }
   @media (max-width: 560px){
     .app{ padding:14px 12px 90px; }
     .topbar{ gap:12px; }
     .day-tabs{ margin-left:0; width:100%; justify-content:flex-start; }
-    .topbar-actions{ flex-wrap:wrap; }
+    .topbar-actions{ flex-wrap:wrap; position:sticky; top:0; z-index:20; background:var(--ink); margin:0 -12px; padding:10px 12px; border-bottom:1px solid var(--border); }
+    .btn-sheet span{ display:none; }
+    .btn-sheet{ padding:10px 12px; }
   }
 </style>
 </head>
@@ -259,6 +292,10 @@
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <input id="searchInput" placeholder="Cari nama, no. hp atau nickname…">
       </div>
+      <a href="https://docs.google.com/spreadsheets/d/1NEGxzUFBX8ut9p077kTb6_Kj7y-iVW3H2mCpI-sDvZI/edit?gid=0#gid=0" target="_blank" rel="noopener" class="btn btn-sheet" title="Buka Google Sheet">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span>Sheet</span>
+      </a>
       <button class="btn" id="refreshBtn" title="Muat semula">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M20 12a8 8 0 10-2.6 5.9M20 4v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
