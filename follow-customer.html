@@ -245,16 +245,18 @@
     .row-actions{ justify-content:flex-start; margin-top:6px; }
     .row-actions::before{ content:'' !important; }
 
-    /* Susun semula supaya WhatsApp & Tick (aksi follow-up utama) berada paling atas & mudah ditekan */
+    /* Susun semula: Nama > Whatsapp > Tick > Topik > Aksi (medan follow-up utama sahaja di mobile) */
     .cell-nama{ order:1; }
     .row-item [data-label="Whatsapp"]{ order:2; padding:6px 0; }
     .row-item [data-label="Tick"]{ order:3; padding:6px 0; }
-    .row-item [data-label="No Hp"]{ order:4; }
-    .row-item [data-label="Nickname"]{ order:5; }
-    .row-item [data-label="Rank"]{ order:6; }
-    .row-item [data-label="Circle"]{ order:7; }
-    .row-item [data-label="Topik"]{ order:8; }
-    .row-item .row-actions{ order:9; }
+    .row-item [data-label="Topik"]{ order:4; }
+    .row-item .row-actions{ order:5; }
+
+    /* Sembunyikan medan sekunder di mobile — hanya Whatsapp, Tick & Topik dipaparkan sebagai data follow-up */
+    .row-item [data-label="No Hp"],
+    .row-item [data-label="Nickname"],
+    .row-item [data-label="Rank"],
+    .row-item [data-label="Circle"]{ display:none; }
 
     /* Sasaran sentuhan lebih besar untuk follow-up pantas di mobile */
     .wa-link{ padding:10px 16px 10px 13px; font-size:.85rem; border-radius:12px; }
@@ -283,7 +285,7 @@
       </svg>
       <div>
         <div class="wordmark">LEDGER<span>.</span></div>
-        <div class="tagline">Referral Circle</div>
+        <div class="tagline">Database FOllow Throught</div>
       </div>
     </div>
     <div class="day-tabs" id="dayTabs"></div>
