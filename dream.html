@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ms" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Countdown Dream & Goal</title>
+<meta name="theme-color" content="#0a1224">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏳</text></svg>">
+<style>
+:root{
+  --bg:#0a1224;--bg2:#0f1b36;--card:rgba(255,255,255,.04);--card-b:rgba(255,255,255,.09);
+  --txt:#eef2fa;--mut:#8b98b5;--em:#10d9a0;--em2:#0aa377;--gold:#e8c26a;--gold2:#b8923a;
+  --shadow:0 20px 50px -20px rgba(0,0,0,.6);--box:rgba(255,255,255,.05);--glow:rgba(16,217,160,.14);
+}
+[data-theme="light"]{
+  --bg:#f4f6fb;--bg2:#e9eef8;--card:#ffffff;--card-b:#dfe5f2;
+  --txt:#0f1b36;--mut:#5d6b8a;--em:#079669;--em2:#067a56;--gold:#a87a1c;--gold2:#8a6414;
+  --shadow:0 18px 40px -22px rgba(15,27,54,.25);--box:#f1f4fa;--glow:rgba(7,150,105,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:84px;-webkit-text-size-adjust:100%}
+body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5;min-height:100vh;
+  background-image:radial-gradient(900px 500px at 10% -10%,var(--glow),transparent 60%),radial-gradient(700px 400px at 100% 0,rgba(232,194,106,.08),transparent 60%);
+  background-attachment:fixed;padding-bottom:env(safe-area-inset-bottom,0)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 18px}
+
+/* Header */
+header.top{position:sticky;top:0;z-index:50;padding-top:env(safe-area-inset-top,0);
+  background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--card-b)}
+.bar{display:flex;align-items:center;gap:14px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
+.logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:17px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1405;box-shadow:0 6px 18px -6px var(--gold)}
+.brand small{display:block;font-weight:500;font-size:10.5px;color:var(--mut);letter-spacing:1.4px;text-transform:uppercase}
+nav{margin-left:auto;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav a{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:600;color:var(--mut);text-decoration:none;
+  border:1px solid transparent;white-space:nowrap;transition:.25s}
+nav a:hover{color:var(--txt);background:var(--card)}
+nav a.active{color:var(--em);background:var(--glow);border-color:color-mix(in srgb,var(--em) 35%,transparent)}
+.theme{width:38px;height:38px;border-radius:12px;border:1px solid var(--card-b);background:var(--card);color:var(--txt);cursor:pointer;font-size:16px;flex:none;transition:.25s}
+.theme:hover{border-color:var(--gold)}
+
+/* Hero */
+.hero{padding:44px 0 10px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold);font-weight:700;
+  padding:6px 12px;border:1px solid color-mix(in srgb,var(--gold) 35%,transparent);border-radius:999px;background:color-mix(in srgb,var(--gold) 8%,transparent)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--em);box-shadow:0 0 0 0 var(--em);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+h1{font-size:clamp(28px,5.2vw,48px);line-height:1.12;margin:16px 0 10px;letter-spacing:-.8px}
+h1 span{background:linear-gradient(90deg,var(--gold),var(--em));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--mut);max-width:620px;font-size:15.5px}
+.today{margin-top:16px;font-size:13px;color:var(--mut)}
+.today b{color:var(--txt)}
+
+/* Section */
+section{padding:46px 0 6px}
+.sec-h{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.sec-ic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:20px;background:var(--glow);border:1px solid color-mix(in srgb,var(--em) 30%,transparent)}
+.sec-h h2{font-size:clamp(20px,3.4vw,26px);letter-spacing:-.4px}
+.sec-h p{font-size:13px;color:var(--mut)}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(310px,1fr))}
+.grid.two{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+
+/* Card */
+.card{position:relative;overflow:hidden;padding:22px;border-radius:22px;background:var(--card);border:1px solid var(--card-b);box-shadow:var(--shadow);transition:.3s}
+.card:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--gold) 45%,transparent)}
+.card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--gold),var(--em))}
+.card .no{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold);font-weight:700}
+.card h3{font-size:18px;line-height:1.35;margin:8px 0 10px;letter-spacing:-.2px;min-height:48px}
+.date{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--mut);padding:6px 11px;border-radius:10px;background:var(--box)}
+.cd{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:18px 0 16px}
+.cd div{text-align:center;padding:12px 4px 9px;border-radius:14px;background:var(--box);border:1px solid var(--card-b)}
+.cd b{display:block;font-size:clamp(22px,6vw,28px);font-variant-numeric:tabular-nums;font-weight:800;letter-spacing:-.5px;line-height:1.1}
+.cd div:first-child b{color:var(--em)}
+.cd small{font-size:10px;letter-spacing:1.3px;text-transform:uppercase;color:var(--mut);font-weight:600}
+.meta{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-bottom:8px}
+.meta b{color:var(--txt)}
+.track{height:8px;border-radius:99px;background:var(--box);overflow:hidden;border:1px solid var(--card-b)}
+.fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--em2),var(--em),var(--gold));transition:width 1s ease}
+.card.done .cd b{color:var(--gold)}
+.badge{position:absolute;top:18px;right:18px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;background:var(--glow);color:var(--em);display:none}
+.card.done .badge{display:block;background:color-mix(in srgb,var(--gold) 18%,transparent);color:var(--gold)}
+
+/* Notion */
+.frame{border-radius:22px;overflow:hidden;border:1px solid var(--card-b);background:var(--card);box-shadow:var(--shadow);padding:10px}
+.frame iframe{display:block;width:100%;height:600px;border:0;border-radius:14px;background:#fff}
+.note{font-size:12px;color:var(--mut);margin-top:10px;text-align:center}
+
+footer{margin-top:60px;padding:26px 0 34px;border-top:1px solid var(--card-b);text-align:center;font-size:12.5px;color:var(--mut)}
+footer b{color:var(--gold)}
+
+@media(max-width:640px){
+  .brand small{display:none}
+  .bar{gap:10px}
+  nav a{padding:8px 11px;font-size:12.5px}
+  .grid,.grid.two{grid-template-columns:1fr}
+  .frame iframe{height:70vh;min-height:480px}
+  .hero{padding-top:30px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap bar">
+    <div class="brand"><div class="logo">◆</div><div>Countdown<small>Dream &amp; Goal</small></div></div>
+    <nav id="nav">
+      <a href="#dream" data-t="dream">🌙 Dream</a>
+      <a href="#goal" data-t="goal">🎯 Goal</a>
+      <a href="#content" data-t="content">🗓️ Content Schedule</a>
+    </nav>
+    <button class="theme" id="theme" aria-label="Tukar tema">🌓</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero">
+    <span class="eyebrow"><i class="dot"></i> Command Center</span>
+    <h1>Setiap saat <span>menghampiri</span> impian.</h1>
+    <p class="lead">Pantau masa yang berbaki untuk setiap dream dan goal. Fokus, konsisten, dan bergerak setiap hari.</p>
+    <p class="today">Hari ini: <b id="today">—</b> · Waktu Malaysia (GMT+8)</p>
+  </div>
+
+  <section id="dream">
+    <div class="sec-h"><div class="sec-ic">🌙</div><div><h2>Dream</h2><p>Impian jangka panjang yang mahu dicapai</p></div></div>
+    <div class="grid" id="dreamGrid"></div>
+  </section>
+
+  <section id="goal">
+    <div class="sec-h"><div class="sec-ic">🎯</div><div><h2>Goal</h2><p>Sasaran yang mesti dicapai</p></div></div>
+    <div class="grid two" id="goalGrid"></div>
+  </section>
+
+  <section id="content">
+    <div class="sec-h"><div class="sec-ic">🗓️</div><div><h2>Content Schedule</h2><p>Jadual kandungan terus dari Notion</p></div></div>
+    <div class="frame">
+      <iframe src="https://purring-talos-7f4.notion.site/ebd//38f4b078389f808081ebd30fcca7fae7" width="100%" height="600" frameborder="0" allowfullscreen loading="lazy" title="Content Schedule"></iframe>
+    </div>
+    <p class="note">Jika jadual tidak dipaparkan, pastikan halaman Notion ditetapkan sebagai Public / Share to web.</p>
+  </section>
+
+  <footer>Dibina untuk disiplin &amp; konsistensi · <b>Dream → Goal → Execution</b></footer>
+</main>
+
+<script>
+/* ====== DATA (ubah di sini sahaja) ======
+   tarikh = tarikh sasaran (waktu Malaysia, 23:59:59)
+   mula   = tarikh mula untuk kiraan progress bar            */
+var DREAMS = [
+  { tajuk: "Berhentikan isteri daripada berniaga untuk bantu keluarga", tarikh: "2027-12-31", mula: "2026-10-12" },
+  { tajuk: "Berhenti daripada KAFA",                                    tarikh: "2028-11-20", mula: "2026-10-12" },
+  { tajuk: "Tunaikan umrah bersama keluarga",                           tarikh: "2028-12-31", mula: "2026-10-12" }
+];
+var GOALS = [
+  { tajuk: "FMD",           tarikh: "2026-12-31", mula: "2026-10-12" },
+  { tajuk: "1000 Frontline", tarikh: "2027-04-30", mula: "2026-10-12" }
+];
+
+var BULAN = ["Jan","Feb","Mac","Apr","Mei","Jun","Jul","Ogo","Sep","Okt","Nov","Dis"];
+var items = [];
+
+function fmt(d){ var p = d.split("-"); return parseInt(p[2],10) + " " + BULAN[parseInt(p[1],10)-1] + " " + p[0]; }
+function pad(n){ return n < 10 ? "0" + n : "" + n; }
+function ts(d, end){ return new Date(d + (end ? "T23:59:59+08:00" : "T00:00:00+08:00")).getTime(); }
+
+function build(list, gridId, label){
+  var g = document.getElementById(gridId), html = "";
+  list.forEach(function(it, i){
+    var id = label + i;
+    items.push({ id:id, t:ts(it.tarikh,true), s:ts(it.mula,false) });
+    html += '<article class="card" id="c-'+id+'">' +
+      '<span class="badge">✔ Masa Tamat</span>' +
+      '<div class="no">'+label+' '+(i+1)+'</div>' +
+      '<h3>'+it.tajuk+'</h3>' +
+      '<span class="date">📅 '+fmt(it.tarikh)+'</span>' +
+      '<div class="cd">' +
+        '<div><b id="'+id+'-d">0</b><small>Hari</small></div>' +
+        '<div><b id="'+id+'-h">00</b><small>Jam</small></div>' +
+        '<div><b id="'+id+'-m">00</b><small>Minit</small></div>' +
+        '<div><b id="'+id+'-s">00</b><small>Saat</small></div>' +
+      '</div>' +
+      '<div class="meta"><span>Progress masa</span><b id="'+id+'-p">0%</b></div>' +
+      '<div class="track"><div class="fill" id="'+id+'-f"></div></div>' +
+    '</article>';
+  });
+  g.innerHTML = html;
+}
+
+function tick(){
+  var now = Date.now();
+  items.forEach(function(it){
+    var diff = it.t - now, done = diff <= 0;
+    if (done) diff = 0;
+    var sec = Math.floor(diff/1000);
+    var d = Math.floor(sec/86400), h = Math.floor(sec%86400/3600), m = Math.floor(sec%3600/60), s = sec%60;
+    document.getElementById(it.id+"-d").textContent = d.toLocaleString("en-US");
+    document.getElementById(it.id+"-h").textContent = pad(h);
+    document.getElementById(it.id+"-m").textContent = pad(m);
+    document.getElementById(it.id+"-s").textContent = pad(s);
+    var total = it.t - it.s, pct = total > 0 ? Math.min(100, Math.max(0, (now - it.s)/total*100)) : 100;
+    if (done) pct = 100;
+    document.getElementById(it.id+"-p").textContent = pct.toFixed(1) + "%";
+    document.getElementById(it.id+"-f").style.width = pct + "%";
+    document.getElementById("c-"+it.id).classList.toggle("done", done);
+  });
+  var n = new Date(now + 8*3600*1000);
+  document.getElementById("today").textContent = n.getUTCDate() + " " + BULAN[n.getUTCMonth()] + " " + n.getUTCFullYear();
+}
+
+build(DREAMS, "dreamGrid", "Dream");
+build(GOALS,  "goalGrid",  "Goal");
+tick(); setInterval(tick, 1000);
+
+/* Nav: scroll lancar + penanda aktif */
+var links = document.querySelectorAll("#nav a");
+links.forEach(function(a){
+  a.addEventListener("click", function(e){
+    e.preventDefault();
+    var t = document.getElementById(a.getAttribute("href").slice(1));
+    if (t) t.scrollIntoView({ behavior:"smooth", block:"start" });
+  });
+});
+if ("IntersectionObserver" in window){
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if (e.isIntersecting){
+        links.forEach(function(a){ a.classList.toggle("active", a.dataset.t === e.target.id); });
+        var act = document.querySelector("#nav a.active");
+        if (act && act.scrollIntoView) act.scrollIntoView({ inline:"center", block:"nearest" });
+      }
+    });
+  }, { rootMargin:"-35% 0px -55% 0px" });
+  ["dream","goal","content"].forEach(function(id){ io.observe(document.getElementById(id)); });
+}
+
+/* Tema Light / Dark */
+(function(){
+  var root = document.documentElement, saved = null;
+  try { saved = localStorage.getItem("cd-theme"); } catch(e){}
+  if (!saved && window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches) saved = "light";
+  if (saved) root.setAttribute("data-theme", saved);
+  document.getElementById("theme").addEventListener("click", function(){
+    var n = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", n);
+    try { localStorage.setItem("cd-theme", n); } catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
