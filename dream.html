@@ -55,7 +55,7 @@ h1 span{background:linear-gradient(90deg,var(--gold),var(--em));-webkit-backgrou
 .today b{color:var(--txt)}
 
 /* Section */
-section{padding:46px 0 6px}
+section{position:relative;padding:46px 0 6px}
 .sec-h{display:flex;align-items:center;gap:14px;margin-bottom:20px}
 .sec-ic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:20px;background:var(--glow);border:1px solid color-mix(in srgb,var(--em) 30%,transparent)}
 .sec-h h2{font-size:clamp(20px,3.4vw,26px);letter-spacing:-.4px}
@@ -63,14 +63,35 @@ section{padding:46px 0 6px}
 .grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(310px,1fr))}
 .grid.two{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
 
-/* Card */
-.card{position:relative;overflow:hidden;padding:22px;border-radius:22px;background:var(--card);border:1px solid var(--card-b);box-shadow:var(--shadow);transition:transform .3s,border-color .3s;contain:content}
+/* Garisan pemisah antara kategori */
+section + section{margin-top:40px}
+section + section::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,var(--gold) 25%,var(--em) 75%,transparent);opacity:.75}
+section + section::after{content:"";position:absolute;top:-4px;left:50%;width:10px;height:10px;margin-left:-5px;transform:rotate(45deg);
+  background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:2px;box-shadow:0 0 0 4px var(--bg),0 0 18px -2px var(--gold)}
+
+/* Card (warna premium songsang mengikut tema) */
+[data-theme="dark"] .card{
+  --txt:#0f1b36;--mut:#5d6b8a;--em:#079669;--em2:#067a56;--gold:#a87a1c;--gold2:#8a6414;
+  --box:#eef2fa;--card-b:#dbe3f2;--glow:rgba(7,150,105,.10);
+  background:linear-gradient(160deg,#ffffff 0%,#f1f5fc 55%,#e4ebf8 100%);
+  box-shadow:0 24px 50px -22px rgba(0,0,0,.65),inset 0 1px 0 #fff}
+[data-theme="light"] .card{
+  --txt:#eef2fa;--mut:#9aa7c4;--em:#10d9a0;--em2:#0aa377;--gold:#e8c26a;--gold2:#b8923a;
+  --box:rgba(255,255,255,.06);--card-b:rgba(255,255,255,.10);--glow:rgba(16,217,160,.14);
+  background:linear-gradient(160deg,#16264a 0%,#0f1b36 55%,#0a1224 100%);
+  box-shadow:0 24px 50px -22px rgba(15,27,54,.55),inset 0 1px 0 rgba(255,255,255,.08)}
+.card{position:relative;overflow:hidden;padding:22px;border-radius:22px;background:var(--card);border:1px solid var(--card-b);box-shadow:var(--shadow);transition:transform .3s,border-color .3s;contain:content;color:var(--txt)}
 .card:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--gold) 45%,transparent)}
-.card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--gold),var(--em))}
+.card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;z-index:3;background:linear-gradient(90deg,var(--gold),var(--em))}
+.thumb{position:relative;margin:-22px -22px 18px;height:180px;overflow:hidden;background:linear-gradient(135deg,var(--gold2),var(--em2))}
+.thumb img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+.card:hover .thumb img{transform:scale(1.06)}
+.thumb::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(10,18,36,.05) 40%,rgba(10,18,36,.45))}
 .card .no{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold);font-weight:700}
 .card h3{font-size:18px;line-height:1.35;margin:8px 0 10px;letter-spacing:-.2px;min-height:48px}
 .date{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--mut);padding:6px 11px;border-radius:10px;background:var(--box)}
-.cd{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:18px 0 16px}
+.cd{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 16px}
 .cd div{text-align:center;padding:12px 4px 9px;border-radius:14px;background:var(--box);border:1px solid var(--card-b)}
 .cd b{display:block;font-size:clamp(22px,6vw,28px);font-variant-numeric:tabular-nums;font-weight:800;letter-spacing:-.5px;line-height:1.1}
 .cd div:first-child b{color:var(--em)}
@@ -80,7 +101,7 @@ section{padding:46px 0 6px}
 .track{height:8px;border-radius:99px;background:var(--box);overflow:hidden;border:1px solid var(--card-b)}
 .fill{height:100%;width:100%;transform:scaleX(0);transform-origin:left;will-change:transform;border-radius:99px;background:linear-gradient(90deg,var(--em2),var(--em),var(--gold));transition:transform 1s ease}
 .card.done .cd b{color:var(--gold)}
-.badge{position:absolute;top:18px;right:18px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;background:var(--glow);color:var(--em);display:none}
+.badge{position:absolute;top:18px;right:18px;z-index:4;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;background:var(--glow);color:var(--em);display:none}
 .card.done .badge{display:block;background:color-mix(in srgb,var(--gold) 18%,transparent);color:var(--gold)}
 
 /* Notion */
@@ -106,6 +127,7 @@ footer b{color:var(--gold)}
   .grid,.grid.two{grid-template-columns:1fr}
   .frame iframe{height:70vh;min-height:480px}
   .hero{padding-top:30px}
+  .thumb{height:160px}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
@@ -160,11 +182,12 @@ footer b{color:var(--gold)}
 <script>
 /* ====== DATA (ubah di sini sahaja) ======
    tarikh = tarikh sasaran (waktu Malaysia, 23:59:59)
-   mula   = tarikh mula untuk kiraan progress bar            */
+   mula   = tarikh mula untuk kiraan progress bar
+   gambar = nama fail dalam folder "gambar" (tanpa sambungan; .jpg/.jpeg/.png/.webp dikesan automatik) */
 var DREAMS = [
-  { tajuk: "Berhentikan isteri daripada berniaga untuk bantu keluarga", tarikh: "2027-12-31", mula: "2026-10-12" },
-  { tajuk: "Berhenti daripada KAFA",                                    tarikh: "2028-11-20", mula: "2026-10-12" },
-  { tajuk: "Tunaikan umrah bersama keluarga",                           tarikh: "2028-12-31", mula: "2026-10-12" }
+  { tajuk: "Berhentikan isteri daripada bekerja", tarikh: "2027-12-31", mula: "2026-10-12", gambar: "mesir" },
+  { tajuk: "Berhenti KAFA",                       tarikh: "2028-11-20", mula: "2026-10-12", gambar: "freedom" },
+  { tajuk: "Umrah Bersama Keluarga",              tarikh: "2028-12-31", mula: "2026-10-12", gambar: "umrah" }
 ];
 var GOALS = [
   { tajuk: "FMD",           tarikh: "2026-12-31", mula: "2026-10-12" },
@@ -172,27 +195,40 @@ var GOALS = [
 ];
 
 var BULAN = ["Jan","Feb","Mac","Apr","Mei","Jun","Jul","Ogo","Sep","Okt","Nov","Dis"];
+var EXTS = ["jpg","jpeg","png","webp"];
 var items = [];
 
 function fmt(d){ var p = d.split("-"); return parseInt(p[2],10) + " " + BULAN[parseInt(p[1],10)-1] + " " + p[0]; }
 function pad(n){ return n < 10 ? "0" + n : "" + n; }
 function ts(d, end){ return new Date(d + (end ? "T23:59:59+08:00" : "T00:00:00+08:00")).getTime(); }
 
+/* Gambar: cuba .jpg → .jpeg → .png → .webp, jika tiada sembunyikan */
+function imgFail(el){
+  var i = parseInt(el.getAttribute("data-i"), 10) + 1;
+  if (i < EXTS.length){
+    el.setAttribute("data-i", i);
+    el.src = "gambar/" + el.getAttribute("data-n") + "." + EXTS[i];
+  } else {
+    el.onerror = null;
+    el.style.display = "none";
+  }
+}
+
 function build(list, gridId, label){
   var g = document.getElementById(gridId), html = "";
   list.forEach(function(it, i){
     var id = label + i;
-    items.push({ id:id, t:ts(it.tarikh,true), s:ts(it.mula,false) });
+    items.push({ id:id, t:ts(it.tarikh,true), s:ts(it.mula,false), y:it.tarikh });
     html += '<article class="card" id="c-'+id+'">' +
       '<span class="badge">✔ Masa Tamat</span>' +
+      (it.gambar ? '<div class="thumb"><img src="gambar/'+it.gambar+'.'+EXTS[0]+'" data-n="'+it.gambar+'" data-i="0" alt="'+it.tajuk+'" loading="lazy" onerror="imgFail(this)"></div>' : '') +
       '<div class="no">'+label+' '+(i+1)+'</div>' +
       '<h3>'+it.tajuk+'</h3>' +
       '<span class="date">📅 '+fmt(it.tarikh)+'</span>' +
       '<div class="cd">' +
+        '<div><b id="'+id+'-y">0</b><small>Tahun</small></div>' +
+        '<div><b id="'+id+'-mo">0</b><small>Bulan</small></div>' +
         '<div><b id="'+id+'-d">0</b><small>Hari</small></div>' +
-        '<div><b id="'+id+'-h">00</b><small>Jam</small></div>' +
-        '<div><b id="'+id+'-m">00</b><small>Minit</small></div>' +
-        '<div><b id="'+id+'-s">00</b><small>Saat</small></div>' +
       '</div>' +
       '<div class="meta"><span>Progress masa</span><b id="'+id+'-p">0%</b></div>' +
       '<div class="track"><div class="fill" id="'+id+'-f"></div></div>' +
@@ -201,17 +237,25 @@ function build(list, gridId, label){
   g.innerHTML = html;
 }
 
+/* Beza kalendar: Tahun / Bulan / Hari (waktu Malaysia) */
+function ymd(now, target){
+  var n = new Date(now + 8*3600*1000), p = target.split("-");
+  var ay = n.getUTCFullYear(), am = n.getUTCMonth()+1, ad = n.getUTCDate();
+  var by = parseInt(p[0],10), bm = parseInt(p[1],10), bd = parseInt(p[2],10);
+  var y = by - ay, m = bm - am, d = bd - ad;
+  if (d < 0){ m--; d += new Date(Date.UTC(by, bm-1, 0)).getUTCDate(); }
+  if (m < 0){ y--; m += 12; }
+  return { y:y, m:m, d:d };
+}
+
 function tick(){
   var now = Date.now();
   items.forEach(function(it){
-    var diff = it.t - now, done = diff <= 0;
-    if (done) diff = 0;
-    var sec = Math.floor(diff/1000);
-    var d = Math.floor(sec/86400), h = Math.floor(sec%86400/3600), m = Math.floor(sec%3600/60), s = sec%60;
-    document.getElementById(it.id+"-d").textContent = d.toLocaleString("en-US");
-    document.getElementById(it.id+"-h").textContent = pad(h);
-    document.getElementById(it.id+"-m").textContent = pad(m);
-    document.getElementById(it.id+"-s").textContent = pad(s);
+    var done = it.t - now <= 0;
+    var r = done ? { y:0, m:0, d:0 } : ymd(now, it.y);
+    document.getElementById(it.id+"-y").textContent = r.y;
+    document.getElementById(it.id+"-mo").textContent = r.m;
+    document.getElementById(it.id+"-d").textContent = r.d;
     var total = it.t - it.s, pct = total > 0 ? Math.min(100, Math.max(0, (now - it.s)/total*100)) : 100;
     if (done) pct = 100;
     document.getElementById(it.id+"-p").textContent = pct.toFixed(1) + "%";
