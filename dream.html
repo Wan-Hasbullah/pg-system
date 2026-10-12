@@ -85,7 +85,7 @@ section + section::after{content:"";position:absolute;top:-4px;left:50%;width:10
 .card:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--gold) 45%,transparent)}
 .card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;z-index:3;background:linear-gradient(90deg,var(--gold),var(--em))}
 .thumb{position:relative;margin:-22px -22px 18px;height:180px;overflow:hidden;background:linear-gradient(135deg,var(--gold2),var(--em2))}
-.thumb img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+.thumb img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .6s ease;cursor:zoom-in}
 .card:hover .thumb img{transform:scale(1.06)}
 .thumb::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(10,18,36,.05) 40%,rgba(10,18,36,.45))}
 .card .no{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold);font-weight:700}
@@ -104,10 +104,32 @@ section + section::after{content:"";position:absolute;top:-4px;left:50%;width:10
 .badge{position:absolute;top:18px;right:18px;z-index:4;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;background:var(--glow);color:var(--em);display:none}
 .card.done .badge{display:block;background:color-mix(in srgb,var(--gold) 18%,transparent);color:var(--gold)}
 
+/* Sasaran Goal (Total & Baki) */
+.card h3.has-sub{min-height:0;margin-bottom:4px}
+.sub{font-size:13px;font-weight:600;color:var(--mut);margin-bottom:12px}
+.stat{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 12px}
+.stat div{padding:10px 12px;border-radius:14px;background:var(--box);border:1px solid var(--card-b)}
+.stat small{display:block;font-size:10px;letter-spacing:1.3px;text-transform:uppercase;color:var(--mut);font-weight:600}
+.stat b{display:block;font-size:22px;font-weight:800;letter-spacing:-.4px;line-height:1.2;font-variant-numeric:tabular-nums}
+.stat div:first-child b{color:var(--em)}
+.stat div:last-child b{color:var(--gold)}
+
+/* Strategi */
+.strat h3{min-height:0;margin:6px 0 0}
+.strat .sec-ic{margin-bottom:16px}
+
+/* Lightbox gambar */
+.lb{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;cursor:zoom-out;
+  padding:calc(env(safe-area-inset-top,0px) + 56px) 16px calc(env(safe-area-inset-bottom,0px) + 20px);
+  background:rgba(5,9,20,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.lb.on{display:flex}
+.lb img{display:block;max-width:100%;max-height:100%;object-fit:contain;border-radius:16px;border:1px solid rgba(255,255,255,.12);box-shadow:0 30px 70px -20px rgba(0,0,0,.8)}
+.lb button{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);right:14px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.08);color:#fff;font-size:18px;cursor:pointer}
+
 /* Notion */
 .frame{border-radius:22px;overflow:hidden;border:1px solid var(--card-b);background:var(--card);box-shadow:var(--shadow);padding:10px}
 .frame iframe{display:block;width:100%;height:600px;border:0;border-radius:14px;background:#fff}
-.note{font-size:12px;color:var(--mut);margin-top:10px;text-align:center}
 .fbox{position:relative}
 .shield{position:absolute;inset:0;z-index:2;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;
   background:linear-gradient(180deg,transparent 40%,rgba(10,18,36,.55));-webkit-tap-highlight-color:transparent}
@@ -140,6 +162,7 @@ footer b{color:var(--gold)}
     <nav id="nav">
       <a href="#dream" data-t="dream">🌙 Dream</a>
       <a href="#goal" data-t="goal">🎯 Goal</a>
+      <a href="#strategi" data-t="strategi">♟️ Strategi</a>
       <a href="#content" data-t="content">🗓️ Content Schedule</a>
     </nav>
     <button class="theme" id="theme" aria-label="Tukar tema">🌓</button>
@@ -164,6 +187,27 @@ footer b{color:var(--gold)}
     <div class="grid two" id="goalGrid"></div>
   </section>
 
+  <section id="strategi">
+    <div class="sec-h"><div class="sec-ic">♟️</div><div><h2>Strategi</h2><p>Langkah utama untuk mencapai sasaran</p></div></div>
+    <div class="grid">
+      <article class="card strat">
+        <div class="sec-ic">🤝</div>
+        <div class="no">Strategi 1</div>
+        <h3>Servicing</h3>
+      </article>
+      <article class="card strat">
+        <div class="sec-ic">📣</div>
+        <div class="no">Strategi 2</div>
+        <h3>Content Marketing</h3>
+      </article>
+      <article class="card strat">
+        <div class="sec-ic">🎙️</div>
+        <div class="no">Strategi 3</div>
+        <h3>Live 100 episod</h3>
+      </article>
+    </div>
+  </section>
+
   <section id="content">
     <div class="sec-h"><div class="sec-ic">🗓️</div><div><h2>Content Schedule</h2><p>Jadual kandungan terus dari Notion</p></div></div>
     <div class="frame">
@@ -173,25 +217,30 @@ footer b{color:var(--gold)}
       </div>
     </div>
     <button class="lock" id="lock">🔒 Kunci semula (supaya mudah skrol)</button>
-    <p class="note">Jika jadual tidak dipaparkan, pastikan halaman Notion ditetapkan sebagai Public / Share to web.</p>
   </section>
 
-  <footer>Dibina untuk disiplin &amp; konsistensi · <b>Dream → Goal → Execution</b></footer>
+  <footer><b>Dream → Goal → Execution</b></footer>
 </main>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button type="button" id="lbx" aria-label="Tutup">✕</button>
+  <img id="lbi" alt="">
+</div>
 
 <script>
 /* ====== DATA (ubah di sini sahaja) ======
    tarikh = tarikh sasaran (waktu Malaysia, 23:59:59)
    mula   = tarikh mula untuk kiraan progress bar
-   gambar = nama fail dalam folder "gambar" (tanpa sambungan; .jpg/.jpeg/.png/.webp dikesan automatik) */
+   gambar = nama fail dalam folder "gambar" (tanpa sambungan; .jpg/.jpeg/.png/.webp dikesan automatik)
+   target = jumlah sasaran Direct Frontline | total = jumlah semasa (baki dikira automatik) */
 var DREAMS = [
   { tajuk: "Berhentikan isteri daripada bekerja", tarikh: "2027-12-31", mula: "2026-10-12", gambar: "mesir" },
   { tajuk: "Berhenti KAFA",                       tarikh: "2028-11-20", mula: "2026-10-12", gambar: "freedom" },
   { tajuk: "Umrah Bersama Keluarga",              tarikh: "2028-12-31", mula: "2026-10-12", gambar: "umrah" }
 ];
 var GOALS = [
-  { tajuk: "FMD",           tarikh: "2026-12-31", mula: "2026-10-12" },
-  { tajuk: "1000 Frontline", tarikh: "2027-04-30", mula: "2026-10-12" }
+  { tajuk: "FMD",            tarikh: "2026-12-31", mula: "2026-10-12", target: 500,  total: 394 },
+  { tajuk: "1000 Frontline", tarikh: "2027-04-30", mula: "2026-10-12", target: 1000, total: 394 }
 ];
 
 var BULAN = ["Jan","Feb","Mac","Apr","Mei","Jun","Jul","Ogo","Sep","Okt","Nov","Dis"];
@@ -201,6 +250,7 @@ var items = [];
 function fmt(d){ var p = d.split("-"); return parseInt(p[2],10) + " " + BULAN[parseInt(p[1],10)-1] + " " + p[0]; }
 function pad(n){ return n < 10 ? "0" + n : "" + n; }
 function ts(d, end){ return new Date(d + (end ? "T23:59:59+08:00" : "T00:00:00+08:00")).getTime(); }
+function num(n){ return Number(n).toLocaleString("en-US"); }
 
 /* Gambar: cuba .jpg → .jpeg → .png → .webp, jika tiada sembunyikan */
 function imgFail(el){
@@ -219,11 +269,15 @@ function build(list, gridId, label){
   list.forEach(function(it, i){
     var id = label + i;
     items.push({ id:id, t:ts(it.tarikh,true), s:ts(it.mula,false), y:it.tarikh });
+    var hasT = typeof it.target === "number";
+    var baki = hasT ? Math.max(0, it.target - it.total) : 0;
     html += '<article class="card" id="c-'+id+'">' +
       '<span class="badge">✔ Masa Tamat</span>' +
       (it.gambar ? '<div class="thumb"><img src="gambar/'+it.gambar+'.'+EXTS[0]+'" data-n="'+it.gambar+'" data-i="0" alt="'+it.tajuk+'" loading="lazy" onerror="imgFail(this)"></div>' : '') +
       '<div class="no">'+label+' '+(i+1)+'</div>' +
-      '<h3>'+it.tajuk+'</h3>' +
+      '<h3'+(hasT ? ' class="has-sub"' : '')+'>'+it.tajuk+'</h3>' +
+      (hasT ? '<p class="sub">'+num(it.target)+' Direct Frontline</p>' +
+        '<div class="stat"><div><small>Total</small><b>'+num(it.total)+'</b></div><div><small>Baki</small><b>'+num(baki)+'</b></div></div>' : '') +
       '<span class="date">📅 '+fmt(it.tarikh)+'</span>' +
       '<div class="cd">' +
         '<div><b id="'+id+'-y">0</b><small>Tahun</small></div>' +
@@ -289,8 +343,31 @@ if ("IntersectionObserver" in window){
       }
     });
   }, { rootMargin:"-35% 0px -55% 0px" });
-  ["dream","goal","content"].forEach(function(id){ io.observe(document.getElementById(id)); });
+  ["dream","goal","strategi","content"].forEach(function(id){ io.observe(document.getElementById(id)); });
 }
+
+/* Lightbox: klik gambar untuk lihat penuh */
+(function(){
+  var lb = document.getElementById("lb"), im = document.getElementById("lbi");
+  function open(src, alt){
+    im.src = src; im.alt = alt || "";
+    lb.classList.add("on"); lb.setAttribute("aria-hidden","false");
+    document.body.style.overflow = "hidden";
+  }
+  function close(){
+    lb.classList.remove("on"); lb.setAttribute("aria-hidden","true");
+    document.body.style.overflow = "";
+    im.removeAttribute("src");
+  }
+  document.addEventListener("click", function(e){
+    var t = e.target;
+    if (t && t.tagName === "IMG" && t.parentNode && t.parentNode.classList.contains("thumb")){
+      open(t.currentSrc || t.src, t.alt);
+    }
+  });
+  lb.addEventListener("click", close);
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape" && lb.classList.contains("on")) close(); });
+})();
 
 /* Iframe Notion: elak "perangkap skrol" */
 (function(){
