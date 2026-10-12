@@ -20,19 +20,20 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;scroll-padding-top:84px;-webkit-text-size-adjust:100%}
 body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5;min-height:100vh;
-  background-image:radial-gradient(900px 500px at 10% -10%,var(--glow),transparent 60%),radial-gradient(700px 400px at 100% 0,rgba(232,194,106,.08),transparent 60%);
-  background-attachment:fixed;padding-bottom:env(safe-area-inset-bottom,0)}
+  padding-bottom:env(safe-area-inset-bottom,0)}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;transform:translateZ(0);
+  background-image:radial-gradient(900px 500px at 10% -10%,var(--glow),transparent 60%),radial-gradient(700px 400px at 100% 0,rgba(232,194,106,.08),transparent 60%)}
 .wrap{max-width:1100px;margin:0 auto;padding:0 18px}
 
 /* Header */
 header.top{position:sticky;top:0;z-index:50;padding-top:env(safe-area-inset-top,0);
-  background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--card-b)}
+  background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transform:translateZ(0);border-bottom:1px solid var(--card-b)}
 .bar{display:flex;align-items:center;gap:14px;height:64px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
 .logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:17px;
   background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1405;box-shadow:0 6px 18px -6px var(--gold)}
 .brand small{display:block;font-weight:500;font-size:10.5px;color:var(--mut);letter-spacing:1.4px;text-transform:uppercase}
-nav{margin-left:auto;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+nav{margin-left:auto;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain}
 nav::-webkit-scrollbar{display:none}
 nav a{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:600;color:var(--mut);text-decoration:none;
   border:1px solid transparent;white-space:nowrap;transition:.25s}
@@ -45,8 +46,8 @@ nav a.active{color:var(--em);background:var(--glow);border-color:color-mix(in sr
 .hero{padding:44px 0 10px}
 .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold);font-weight:700;
   padding:6px 12px;border:1px solid color-mix(in srgb,var(--gold) 35%,transparent);border-radius:999px;background:color-mix(in srgb,var(--gold) 8%,transparent)}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--em);box-shadow:0 0 0 0 var(--em);animation:pulse 2s infinite}
-@keyframes pulse{70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--em);animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.3}}
 h1{font-size:clamp(28px,5.2vw,48px);line-height:1.12;margin:16px 0 10px;letter-spacing:-.8px}
 h1 span{background:linear-gradient(90deg,var(--gold),var(--em));-webkit-background-clip:text;background-clip:text;color:transparent}
 .lead{color:var(--mut);max-width:620px;font-size:15.5px}
@@ -63,7 +64,7 @@ section{padding:46px 0 6px}
 .grid.two{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
 
 /* Card */
-.card{position:relative;overflow:hidden;padding:22px;border-radius:22px;background:var(--card);border:1px solid var(--card-b);box-shadow:var(--shadow);transition:.3s}
+.card{position:relative;overflow:hidden;padding:22px;border-radius:22px;background:var(--card);border:1px solid var(--card-b);box-shadow:var(--shadow);transition:transform .3s,border-color .3s;contain:content}
 .card:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--gold) 45%,transparent)}
 .card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--gold),var(--em))}
 .card .no{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold);font-weight:700}
@@ -77,7 +78,7 @@ section{padding:46px 0 6px}
 .meta{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-bottom:8px}
 .meta b{color:var(--txt)}
 .track{height:8px;border-radius:99px;background:var(--box);overflow:hidden;border:1px solid var(--card-b)}
-.fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--em2),var(--em),var(--gold));transition:width 1s ease}
+.fill{height:100%;width:100%;transform:scaleX(0);transform-origin:left;will-change:transform;border-radius:99px;background:linear-gradient(90deg,var(--em2),var(--em),var(--gold));transition:transform 1s ease}
 .card.done .cd b{color:var(--gold)}
 .badge{position:absolute;top:18px;right:18px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;background:var(--glow);color:var(--em);display:none}
 .card.done .badge{display:block;background:color-mix(in srgb,var(--gold) 18%,transparent);color:var(--gold)}
@@ -86,6 +87,14 @@ section{padding:46px 0 6px}
 .frame{border-radius:22px;overflow:hidden;border:1px solid var(--card-b);background:var(--card);box-shadow:var(--shadow);padding:10px}
 .frame iframe{display:block;width:100%;height:600px;border:0;border-radius:14px;background:#fff}
 .note{font-size:12px;color:var(--mut);margin-top:10px;text-align:center}
+.fbox{position:relative}
+.shield{position:absolute;inset:0;z-index:2;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  background:linear-gradient(180deg,transparent 40%,rgba(10,18,36,.55));-webkit-tap-highlight-color:transparent}
+.shield span{padding:11px 18px;border-radius:999px;font-size:13px;font-weight:700;color:#1a1405;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));box-shadow:0 10px 26px -8px var(--gold)}
+.shield.off{display:none}
+.lock{display:none;margin:12px auto 0;padding:9px 16px;border-radius:999px;border:1px solid var(--card-b);background:var(--card);color:var(--txt);font-size:12.5px;font-weight:600;cursor:pointer}
+.lock.on{display:block}
 
 footer{margin-top:60px;padding:26px 0 34px;border-top:1px solid var(--card-b);text-align:center;font-size:12.5px;color:var(--mut)}
 footer b{color:var(--gold)}
@@ -136,8 +145,12 @@ footer b{color:var(--gold)}
   <section id="content">
     <div class="sec-h"><div class="sec-ic">🗓️</div><div><h2>Content Schedule</h2><p>Jadual kandungan terus dari Notion</p></div></div>
     <div class="frame">
-      <iframe src="https://purring-talos-7f4.notion.site/ebd//38f4b078389f808081ebd30fcca7fae7" width="100%" height="600" frameborder="0" allowfullscreen loading="lazy" title="Content Schedule"></iframe>
+      <div class="fbox">
+        <iframe src="https://purring-talos-7f4.notion.site/ebd//38f4b078389f808081ebd30fcca7fae7" width="100%" height="600" frameborder="0" allowfullscreen loading="lazy" title="Content Schedule"></iframe>
+        <div class="shield" id="shield"><span>👆 Tekan untuk buka jadual</span></div>
+      </div>
     </div>
+    <button class="lock" id="lock">🔒 Kunci semula (supaya mudah skrol)</button>
     <p class="note">Jika jadual tidak dipaparkan, pastikan halaman Notion ditetapkan sebagai Public / Share to web.</p>
   </section>
 
@@ -202,7 +215,7 @@ function tick(){
     var total = it.t - it.s, pct = total > 0 ? Math.min(100, Math.max(0, (now - it.s)/total*100)) : 100;
     if (done) pct = 100;
     document.getElementById(it.id+"-p").textContent = pct.toFixed(1) + "%";
-    document.getElementById(it.id+"-f").style.width = pct + "%";
+    document.getElementById(it.id+"-f").style.transform = "scaleX(" + (pct/100) + ")";
     document.getElementById("c-"+it.id).classList.toggle("done", done);
   });
   var n = new Date(now + 8*3600*1000);
@@ -227,13 +240,20 @@ if ("IntersectionObserver" in window){
     es.forEach(function(e){
       if (e.isIntersecting){
         links.forEach(function(a){ a.classList.toggle("active", a.dataset.t === e.target.id); });
-        var act = document.querySelector("#nav a.active");
-        if (act && act.scrollIntoView) act.scrollIntoView({ inline:"center", block:"nearest" });
+        var act = document.querySelector("#nav a.active"), nv = document.getElementById("nav");
+        if (act) nv.scrollTo({ left: act.offsetLeft - (nv.clientWidth - act.offsetWidth)/2, behavior:"auto" });
       }
     });
   }, { rootMargin:"-35% 0px -55% 0px" });
   ["dream","goal","content"].forEach(function(id){ io.observe(document.getElementById(id)); });
 }
+
+/* Iframe Notion: elak "perangkap skrol" */
+(function(){
+  var sh = document.getElementById("shield"), lk = document.getElementById("lock");
+  sh.addEventListener("click", function(){ sh.classList.add("off"); lk.classList.add("on"); });
+  lk.addEventListener("click", function(){ sh.classList.remove("off"); lk.classList.remove("on"); });
+})();
 
 /* Tema Light / Dark */
 (function(){
