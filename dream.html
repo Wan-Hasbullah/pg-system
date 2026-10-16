@@ -118,6 +118,16 @@ section + section::after{content:"";position:absolute;top:-4px;left:50%;width:10
 .strat h3{min-height:0;margin:6px 0 0}
 .strat .sec-ic{margin-bottom:16px}
 
+/* Dream Jangka Panjang */
+.lt h3{min-height:0;margin:6px 0 14px}
+.lt .sec-ic{margin-bottom:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:9px 13px;border-radius:12px;font-size:13px;font-weight:600;background:var(--box);border:1px solid var(--card-b)}
+.chip i{font-style:normal}
+.sublist{list-style:none;display:grid;gap:8px;counter-reset:s}
+.sublist li{display:flex;align-items:flex-start;gap:10px;padding:11px 12px;border-radius:14px;font-size:13.5px;font-weight:600;line-height:1.4;background:var(--box);border:1px solid var(--card-b)}
+.sublist li::before{counter-increment:s;content:counter(s);flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;color:#1a1405;background:linear-gradient(135deg,var(--gold),var(--gold2))}
+
 /* Lightbox gambar */
 .lb{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;cursor:zoom-out;
   padding:calc(env(safe-area-inset-top,0px) + 56px) 16px calc(env(safe-area-inset-bottom,0px) + 20px);
@@ -161,6 +171,7 @@ footer b{color:var(--gold)}
     <div class="brand"><div class="logo">◆</div><div>Countdown<small>Dream &amp; Goal</small></div></div>
     <nav id="nav">
       <a href="#dream" data-t="dream">🌙 Dream</a>
+      <a href="#jangka-panjang" data-t="jangka-panjang">🏛️ Jangka Panjang</a>
       <a href="#goal" data-t="goal">🎯 Goal</a>
       <a href="#strategi" data-t="strategi">♟️ Strategi</a>
       <a href="#content" data-t="content">🗓️ Content Schedule</a>
@@ -180,6 +191,36 @@ footer b{color:var(--gold)}
   <section id="dream">
     <div class="sec-h"><div class="sec-ic">🌙</div><div><h2>Dream</h2><p>Impian jangka panjang yang mahu dicapai</p></div></div>
     <div class="grid" id="dreamGrid"></div>
+  </section>
+
+  <section id="jangka-panjang">
+    <div class="sec-h"><div class="sec-ic">🏛️</div><div><h2>Dream Jangka Panjang</h2><p>Legasi perniagaan &amp; aset untuk masa depan</p></div></div>
+    <div class="grid">
+      <article class="card lt">
+        <div class="sec-ic">🤝</div>
+        <div class="no">Dream Jangka Panjang 1</div>
+        <h3>Jalankan sebuah perniagaan dan agihkan hasil pada adik beradik</h3>
+      </article>
+      <article class="card lt">
+        <div class="sec-ic">🏡</div>
+        <div class="no">Dream Jangka Panjang 2</div>
+        <h3>Hartanah</h3>
+        <div class="chips">
+          <span class="chip"><i>🔑</i> Sewa</span>
+          <span class="chip"><i>🛏️</i> Homestay / Roomstay</span>
+        </div>
+      </article>
+      <article class="card lt">
+        <div class="sec-ic">🚀</div>
+        <div class="no">Dream Jangka Panjang 3</div>
+        <h3>Founder Bisnes</h3>
+        <ol class="sublist">
+          <li>Bisnes Franchise</li>
+          <li>Bisnes Mini Market seperti Speedmart tetapi mempunyai sistem app</li>
+          <li>Stesen minyak dan Mini Market di stesen minyak</li>
+        </ol>
+      </article>
+    </div>
   </section>
 
   <section id="goal">
@@ -343,7 +384,7 @@ if ("IntersectionObserver" in window){
       }
     });
   }, { rootMargin:"-35% 0px -55% 0px" });
-  ["dream","goal","strategi","content"].forEach(function(id){ io.observe(document.getElementById(id)); });
+  ["dream","jangka-panjang","goal","strategi","content"].forEach(function(id){ io.observe(document.getElementById(id)); });
 }
 
 /* Lightbox: klik gambar untuk lihat penuh */
