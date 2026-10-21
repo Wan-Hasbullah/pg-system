@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Follow Up Database</title>
+<title>Servicing Database</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -31,14 +31,13 @@ h1{margin:0;font-size:20px;font-weight:800;letter-spacing:-.02em}
 .tab[aria-selected=true]{background:var(--ink);color:#fff}
 .tab[aria-selected=true] b{color:#bfe6d6}
 
-/* Penapis */
-.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.filters label.wide{grid-column:1/-1}
-.filters label{display:flex;flex-direction:column;gap:3px;font-size:11px;font-weight:700;color:var(--mute);letter-spacing:.03em;text-transform:uppercase;min-width:0}
-.filters select{width:100%;font:600 14px inherit;font-family:inherit;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 34px 10px 12px;min-height:44px;cursor:pointer;
+/* Penapis (sebaris pada mobile) */
+.filters{display:grid;grid-template-columns:1.3fr 1fr .85fr;gap:6px;margin-top:10px}
+.filters label{display:flex;flex-direction:column;gap:3px;font-size:10px;font-weight:700;color:var(--mute);letter-spacing:.03em;text-transform:uppercase;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.filters select{width:100%;font:600 13px inherit;font-family:inherit;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 24px 10px 10px;min-height:44px;cursor:pointer;min-width:0;box-shadow:0 1px 2px rgba(14,42,34,.05);
 appearance:none;-webkit-appearance:none;
 background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%235d716a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-background-repeat:no-repeat;background-position:right 12px center;text-overflow:ellipsis}
+background-repeat:no-repeat;background-position:right 9px center;background-size:10px 7px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
 .filters select:disabled{opacity:.5;cursor:not-allowed;background-color:#f1f4f3}
 .filters select.on{border-color:var(--green);box-shadow:0 0 0 1px var(--green)}
 .meta{display:flex;justify-content:space-between;gap:10px;margin-top:6px;font-size:12px;color:var(--mute);min-height:16px}
@@ -72,8 +71,9 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
 
 /* Desktop / tablet */
 @media(min-width:640px){
-  .filters{grid-template-columns:minmax(0,220px) minmax(0,300px) minmax(0,200px)}
-  .filters label.wide{grid-column:auto}
+  .filters{grid-template-columns:minmax(0,220px) minmax(0,300px) minmax(0,200px);gap:8px}
+  .filters label{font-size:11px}
+  .filters select{font-size:14px;padding:10px 34px 10px 12px;background-position:right 12px center;background-size:12px 8px}
   .row{grid-template-columns:1fr auto;grid-template-areas:"n w" "c c";align-items:center;gap:8px 12px}
   .wa{min-height:40px;font-size:13px;padding:9px 16px}
 }
@@ -87,7 +87,7 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
 <header class="top">
   <div class="wrap">
     <div class="bar">
-      <h1>Follow Up</h1>
+      <h1>Servicing</h1>
       <div class="actions">
         <a id="sheetBtn" class="btn" target="_blank" rel="noopener">Buka Sheet</a>
         <button id="refreshBtn" class="btn" type="button">Muat semula</button>
@@ -100,8 +100,8 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
       <button class="tab" role="tab" data-tab="No Tak Aktif">No Tak Aktif <b>-</b></button>
     </nav>
     <div class="filters">
-      <label class="wide">Hari follow up
-        <select id="daySel" aria-label="Tapis mengikut hari follow up"></select>
+      <label>Hari servicing
+        <select id="daySel" aria-label="Tapis mengikut hari servicing"></select>
       </label>
       <label>Topik
         <select id="topicSel" aria-label="Tapis mengikut topik"><option value="">Semua topik</option></select>
@@ -134,7 +134,7 @@ const CONFIG = {
   GIDS: { 'Stranger': '0', 'Inner Circle': '1483812357', 'Dealer': '600246336' }, // No Tak Aktif diambil automatik
   REFRESH_MS: 120000,                       // semak data baharu setiap 2 minit
   GROUP_SIZE: 10,                           // warna bertukar setiap 10 nama
-  DAY_SLOTS: [1, 2, 3, 4, 5],               // hari follow up (1=Isnin ... 5=Jumaat). Setiap kumpulan 10 nama diberi satu hari
+  DAY_SLOTS: [1, 2, 3, 4, 5],               // hari servicing (1=Isnin ... 5=Jumaat). Setiap kumpulan 10 nama diberi satu hari
   COUNTRY_CODE: '60',
   SHOW_EMPTY_TOPICS: true                   // true: topik kosong dipaparkan sebagai "belum"; false: disembunyikan
 };
@@ -276,7 +276,7 @@ function render() {
     : tab.rows.length + ' rekod';
   if (!items.length) {
     if (dayFilter === 'today' && !CONFIG.DAY_SLOTS.includes(new Date().getDay())) {
-      return message('Hari ini tiada jadual follow up. Pilih hari lain atau "Semua hari".');
+      return message('Hari ini tiada jadual servicing. Pilih hari lain atau "Semua hari".');
     }
     return message('Tiada rekod sepadan dengan penapis ini.');
   }
