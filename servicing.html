@@ -33,6 +33,7 @@ h1{margin:0;font-size:20px;font-weight:800;letter-spacing:-.02em}
 
 /* Penapis */
 .filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.filters label.wide{grid-column:1/-1}
 .filters label{display:flex;flex-direction:column;gap:3px;font-size:11px;font-weight:700;color:var(--mute);letter-spacing:.03em;text-transform:uppercase;min-width:0}
 .filters select{width:100%;font:600 14px inherit;font-family:inherit;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 34px 10px 12px;min-height:44px;cursor:pointer;
 appearance:none;-webkit-appearance:none;
@@ -49,7 +50,10 @@ background-repeat:no-repeat;background-position:right 12px center;text-overflow:
 /* Senarai */
 main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
 .group{border-radius:16px;padding:10px;margin-bottom:12px}
-.gl{font-size:12px;font-weight:700;color:var(--ink);opacity:.7;margin:0 4px 8px}
+.gh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 4px 8px}
+.gl{font-size:12px;font-weight:700;color:var(--ink);opacity:.7;margin:0}
+.day{font-size:11px;font-weight:700;color:var(--ink);background:rgba(255,255,255,.75);border-radius:999px;padding:3px 10px;white-space:nowrap}
+.day.now{background:var(--ink);color:#fff}
 .cards{display:grid;grid-template-columns:1fr;gap:8px}
 .row{display:grid;grid-template-columns:1fr;grid-template-areas:"n" "w" "c";gap:10px;background:rgba(255,255,255,.78);border-left:5px solid var(--acc,var(--green));border-radius:12px;padding:12px}
 .name{grid-area:n;font-weight:700;font-size:16px;min-width:0;overflow-wrap:anywhere}
@@ -68,7 +72,8 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
 
 /* Desktop / tablet */
 @media(min-width:640px){
-  .filters{grid-template-columns:minmax(0,320px) minmax(0,220px)}
+  .filters{grid-template-columns:minmax(0,220px) minmax(0,300px) minmax(0,200px)}
+  .filters label.wide{grid-column:auto}
   .row{grid-template-columns:1fr auto;grid-template-areas:"n w" "c c";align-items:center;gap:8px 12px}
   .wa{min-height:40px;font-size:13px;padding:9px 16px}
 }
@@ -95,6 +100,9 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
       <button class="tab" role="tab" data-tab="No Tak Aktif">No Tak Aktif <b>-</b></button>
     </nav>
     <div class="filters">
+      <label class="wide">Hari follow up
+        <select id="daySel" aria-label="Tapis mengikut hari follow up"></select>
+      </label>
       <label>Topik
         <select id="topicSel" aria-label="Tapis mengikut topik"><option value="">Semua topik</option></select>
       </label>
@@ -126,6 +134,7 @@ const CONFIG = {
   GIDS: { 'Stranger': '0', 'Inner Circle': '1483812357', 'Dealer': '600246336' }, // No Tak Aktif diambil automatik
   REFRESH_MS: 120000,                       // semak data baharu setiap 2 minit
   GROUP_SIZE: 10,                           // warna bertukar setiap 10 nama
+  DAY_SLOTS: [1, 2, 3, 4, 5],               // hari follow up (1=Isnin ... 5=Jumaat). Setiap kumpulan 10 nama diberi satu hari
   COUNTRY_CODE: '60',
   SHOW_EMPTY_TOPICS: true                   // true: topik kosong dipaparkan sebagai "belum"; false: disembunyikan
 };
@@ -140,6 +149,29 @@ const lsSet = (k, v) => { try { localStorage.setItem('fu_' + k, v); } catch (e) 
 let data = null, busy = false, loadedAt = 0;
 let active = TABS.includes(lsGet('tab')) ? lsGet('tab') : TABS[0];
 let topicFilter = '', statusFilter = '';
+const DAY_NAMES = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
+const savedDay = lsGet('day');
+let dayFilter = (savedDay === 'all' || savedDay === 'today' || CONFIG.DAY_SLOTS.map(String).includes(savedDay))
+  ? savedDay : (CONFIG.DAY_SLOTS.includes(new Date().getDay()) ? 'today' : 'all');
+let daySig = '';
+
+/* Setiap kumpulan 10 nama (ikut kedudukan dalam sheet) ada satu hari tetap dalam minggu */
+const dayOf = (g) => CONFIG.DAY_SLOTS[g % CONFIG.DAY_SLOTS.length];
+const wantedDay = () => dayFilter === 'all' ? null : dayFilter === 'today' ? new Date().getDay() : Number(dayFilter);
+
+function syncDay() {
+  const sig = DAY_NAMES[new Date().getDay()];
+  const s = $('#daySel');
+  if (sig !== daySig) {
+    daySig = sig;
+    s.replaceChildren();
+    [['today', 'Hari ini (' + sig + ')'], ['all', 'Semua hari']]
+      .concat(CONFIG.DAY_SLOTS.map((d) => [String(d), DAY_NAMES[d]]))
+      .forEach((x) => { const o = el('option', '', x[1]); o.value = x[0]; s.append(o); });
+  }
+  s.value = dayFilter;
+  s.classList.toggle('on', dayFilter !== 'all');
+}
 let topicSig = '';
 
 function el(tag, cls, text) {
@@ -218,6 +250,7 @@ function render() {
   });
   $('#sheetBtn').href = sheetUrl(active);
   const tab = data && data.tabs[active];
+  syncDay();
   syncFilters(tab);
   $('#count').textContent = '';
   if (!data) return;
@@ -228,25 +261,44 @@ function render() {
   if (!tab.rows.length) return message('Tiada rekod dalam tab ini.');
 
   const tIdx = topicFilter ? tab.topics.indexOf(topicFilter) : -1;
-  const rows = tab.rows.filter((r) => tIdx < 0 || !statusFilter || topicState(r.t[tIdx]) === statusFilter);
-
-  $('#count').textContent = (tIdx >= 0 || statusFilter)
-    ? 'Dipaparkan ' + rows.length + ' daripada ' + tab.rows.length + ' rekod'
-    : tab.rows.length + ' rekod';
-  if (!rows.length) return message('Tiada rekod sepadan dengan penapis ini.');
-
   const size = CONFIG.GROUP_SIZE;
+  const wanted = wantedDay();
+  const items = [];
+  tab.rows.forEach((r, i) => {
+    const g = Math.floor(i / size);
+    if (wanted !== null && dayOf(g) !== wanted) return;
+    if (tIdx >= 0 && statusFilter && topicState(r.t[tIdx]) !== statusFilter) return;
+    items.push({ r: r, i: i, g: g });
+  });
+  const filtered = wanted !== null || tIdx >= 0 || !!statusFilter;
+  $('#count').textContent = filtered
+    ? 'Dipaparkan ' + items.length + ' daripada ' + tab.rows.length + ' rekod'
+    : tab.rows.length + ' rekod';
+  if (!items.length) {
+    if (dayFilter === 'today' && !CONFIG.DAY_SLOTS.includes(new Date().getDay())) {
+      return message('Hari ini tiada jadual follow up. Pilih hari lain atau "Semua hari".');
+    }
+    return message('Tiada rekod sepadan dengan penapis ini.');
+  }
+
+  const today = new Date().getDay();
   const frag = document.createDocumentFragment();
-  let cards = null, g = 0;
-  rows.forEach((r, i) => {
-    if (i % size === 0) {
-      g = Math.floor(i / size);
+  let cards = null, lastG = -1;
+  items.forEach((it) => {
+    const r = it.r, i = it.i, g = it.g;
+    if (g !== lastG) {
+      lastG = g;
       const group = el('section', 'group');
       group.style.background = 'var(--g' + (g % 8) + ')';
       group.style.setProperty('--acc', 'var(--a' + (g % 8) + ')');
-      group.append(el('p', 'gl', 'Nama ' + (i + 1) + '\u2013' + Math.min(i + size, rows.length)));
+      const dv = dayOf(g);
+      const gh = el('div', 'gh');
+      gh.append(
+        el('p', 'gl', 'Nama ' + (g * size + 1) + '\u2013' + Math.min((g + 1) * size, tab.rows.length)),
+        el('span', 'day' + (dv === today ? ' now' : ''), DAY_NAMES[dv] + (dv === today ? ' \u00B7 Hari ini' : ''))
+      );
       cards = el('div', 'cards');
-      group.append(cards);
+      group.append(gh, cards);
       frag.append(group);
     }
     const row = el('article', 'row');
@@ -319,6 +371,12 @@ document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () 
   render();
   window.scrollTo({ top: 0 });
 }));
+$('#daySel').addEventListener('change', (e) => {
+  dayFilter = e.target.value;
+  lsSet('day', dayFilter);
+  render();
+  window.scrollTo({ top: 0 });
+});
 $('#topicSel').addEventListener('change', (e) => {
   const o = e.target.selectedOptions[0];
   topicFilter = e.target.value === '' ? '' : o.dataset.name;
