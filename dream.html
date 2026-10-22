@@ -11,14 +11,16 @@
   --bg:#0a1224;--bg2:#0f1b36;--card:rgba(255,255,255,.04);--card-b:rgba(255,255,255,.09);
   --txt:#eef2fa;--mut:#8b98b5;--em:#10d9a0;--em2:#0aa377;--gold:#e8c26a;--gold2:#b8923a;
   --shadow:0 20px 50px -20px rgba(0,0,0,.6);--box:rgba(255,255,255,.05);--glow:rgba(16,217,160,.14);
+  --d-s:#10d9a0;--d-c:#e8c26a;--d-l:#ff6b8a;
 }
 [data-theme="light"]{
   --bg:#f4f6fb;--bg2:#e9eef8;--card:#ffffff;--card-b:#dfe5f2;
   --txt:#0f1b36;--mut:#5d6b8a;--em:#079669;--em2:#067a56;--gold:#a87a1c;--gold2:#8a6414;
   --shadow:0 18px 40px -22px rgba(15,27,54,.25);--box:#f1f4fa;--glow:rgba(7,150,105,.10);
+  --d-s:#079669;--d-c:#c48a14;--d-l:#e0436a;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;scroll-padding-top:84px;-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth;scroll-padding-top:calc(84px + env(safe-area-inset-top,0px));-webkit-text-size-adjust:100%}
 body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5;min-height:100vh;
   padding-bottom:env(safe-area-inset-bottom,0)}
 body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;transform:translateZ(0);
@@ -114,9 +116,19 @@ section + section::after{content:"";position:absolute;top:-4px;left:50%;width:10
 .stat div:first-child b{color:var(--em)}
 .stat div:last-child b{color:var(--gold)}
 
+/* Butang Gerak Kerja */
+.gk-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:none;margin-left:auto;padding:10px 16px;border-radius:14px;border:0;cursor:pointer;white-space:nowrap;
+  font:inherit;font-size:13.5px;font-weight:700;color:#1a1405;background:linear-gradient(135deg,var(--gold),var(--gold2));
+  box-shadow:0 10px 26px -10px var(--gold);transition:transform .2s,filter .2s;-webkit-tap-highlight-color:transparent}
+.gk-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.gk-btn:active{transform:translateY(0)}
+
 /* Strategi */
 .strat h3{min-height:0;margin:6px 0 0}
 .strat .sec-ic{margin-bottom:16px}
+a.strat{display:block;text-decoration:none;color:var(--txt)}
+.strat.clk{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.strat.clk:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 
 /* Dream Jangka Panjang */
 .lt h3{min-height:0;margin:6px 0 14px}
@@ -136,6 +148,51 @@ section + section::after{content:"";position:absolute;top:-4px;left:50%;width:10
 .lb img{display:block;max-width:100%;max-height:100%;object-fit:contain;border-radius:16px;border:1px solid rgba(255,255,255,.12);box-shadow:0 30px 70px -20px rgba(0,0,0,.8)}
 .lb button{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);right:14px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.2);
   background:rgba(255,255,255,.08);color:#fff;font-size:18px;cursor:pointer}
+
+/* Popup: Gerak Kerja & Rekod Pencapaian */
+.modal{position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;
+  padding:calc(env(safe-area-inset-top,0px) + 16px) 14px calc(env(safe-area-inset-bottom,0px) + 16px);
+  background:rgba(5,9,20,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.modal.on{display:flex}
+#rk{z-index:120}
+.panel{position:relative;width:100%;max-width:440px;max-height:100%;overflow-y:auto;overscroll-behavior:contain;border-radius:22px;padding:22px;
+  background:linear-gradient(160deg,var(--bg2),var(--bg));border:1px solid var(--card-b);box-shadow:var(--shadow);color:var(--txt)}
+.panel::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--gold),var(--em))}
+.mx{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;border:1px solid var(--card-b);background:var(--card);color:var(--txt);font-size:15px;cursor:pointer}
+.mx:hover{border-color:var(--gold)}
+.m-eye{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold);font-weight:700;padding-right:44px}
+.m-t{font-size:20px;line-height:1.3;margin:6px 0 2px;letter-spacing:-.2px;padding-right:44px}
+.m-g{font-size:13px;font-weight:600;color:var(--mut);margin-bottom:16px}
+.m-g b{color:var(--em)}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.cal-nav button{width:38px;height:38px;border-radius:12px;border:1px solid var(--card-b);background:var(--box);color:var(--txt);font-size:16px;cursor:pointer;flex:none}
+.cal-nav button:hover{border-color:var(--gold)}
+.cal-nav b{font-size:15px;letter-spacing:.2px;text-align:center}
+.dow,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.dow{margin-bottom:6px}
+.dow span{text-align:center;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--mut)}
+.day{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;aspect-ratio:1/1.05;min-width:0;padding:0;border-radius:12px;
+  border:1px solid var(--card-b);background:var(--box);color:var(--txt);font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.day:hover{border-color:var(--gold)}
+.day.empty{visibility:hidden;pointer-events:none}
+.day.today{border-color:var(--em);box-shadow:inset 0 0 0 1px var(--em)}
+.dots{display:flex;gap:3px;height:6px;align-items:center;justify-content:center}
+.dt{width:6px;height:6px;border-radius:50%;flex:none}
+.dt.s{background:var(--d-s)}.dt.c{background:var(--d-c)}.dt.l{background:var(--d-l)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:16px;font-size:12px;font-weight:600;color:var(--mut)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.rrow{padding:12px 14px;border-radius:14px;background:var(--box);border:1px solid var(--card-b);margin-bottom:10px}
+.rtop{display:flex;align-items:center;gap:10px}
+.rtop .dt{width:9px;height:9px}
+.rtop span{font-size:14px;font-weight:700;flex:1}
+.rtop b{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.rtop em{font-style:normal;font-size:12.5px;font-weight:600;color:var(--mut)}
+.rnote{margin-top:8px;font-size:13px;line-height:1.45;color:var(--mut);white-space:pre-line;word-break:break-word}
+.rnone{padding:18px 14px;text-align:center;border-radius:14px;background:var(--box);border:1px dashed var(--card-b);font-size:13.5px;font-weight:600;color:var(--mut)}
+.rgen{margin-top:4px;padding:12px 14px;border-radius:14px;border:1px solid var(--card-b);font-size:13px;line-height:1.45;white-space:pre-line;word-break:break-word}
+.rgen small{display:block;font-size:10px;letter-spacing:1.3px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:4px}
+.m-close{display:block;width:100%;margin-top:14px;padding:12px;border-radius:14px;border:1px solid var(--card-b);background:var(--card);color:var(--txt);font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.m-close:hover{border-color:var(--gold)}
 
 /* Notion */
 .frame{border-radius:22px;overflow:hidden;border:1px solid var(--card-b);background:var(--card);box-shadow:var(--shadow);padding:10px}
@@ -160,6 +217,9 @@ footer b{color:var(--gold)}
   .frame iframe{height:70vh;min-height:480px}
   .hero{padding-top:30px}
   .thumb{height:160px}
+  .panel{padding:18px 16px}
+  .gk-btn{padding:9px 12px;font-size:12.5px}
+  .dow,.days{gap:4px}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
@@ -171,9 +231,9 @@ footer b{color:var(--gold)}
     <div class="brand"><div class="logo">◆</div><div>Countdown<small>Dream &amp; Goal</small></div></div>
     <nav id="nav">
       <a href="#dream" data-t="dream">🌙 Dream</a>
-      <a href="#jangka-panjang" data-t="jangka-panjang">🏛️ Jangka Panjang</a>
-      <a href="#goal" data-t="goal">🎯 Goal</a>
       <a href="#strategi" data-t="strategi">♟️ Strategi</a>
+      <a href="#goal" data-t="goal">🎯 Goal</a>
+      <a href="#jangka-panjang" data-t="jangka-panjang">🏛️ Jangka Panjang</a>
       <a href="#content" data-t="content">🗓️ Content Schedule</a>
     </nav>
     <button class="theme" id="theme" aria-label="Tukar tema">🌓</button>
@@ -191,6 +251,32 @@ footer b{color:var(--gold)}
   <section id="dream">
     <div class="sec-h"><div class="sec-ic">🌙</div><div><h2>Dream</h2><p>Impian jangka panjang yang mahu dicapai</p></div></div>
     <div class="grid" id="dreamGrid"></div>
+  </section>
+
+  <section id="strategi">
+    <div class="sec-h"><div class="sec-ic">♟️</div><div><h2>Strategi</h2><p>Langkah utama untuk mencapai sasaran</p></div></div>
+    <div class="grid">
+      <a class="card strat clk" href="https://wan-pgdealer.pages.dev/servicing" target="_blank" rel="noopener">
+        <div class="sec-ic">🤝</div>
+        <div class="no">Strategi 1</div>
+        <h3>Servicing</h3>
+      </a>
+      <article class="card strat clk" id="stratContent" role="button" tabindex="0" aria-label="Content Marketing — pergi ke Content Schedule">
+        <div class="sec-ic">📣</div>
+        <div class="no">Strategi 2</div>
+        <h3>Content Marketing</h3>
+      </article>
+      <article class="card strat">
+        <div class="sec-ic">🎙️</div>
+        <div class="no">Strategi 3</div>
+        <h3>Live 100 episod</h3>
+      </article>
+    </div>
+  </section>
+
+  <section id="goal">
+    <div class="sec-h"><div class="sec-ic">🎯</div><div><h2>Goal</h2><p>Sasaran yang mesti dicapai</p></div><button type="button" class="gk-btn" id="gkOpen">🗓️ Gerak Kerja</button></div>
+    <div class="grid two" id="goalGrid"></div>
   </section>
 
   <section id="jangka-panjang">
@@ -223,32 +309,6 @@ footer b{color:var(--gold)}
     </div>
   </section>
 
-  <section id="goal">
-    <div class="sec-h"><div class="sec-ic">🎯</div><div><h2>Goal</h2><p>Sasaran yang mesti dicapai</p></div></div>
-    <div class="grid two" id="goalGrid"></div>
-  </section>
-
-  <section id="strategi">
-    <div class="sec-h"><div class="sec-ic">♟️</div><div><h2>Strategi</h2><p>Langkah utama untuk mencapai sasaran</p></div></div>
-    <div class="grid">
-      <article class="card strat">
-        <div class="sec-ic">🤝</div>
-        <div class="no">Strategi 1</div>
-        <h3>Servicing</h3>
-      </article>
-      <article class="card strat">
-        <div class="sec-ic">📣</div>
-        <div class="no">Strategi 2</div>
-        <h3>Content Marketing</h3>
-      </article>
-      <article class="card strat">
-        <div class="sec-ic">🎙️</div>
-        <div class="no">Strategi 3</div>
-        <h3>Live 100 episod</h3>
-      </article>
-    </div>
-  </section>
-
   <section id="content">
     <div class="sec-h"><div class="sec-ic">🗓️</div><div><h2>Content Schedule</h2><p>Jadual kandungan terus dari Notion</p></div></div>
     <div class="frame">
@@ -268,12 +328,48 @@ footer b{color:var(--gold)}
   <img id="lbi" alt="">
 </div>
 
+<!-- Popup 1: Kalendar Gerak Kerja -->
+<div class="modal" id="gk" aria-hidden="true">
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="gkT">
+    <button type="button" class="mx" id="gkx" aria-label="Tutup">✕</button>
+    <div class="m-eye">Gerak Kerja</div>
+    <h3 class="m-t" id="gkT">Gerak Kerja</h3>
+    <p class="m-g">Goal: <b id="gkG">—</b></p>
+    <div class="cal-nav">
+      <button type="button" id="gkPrev" aria-label="Bulan sebelumnya">‹</button>
+      <b id="gkM">—</b>
+      <button type="button" id="gkNext" aria-label="Bulan seterusnya">›</button>
+    </div>
+    <div class="dow"><span>Isn</span><span>Sel</span><span>Rab</span><span>Kha</span><span>Jum</span><span>Sab</span><span>Ahd</span></div>
+    <div class="days" id="gkD"></div>
+    <div class="legend">
+      <span><i class="dt s"></i> Servicing</span>
+      <span><i class="dt c"></i> Content Marketing</span>
+      <span><i class="dt l"></i> Live</span>
+    </div>
+  </div>
+</div>
+
+<!-- Popup 2: Rekod Pencapaian -->
+<div class="modal" id="rk" aria-hidden="true">
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="rkT">
+    <button type="button" class="mx" id="rkx" aria-label="Tutup">✕</button>
+    <div class="m-eye" id="rkDate">—</div>
+    <h3 class="m-t" id="rkT">REKOD PENCAPAIAN</h3>
+    <p class="m-g">Goal: <b id="rkG">—</b></p>
+    <div id="rkB"></div>
+    <button type="button" class="m-close" id="rkc">Tutup</button>
+  </div>
+</div>
+
+<script src="js/goal-data.js"></script>
 <script>
 /* ====== DATA (ubah di sini sahaja) ======
    tarikh = tarikh sasaran (waktu Malaysia, 23:59:59)
    mula   = tarikh mula untuk kiraan progress bar
    gambar = nama fail dalam folder "gambar" (tanpa sambungan; .jpg/.jpeg/.png/.webp dikesan automatik)
-   target = jumlah sasaran Direct Frontline | total = jumlah semasa (baki dikira automatik) */
+   target = jumlah sasaran Direct Frontline | total = jumlah semasa (baki dikira automatik)
+   Rekod Pencapaian (kalendar Gerak Kerja) dibaca daripada fail js/goal-data.js */
 var DREAMS = [
   { tajuk: "Berhentikan isteri daripada bekerja", tarikh: "2027-12-31", mula: "2026-10-12", gambar: "mesir" },
   { tajuk: "Berhenti KAFA",                       tarikh: "2028-11-20", mula: "2026-10-12", gambar: "freedom" },
@@ -285,6 +381,7 @@ var GOALS = [
 ];
 
 var BULAN = ["Jan","Feb","Mac","Apr","Mei","Jun","Jul","Ogo","Sep","Okt","Nov","Dis"];
+var BULAN_P = ["Januari","Februari","Mac","April","Mei","Jun","Julai","Ogos","September","Oktober","November","Disember"];
 var EXTS = ["jpg","jpeg","png","webp"];
 var items = [];
 
@@ -292,6 +389,7 @@ function fmt(d){ var p = d.split("-"); return parseInt(p[2],10) + " " + BULAN[pa
 function pad(n){ return n < 10 ? "0" + n : "" + n; }
 function ts(d, end){ return new Date(d + (end ? "T23:59:59+08:00" : "T00:00:00+08:00")).getTime(); }
 function num(n){ return Number(n).toLocaleString("en-US"); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
 /* Gambar: cuba .jpg → .jpeg → .png → .webp, jika tiada sembunyikan */
 function imgFail(el){
@@ -384,7 +482,7 @@ if ("IntersectionObserver" in window){
       }
     });
   }, { rootMargin:"-35% 0px -55% 0px" });
-  ["dream","jangka-panjang","goal","strategi","content"].forEach(function(id){ io.observe(document.getElementById(id)); });
+  ["dream","strategi","goal","jangka-panjang","content"].forEach(function(id){ io.observe(document.getElementById(id)); });
 }
 
 /* Lightbox: klik gambar untuk lihat penuh */
@@ -415,6 +513,138 @@ if ("IntersectionObserver" in window){
   var sh = document.getElementById("shield"), lk = document.getElementById("lock");
   sh.addEventListener("click", function(){ sh.classList.add("off"); lk.classList.add("on"); });
   lk.addEventListener("click", function(){ sh.classList.remove("off"); lk.classList.remove("on"); });
+})();
+
+/* Strategi 2: Content Marketing → skrol ke Content Schedule */
+(function(){
+  var c = document.getElementById("stratContent");
+  function go(){
+    var t = document.getElementById("content");
+    if (t) t.scrollIntoView({ behavior:"smooth", block:"start" });
+  }
+  c.addEventListener("click", go);
+  c.addEventListener("keydown", function(e){
+    if (e.key === "Enter" || e.key === " "){ e.preventDefault(); go(); }
+  });
+})();
+
+/* ====== Gerak Kerja: kalendar + Rekod Pencapaian (baca sahaja, data daripada data.js) ====== */
+(function(){
+  var CATS = [
+    { k:"servicing", n:"Servicing",         c:"s" },
+    { k:"content",   n:"Content Marketing", c:"c" },
+    { k:"live",      n:"Live",              c:"l" }
+  ];
+  var IDX = {};
+  var gk = document.getElementById("gk"), rk = document.getElementById("rk");
+  var cur = { y:0, m:0 };
+  var GOAL_NAMES = GOALS.map(function(g){ return g.tajuk; }).join(" & ");
+
+  /* Bina indeks: kunci = goal|tarikh. Rekod pendua pada tarikh+goal yang sama digabungkan. */
+  function buildIndex(){
+    IDX = {};
+    var src = (typeof window.REKOD !== "undefined" && Object.prototype.toString.call(window.REKOD) === "[object Array]") ? window.REKOD : [];
+    src.forEach(function(r){
+      if (!r || !r.tarikh) return;
+      var key = String(r.tarikh).trim();
+      var m = IDX[key] || (IDX[key] = { servicing:null, content:null, live:null, catatan:[] });
+      CATS.forEach(function(c){
+        var v = r[c.k];
+        if (v && (Number(v.jumlah) > 0 || (v.catatan && String(v.catatan).trim()))){
+          var o = m[c.k] || (m[c.k] = { jumlah:0, catatan:[] });
+          o.jumlah += Number(v.jumlah) || 0;
+          if (v.catatan && String(v.catatan).trim()) o.catatan.push(String(v.catatan).trim());
+        }
+      });
+      if (r.catatan && String(r.catatan).trim()) m.catatan.push(String(r.catatan).trim());
+    });
+  }
+  function rec(date){ return IDX[date] || null; }
+
+  function lock(){
+    var any = gk.classList.contains("on") || rk.classList.contains("on");
+    document.body.style.overflow = any ? "hidden" : "";
+  }
+  function show(el){ el.classList.add("on"); el.setAttribute("aria-hidden","false"); lock(); }
+  function hide(el){ el.classList.remove("on"); el.setAttribute("aria-hidden","true"); lock(); }
+
+  function myNow(){ return new Date(Date.now() + 8*3600*1000); }
+
+  function render(){
+    var y = cur.y, m = cur.m;
+    document.getElementById("gkM").textContent = BULAN_P[m] + " " + y;
+    var first = (new Date(Date.UTC(y, m, 1)).getUTCDay() + 6) % 7;   /* Isnin = 0 */
+    var dim = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+    var n = myNow(), todayKey = n.getUTCFullYear() + "-" + pad(n.getUTCMonth()+1) + "-" + pad(n.getUTCDate());
+    var html = "", i, d, key, r, dots, cls;
+    for (i = 0; i < first; i++) html += '<button type="button" class="day empty" tabindex="-1" aria-hidden="true"></button>';
+    for (d = 1; d <= dim; d++){
+      key = y + "-" + pad(m+1) + "-" + pad(d);
+      r = rec(key);
+      dots = "";
+      if (r) CATS.forEach(function(c){ if (r[c.k]) dots += '<i class="dt ' + c.c + '"></i>'; });
+      cls = "day" + (key === todayKey ? " today" : "");
+      html += '<button type="button" class="' + cls + '" data-d="' + key + '" aria-label="' + d + ' ' + BULAN_P[m] + ' ' + y + '">' +
+        '<span>' + d + '</span><span class="dots">' + dots + '</span></button>';
+    }
+    document.getElementById("gkD").innerHTML = html;
+  }
+
+  function openCal(){
+    buildIndex();
+    var n = myNow();
+    cur = { y:n.getUTCFullYear(), m:n.getUTCMonth() };
+    document.getElementById("gkG").textContent = GOAL_NAMES;
+    render();
+    show(gk);
+  }
+
+  function openRec(date){
+    var r = rec(date), b = "", any = false;
+    document.getElementById("rkDate").textContent = fmt(date);
+    document.getElementById("rkG").textContent = GOAL_NAMES;
+    if (r){
+      CATS.forEach(function(c){
+        var v = r[c.k];
+        if (v){ any = true;
+          b += '<div class="rrow"><div class="rtop"><i class="dt ' + c.c + '"></i><span>' + c.n + '</span><b>' + num(v.jumlah) + '</b></div>' +
+               (v.catatan.length ? '<p class="rnote">' + esc(v.catatan.join("\n")) + '</p>' : '') + '</div>';
+        } else {
+          b += '<div class="rrow"><div class="rtop"><i class="dt ' + c.c + '"></i><span>' + c.n + '</span><em>Tiada rekod</em></div></div>';
+        }
+      });
+      if (r.catatan.length){ any = true; b += '<div class="rgen"><small>Catatan</small>' + esc(r.catatan.join("\n")) + '</div>'; }
+    }
+    if (!any) b = '<div class="rnone">Tiada rekod pencapaian pada tarikh ini</div>';
+    document.getElementById("rkB").innerHTML = b;
+    show(rk);
+  }
+
+  /* Buka kalendar daripada butang di sebelah tajuk Goal */
+  document.getElementById("gkOpen").addEventListener("click", openCal);
+  /* Klik tarikh */
+  document.getElementById("gkD").addEventListener("click", function(e){
+    var d = e.target.closest ? e.target.closest(".day[data-d]") : null;
+    if (d) openRec(d.getAttribute("data-d"));
+  });
+  /* Bulan sebelumnya / seterusnya */
+  document.getElementById("gkPrev").addEventListener("click", function(){
+    cur.m--; if (cur.m < 0){ cur.m = 11; cur.y--; } render();
+  });
+  document.getElementById("gkNext").addEventListener("click", function(){
+    cur.m++; if (cur.m > 11){ cur.m = 0; cur.y++; } render();
+  });
+  /* Tutup */
+  document.getElementById("gkx").addEventListener("click", function(){ hide(gk); });
+  document.getElementById("rkx").addEventListener("click", function(){ hide(rk); });
+  document.getElementById("rkc").addEventListener("click", function(){ hide(rk); });
+  gk.addEventListener("click", function(e){ if (e.target === gk) hide(gk); });
+  rk.addEventListener("click", function(e){ if (e.target === rk) hide(rk); });
+  document.addEventListener("keydown", function(e){
+    if (e.key !== "Escape") return;
+    if (rk.classList.contains("on")) hide(rk);
+    else if (gk.classList.contains("on")) hide(gk);
+  });
 })();
 
 /* Tema Light / Dark */
