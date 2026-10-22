@@ -96,6 +96,18 @@ background-repeat:no-repeat;background-position:right 12px center;background-siz
 .cd.today{box-shadow:inset 0 0 0 2px var(--a4)}
 .cd.today .dn{color:var(--ink);font-weight:800}
 
+/* Butang kalendar: Snap + Salin */
+.cact{display:flex;gap:8px;margin-top:12px}
+.cbtn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 12px;border-radius:12px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap}
+.cbtn:active{filter:brightness(.95)}
+.cbtn[disabled]{opacity:.6;cursor:wait}
+.cbtn.snap{border:0;color:#fff;background:linear-gradient(135deg,#0e2a22 0%,#15483a 100%);box-shadow:0 6px 16px rgba(14,42,34,.2),inset 0 1px 0 rgba(255,255,255,.10)}
+.cbtn.snap svg{color:#e9cf7a}
+.cbtn.copy{border:1px solid var(--line);background:#fff;color:var(--ink)}
+.cbtn.copy:hover{border-color:var(--green)}
+.cbtn.copy svg{color:var(--green)}
+.cbtn.done{border-color:var(--green)!important}
+
 /* Senarai */
 main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
 .group{border-radius:16px;padding:10px;margin-bottom:12px}
@@ -235,6 +247,16 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
       <button id="calNext" class="cnav" type="button" aria-label="Bulan seterusnya">&rsaquo;</button>
     </div>
     <div id="calGrid" class="cgrid"></div>
+    <div class="cact">
+      <button id="calSnap" class="cbtn snap" type="button" aria-label="Snap gambar kalendar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a2 2 0 0 1 2-2h1.5l1.2-2h6.6l1.2 2H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        <span>Snap</span>
+      </button>
+      <button id="calCopy" class="cbtn copy" type="button" aria-label="Salin hari, tarikh dan jumlah">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+        <span>Salin</span>
+      </button>
+    </div>
   </section>
 </section>
 
@@ -341,6 +363,190 @@ function renderCal() {
   grid.replaceChildren(frag);
   $('#calTitle').textContent = MONTHS[cal.m] + ' ' + cal.y;
   $('#calSum').textContent = 'Hari ini ' + tickCount(todayK) + ' \u00B7 Bulan ini ' + total;
+}
+
+/* ====== Kalendar: Snap (gambar PNG) & Salin (teks) ====== */
+function monthTotal() {
+  const days = new Date(cal.y, cal.m + 1, 0).getDate();
+  let t = 0;
+  for (let d = 1; d <= days; d++) t += tickCount(cal.y + '-' + pad(cal.m + 1) + '-' + pad(d));
+  return t;
+}
+
+/* Teks: hari, tarikh, jumlah (bagi bulan yang sedang dipaparkan) */
+function calText() {
+  const days = new Date(cal.y, cal.m + 1, 0).getDate();
+  const lines = [];
+  let total = 0;
+  for (let d = 1; d <= days; d++) {
+    const n = tickCount(cal.y + '-' + pad(cal.m + 1) + '-' + pad(d));
+    if (!n) continue;
+    total += n;
+    lines.push(DAY_NAMES[new Date(cal.y, cal.m, d).getDay()] + ', ' + d + ' ' + MONTHS[cal.m] + ' ' + cal.y + ' - ' + n);
+  }
+  return 'Servis ' + MONTHS[cal.m] + ' ' + cal.y + '\n\n'
+    + (lines.length ? lines.join('\n') : 'Tiada servis direkodkan.')
+    + '\n\nJumlah: ' + total;
+}
+
+async function copyText(text) {
+  try {
+    if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return true; }
+  } catch (e) { /* cuba kaedah lama */ }
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly', '');
+  ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;font-size:16px';
+  document.body.append(ta);
+  ta.select();
+  ta.setSelectionRange(0, text.length);
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+  ta.remove();
+  return ok;
+}
+
+function flash(btn, text) {
+  const s = btn.querySelector('span');
+  if (!btn.dataset.label) btn.dataset.label = s.textContent;
+  s.textContent = text;
+  btn.classList.add('done');
+  clearTimeout(btn._t);
+  btn._t = setTimeout(() => { s.textContent = btn.dataset.label; btn.classList.remove('done'); }, 1800);
+}
+
+function rr(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+async function buildCalImage() {
+  try {
+    await Promise.all([
+      document.fonts.load('800 28px "Plus Jakarta Sans"'),
+      document.fonts.load('700 16px "Plus Jakarta Sans"'),
+      document.fonts.load('600 14px "Plus Jakarta Sans"')
+    ]);
+  } catch (e) { /* guna fon sandaran */ }
+  const FF = '"Plus Jakarta Sans", system-ui, sans-serif';
+  const S = 2, W = 720, P = 28, GAP = 8, HEAD = 104, WKH = 34, CH = 74, FOOT = 46;
+  const first = new Date(cal.y, cal.m, 1);
+  const days = new Date(cal.y, cal.m + 1, 0).getDate();
+  const rows = Math.ceil((first.getDay() + days) / 7);
+  const CW = (W - P * 2 - GAP * 6) / 7;
+  const H = HEAD + WKH + rows * CH + (rows - 1) * GAP + FOOT + 10;
+  const cv = document.createElement('canvas');
+  cv.width = W * S; cv.height = H * S;
+  const ctx = cv.getContext('2d');
+  ctx.scale(S, S);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, W, H);
+
+  // header gelap + emas
+  const g = ctx.createLinearGradient(0, 0, W, HEAD);
+  g.addColorStop(0, '#0e2a22'); g.addColorStop(1, '#15483a');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, HEAD);
+  ctx.textBaseline = 'alphabetic';
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '800 28px ' + FF;
+  ctx.fillText(MONTHS[cal.m] + ' ' + cal.y, P, 52);
+  ctx.fillStyle = '#e9cf7a';
+  ctx.font = '600 15px ' + FF;
+  ctx.fillText('Kalendar Servis', P, 78);
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#e9cf7a';
+  ctx.font = '800 40px ' + FF;
+  ctx.fillText(String(monthTotal()), W - P, 58);
+  ctx.fillStyle = 'rgba(255,255,255,.75)';
+  ctx.font = '600 13px ' + FF;
+  ctx.fillText('jumlah bulan ini', W - P, 80);
+
+  // nama hari
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#5d716a';
+  ctx.font = '700 12px ' + FF;
+  WK.forEach((w, i) => ctx.fillText(w.toUpperCase(), P + i * (CW + GAP) + CW / 2, HEAD + 22));
+
+  // sel hari
+  const todayK = ymd(new Date());
+  const gy = HEAD + WKH;
+  for (let d = 1; d <= days; d++) {
+    const idx = first.getDay() + d - 1;
+    const col = idx % 7, row = Math.floor(idx / 7);
+    const x = P + col * (CW + GAP), y = gy + row * (CH + GAP);
+    const key = cal.y + '-' + pad(cal.m + 1) + '-' + pad(d);
+    const n = tickCount(key);
+    ctx.fillStyle = n >= 10 ? '#9bd9bc' : n >= 5 ? '#bfe8d3' : n > 0 ? '#dcf3e7' : '#f3f6f5';
+    rr(ctx, x, y, CW, CH, 12); ctx.fill();
+    if (key === todayK) {
+      ctx.strokeStyle = '#c9a500'; ctx.lineWidth = 3;
+      rr(ctx, x + 1.5, y + 1.5, CW - 3, CH - 3, 11); ctx.stroke();
+    }
+    ctx.textAlign = 'center';
+    ctx.fillStyle = n ? '#0e2a22' : '#5d716a';
+    ctx.font = (key === todayK ? '800' : '600') + ' 17px ' + FF;
+    ctx.fillText(String(d), x + CW / 2, y + 26);
+    if (n) {
+      ctx.font = '800 14px ' + FF;
+      const tw = ctx.measureText(String(n)).width;
+      const bw = Math.max(26, tw + 16), bh = 24;
+      const bx = x + CW / 2 - bw / 2, by = y + CH - bh - 10;
+      ctx.fillStyle = '#13795b';
+      rr(ctx, bx, by, bw, bh, 12); ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(String(n), x + CW / 2, by + 17);
+    }
+  }
+
+  // kaki
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#5d716a';
+  ctx.font = '600 12px ' + FF;
+  const now = new Date();
+  ctx.fillText('Servicing Database \u00B7 dijana ' + now.getDate() + ' ' + MONTHS[now.getMonth()] + ' ' + now.getFullYear() + ', ' + pad(now.getHours()) + ':' + pad(now.getMinutes()), P, H - 20);
+
+  return new Promise((res) => cv.toBlob(res, 'image/png'));
+}
+
+async function snapCal() {
+  const btn = $('#calSnap');
+  btn.disabled = true;
+  try {
+    const blob = await buildCalImage();
+    if (!blob) throw new Error('BLOB');
+    const name = 'kalendar-servis-' + cal.y + '-' + pad(cal.m + 1) + '.png';
+    const touch = window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
+    if (touch && navigator.canShare && navigator.share) {
+      const file = new File([blob], name, { type: 'image/png' });
+      if (navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: 'Kalendar Servis ' + MONTHS[cal.m] + ' ' + cal.y });
+          flash(btn, 'Siap');
+          return;
+        } catch (e) {
+          if (e && e.name === 'AbortError') return;   // pengguna batal
+        }
+      }
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    flash(btn, 'Disimpan');
+  } catch (e) {
+    flash(btn, 'Gagal');
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 function syncDay() {
@@ -665,6 +871,11 @@ $('#refreshBtn').addEventListener('click', () => fetchData(true));
 
 $('#calPrev').addEventListener('click', () => { cal.m--; if (cal.m < 0) { cal.m = 11; cal.y--; } renderCal(); });
 $('#calNext').addEventListener('click', () => { cal.m++; if (cal.m > 11) { cal.m = 0; cal.y++; } renderCal(); });
+$('#calSnap').addEventListener('click', snapCal);
+$('#calCopy').addEventListener('click', async () => {
+  const ok = await copyText(calText());
+  flash($('#calCopy'), ok ? 'Disalin' : 'Gagal salin');
+});
 
 /* Tukar hari (lepas tengah malam): tick hari semalam hilang, kiraan kalendar kekal */
 function checkDay() {
