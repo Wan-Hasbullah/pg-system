@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Countdown Dream & Goal</title>
+<title>My Center</title>
 <meta name="theme-color" content="#0a1224">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏳</text></svg>">
 <style>
@@ -12,6 +12,7 @@
   --txt:#eef2fa;--mut:#8b98b5;--em:#10d9a0;--em2:#0aa377;--gold:#e8c26a;--gold2:#b8923a;
   --shadow:0 20px 50px -20px rgba(0,0,0,.6);--box:rgba(255,255,255,.05);--glow:rgba(16,217,160,.14);
   --d-s:#10d9a0;--d-c:#e8c26a;--d-l:#ff6b8a;
+  --k-e:#3b8eea;--k-d:#9b6bf0;--k-b:#f0527a;
 }
 [data-theme="light"]{
   --bg:#f4f6fb;--bg2:#e9eef8;--card:#ffffff;--card-b:#dfe5f2;
@@ -20,7 +21,7 @@
   --d-s:#079669;--d-c:#c48a14;--d-l:#e0436a;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;scroll-padding-top:calc(84px + env(safe-area-inset-top,0px));-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth;scroll-padding-top:var(--hh,140px);-webkit-text-size-adjust:100%}
 body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5;min-height:100vh;
   padding-bottom:env(safe-area-inset-bottom,0)}
 body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;transform:translateZ(0);
@@ -43,6 +44,15 @@ nav a:hover{color:var(--txt);background:var(--card)}
 nav a.active{color:var(--em);background:var(--glow);border-color:color-mix(in srgb,var(--em) 35%,transparent)}
 .theme{width:38px;height:38px;border-radius:12px;border:1px solid var(--card-b);background:var(--card);color:var(--txt);cursor:pointer;font-size:16px;flex:none;transition:.25s}
 .theme:hover{border-color:var(--gold)}
+
+/* Sub navigasi (kekal/tetap di bawah header) */
+.sub-bar{border-top:1px solid var(--card-b)}
+.subnav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;padding:8px 0}
+.subnav::-webkit-scrollbar{display:none}
+.subnav a{display:flex;align-items:center;gap:6px;padding:6px 13px;border-radius:10px;font-size:12.5px;font-weight:600;color:var(--mut);text-decoration:none;
+  border:1px solid transparent;white-space:nowrap;transition:.25s}
+.subnav a:hover{color:var(--txt);background:var(--card)}
+.subnav a.active{color:var(--gold);background:color-mix(in srgb,var(--gold) 10%,transparent);border-color:color-mix(in srgb,var(--gold) 35%,transparent)}
 
 /* Hero */
 .hero{padding:44px 0 10px}
@@ -194,6 +204,30 @@ a.strat{display:block;text-decoration:none;color:var(--txt)}
 .m-close{display:block;width:100%;margin-top:14px;padding:12px;border-radius:14px;border:1px solid var(--card-b);background:var(--card);color:var(--txt);font:inherit;font-size:14px;font-weight:700;cursor:pointer}
 .m-close:hover{border-color:var(--gold)}
 
+/* Kalendar Makluman */
+.card.cal:hover{transform:none;border-color:var(--card-b)}
+.card.cal .day{aspect-ratio:auto;min-height:58px;padding:6px 0}
+.dt.ke{background:var(--k-e)}.dt.kd{background:var(--k-d)}.dt.kb{background:var(--k-b)}
+.day.sel{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,transparent);box-shadow:inset 0 0 0 1px var(--gold)}
+.k-retry{font:inherit;font-size:12px;font-weight:700;color:var(--gold);background:none;border:0;cursor:pointer;margin-left:auto}
+.mk-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:20px 0 14px;padding-top:18px;border-top:1px solid var(--card-b)}
+.card .mk-h h3{min-height:0;margin:0;font-size:16px;font-weight:800}
+.mk-all{font:inherit;font-size:12px;font-weight:700;padding:7px 12px;border-radius:10px;border:1px solid var(--card-b);background:var(--box);color:var(--txt);cursor:pointer;white-space:nowrap}
+.mk-all:hover{border-color:var(--gold)}
+.mk-g{margin-bottom:16px}
+.mk-gh{display:flex;align-items:center;gap:9px;margin-bottom:8px;font-size:11.5px;letter-spacing:1.3px;text-transform:uppercase;font-weight:800;color:var(--mut)}
+.mk-gh .dt{width:10px;height:10px}
+.mk-gh em{font-style:normal;margin-left:auto;padding:2px 9px;border-radius:99px;background:var(--box);border:1px solid var(--card-b);letter-spacing:0}
+.mk-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;margin-bottom:8px;text-decoration:none;color:var(--txt);
+  background:var(--box);border:1px solid var(--card-b);transition:border-color .25s,transform .25s}
+a.mk-item:hover{border-color:var(--gold);transform:translateY(-1px)}
+.mk-item .dt{width:10px;height:10px}
+.mk-main{flex:1;min-width:0}
+.mk-t{font-size:14px;font-weight:700;line-height:1.35;word-break:break-word}
+.mk-s{font-size:12px;font-weight:600;color:var(--mut);margin-top:2px}
+.mk-go{font-size:12px;font-weight:700;color:var(--gold);white-space:nowrap}
+.mk-none{padding:12px 14px;text-align:center;border-radius:14px;background:var(--box);border:1px dashed var(--card-b);font-size:13px;font-weight:600;color:var(--mut)}
+
 /* Notion */
 .frame{border-radius:22px;overflow:hidden;border:1px solid var(--card-b);background:var(--card);box-shadow:var(--shadow);padding:10px}
 .frame iframe{display:block;width:100%;height:600px;border:0;border-radius:14px;background:#fff}
@@ -211,8 +245,10 @@ footer b{color:var(--gold)}
 
 @media(max-width:640px){
   .brand small{display:none}
-  .bar{gap:10px}
-  nav a{padding:8px 11px;font-size:12.5px}
+  .bar{gap:10px;height:auto;flex-wrap:wrap;row-gap:8px;padding:10px 0 4px}
+  .brand{flex:1}
+  nav{order:3;width:100%;margin-left:0}
+  nav a{padding:8px 11px;font-size:12.5px;flex:1;justify-content:center}
   .grid,.grid.two{grid-template-columns:1fr}
   .frame iframe{height:70vh;min-height:480px}
   .hero{padding-top:30px}
@@ -220,24 +256,26 @@ footer b{color:var(--gold)}
   .panel{padding:18px 16px}
   .gk-btn{padding:9px 12px;font-size:12.5px}
   .dow,.days{gap:4px}
+  .card.cal{padding:18px 14px}
+  .card.cal .day{min-height:46px;font-size:12.5px}
+  .mk-go{display:none}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
 
-<header class="top">
+<header class="top" id="top">
   <div class="wrap bar">
-    <div class="brand"><div class="logo">◆</div><div>Countdown<small>Dream &amp; Goal</small></div></div>
+    <div class="brand"><div class="logo">◆</div><div>My Center<small>Dream &amp; Business</small></div></div>
     <nav id="nav">
-      <a href="#dream" data-t="dream">🌙 Dream</a>
-      <a href="#strategi" data-t="strategi">♟️ Strategi</a>
-      <a href="#goal" data-t="goal">🎯 Goal</a>
-      <a href="#jangka-panjang" data-t="jangka-panjang">🏛️ Jangka Panjang</a>
-      <a href="#content" data-t="content">🗓️ Content Schedule</a>
+      <a href="#dream" data-g="dream">🌙 Dream</a>
+      <a href="#kalendar" data-g="kalendar">🗓️ Kalendar</a>
+      <a href="#goal" data-g="business">💼 Business Center</a>
     </nav>
     <button class="theme" id="theme" aria-label="Tukar tema">🌓</button>
   </div>
+  <div class="sub-bar"><div class="wrap"><nav class="subnav" id="subnav" style="margin-left:0"></nav></div></div>
 </header>
 
 <main class="wrap">
@@ -248,35 +286,10 @@ footer b{color:var(--gold)}
     <p class="today">Hari ini: <b id="today">—</b> · Waktu Malaysia (GMT+8)</p>
   </div>
 
+  <!-- ===== DREAM ===== -->
   <section id="dream">
-    <div class="sec-h"><div class="sec-ic">🌙</div><div><h2>Dream</h2><p>Impian jangka panjang yang mahu dicapai</p></div></div>
+    <div class="sec-h"><div class="sec-ic">🌙</div><div><h2>3 Dream Terawal</h2><p>Impian yang mahu dicapai dalam masa terdekat</p></div></div>
     <div class="grid" id="dreamGrid"></div>
-  </section>
-
-  <section id="strategi">
-    <div class="sec-h"><div class="sec-ic">♟️</div><div><h2>Strategi</h2><p>Langkah utama untuk mencapai sasaran</p></div></div>
-    <div class="grid">
-      <a class="card strat clk" href="https://wan-pgdealer.pages.dev/servicing" target="_blank" rel="noopener">
-        <div class="sec-ic">🤝</div>
-        <div class="no">Strategi 1</div>
-        <h3>Servicing</h3>
-      </a>
-      <article class="card strat clk" id="stratContent" role="button" tabindex="0" aria-label="Content Marketing — pergi ke Content Schedule">
-        <div class="sec-ic">📣</div>
-        <div class="no">Strategi 2</div>
-        <h3>Content Marketing</h3>
-      </article>
-      <article class="card strat">
-        <div class="sec-ic">🎙️</div>
-        <div class="no">Strategi 3</div>
-        <h3>Live 100 episod</h3>
-      </article>
-    </div>
-  </section>
-
-  <section id="goal">
-    <div class="sec-h"><div class="sec-ic">🎯</div><div><h2>Goal</h2><p>Sasaran yang mesti dicapai</p></div><button type="button" class="gk-btn" id="gkOpen">🗓️ Gerak Kerja</button></div>
-    <div class="grid two" id="goalGrid"></div>
   </section>
 
   <section id="jangka-panjang">
@@ -309,8 +322,59 @@ footer b{color:var(--gold)}
     </div>
   </section>
 
+  <!-- ===== KALENDAR ===== -->
+  <section id="kalendar">
+    <div class="sec-h"><div class="sec-ic">🗓️</div><div><h2>Kalendar</h2><p>Makluman event &amp; birthday customer</p></div></div>
+    <article class="card cal">
+      <div class="cal-nav">
+        <button type="button" id="kPrev" aria-label="Bulan sebelumnya">‹</button>
+        <b id="kM">—</b>
+        <button type="button" id="kNext" aria-label="Bulan seterusnya">›</button>
+      </div>
+      <div class="dow"><span>Isn</span><span>Sel</span><span>Rab</span><span>Kha</span><span>Jum</span><span>Sab</span><span>Ahd</span></div>
+      <div class="days" id="kD"></div>
+      <div class="legend">
+        <span><i class="dt ke"></i> Event Customer</span>
+        <span><i class="dt kd"></i> Event Dealer</span>
+        <span><i class="dt kb"></i> Birthday Customer</span>
+        <button type="button" class="k-retry" id="kStat" hidden></button>
+      </div>
+      <div id="kalMakluman">
+        <div class="mk-h"><h3 id="kLT">Senarai Makluman</h3><button type="button" class="mk-all" id="kAll" hidden>Papar semua bulan ini</button></div>
+        <div id="kList"></div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ===== BUSINESS CENTER ===== -->
+  <section id="goal">
+    <div class="sec-h"><div class="sec-ic">🎯</div><div><h2>Goal</h2><p>Sasaran yang mesti dicapai</p></div><button type="button" class="gk-btn" id="gkOpen">🗓️ Gerak Kerja</button></div>
+    <div class="grid two" id="goalGrid"></div>
+  </section>
+
+  <section id="strategi">
+    <div class="sec-h"><div class="sec-ic">♟️</div><div><h2>Strategi</h2><p>Langkah utama untuk mencapai sasaran</p></div></div>
+    <div class="grid">
+      <a class="card strat clk" href="https://wan-pgdealer.pages.dev/servicing" target="_blank" rel="noopener">
+        <div class="sec-ic">🤝</div>
+        <div class="no">Strategi 1</div>
+        <h3>Servicing</h3>
+      </a>
+      <article class="card strat clk" id="stratContent" role="button" tabindex="0" aria-label="Content Marketing — pergi ke Content Marketing">
+        <div class="sec-ic">📣</div>
+        <div class="no">Strategi 2</div>
+        <h3>Content Marketing</h3>
+      </article>
+      <article class="card strat">
+        <div class="sec-ic">🎙️</div>
+        <div class="no">Strategi 3</div>
+        <h3>Live 100 episod</h3>
+      </article>
+    </div>
+  </section>
+
   <section id="content">
-    <div class="sec-h"><div class="sec-ic">🗓️</div><div><h2>Content Schedule</h2><p>Jadual kandungan terus dari Notion</p></div></div>
+    <div class="sec-h"><div class="sec-ic">🗓️</div><div><h2>Content Marketing</h2><p>Jadual kandungan terus dari Notion</p></div></div>
     <div class="frame">
       <div class="fbox">
         <iframe src="https://purring-talos-7f4.notion.site/ebd//38f4b078389f808081ebd30fcca7fae7" width="100%" height="600" frameborder="0" allowfullscreen loading="lazy" title="Content Schedule"></iframe>
@@ -363,13 +427,15 @@ footer b{color:var(--gold)}
 </div>
 
 <script src="js/goal-data.js"></script>
+<script src="js/kalendar-data.js"></script>
 <script>
 /* ====== DATA (ubah di sini sahaja) ======
    tarikh = tarikh sasaran (waktu Malaysia, 23:59:59)
    mula   = tarikh mula untuk kiraan progress bar
    gambar = nama fail dalam folder "gambar" (tanpa sambungan; .jpg/.jpeg/.png/.webp dikesan automatik)
    target = jumlah sasaran Direct Frontline | total = jumlah semasa (baki dikira automatik)
-   Rekod Pencapaian (kalendar Gerak Kerja) dibaca daripada fail js/goal-data.js */
+   Rekod Pencapaian (kalendar Gerak Kerja) dibaca daripada fail js/goal-data.js
+   Makluman Kalendar dibaca daripada fail js/kalendar-data.js */
 var DREAMS = [
   { tajuk: "Berhentikan isteri daripada bekerja", tarikh: "2027-12-31", mula: "2026-10-12", gambar: "mesir" },
   { tajuk: "Berhenti KAFA",                       tarikh: "2028-11-20", mula: "2026-10-12", gambar: "freedom" },
@@ -463,27 +529,75 @@ build(DREAMS, "dreamGrid", "Dream");
 build(GOALS,  "goalGrid",  "Goal");
 tick(); setInterval(tick, 1000);
 
-/* Nav: scroll lancar + penanda aktif */
-var links = document.querySelectorAll("#nav a");
-links.forEach(function(a){
-  a.addEventListener("click", function(e){
-    e.preventDefault();
-    var t = document.getElementById(a.getAttribute("href").slice(1));
+/* Navigasi 2 peringkat: Dream / Kalendar / Business Center + sub navigasi (kekal di atas) */
+(function(){
+  var GROUPS = [
+    { g:"dream",    first:"dream",    subs:[["dream","🌙 3 Dream Terawal"],["jangka-panjang","🏛️ Dream Jangka Panjang"]] },
+    { g:"kalendar", first:"kalendar", subs:[["kalendar","🗓️ Kalendar"],["kalMakluman","📢 Senarai Makluman"]] },
+    { g:"business", first:"goal",     subs:[["goal","🎯 Goal"],["strategi","♟️ Strategi"],["content","📣 Content Marketing"]] }
+  ];
+  var SEC = ["dream","jangka-panjang","kalendar","goal","strategi","content"];
+  var S2G = {}, G = {};
+  GROUPS.forEach(function(x){ G[x.g] = x; x.subs.forEach(function(s){ S2G[s[0]] = x.g; }); });
+
+  var nav = document.getElementById("nav"), sub = document.getElementById("subnav"), head = document.getElementById("top");
+  var curG = "", curS = "";
+
+  function center(box, act){
+    if (act) box.scrollTo({ left: act.offsetLeft - (box.clientWidth - act.offsetWidth)/2, behavior:"auto" });
+  }
+  function setHH(){ document.documentElement.style.setProperty("--hh", (head.offsetHeight + 8) + "px"); }
+
+  function paint(g, s){
+    if (g !== curG){
+      curG = g;
+      sub.innerHTML = G[g].subs.map(function(x){ return '<a href="#'+x[0]+'" data-t="'+x[0]+'">'+x[1]+'</a>'; }).join("");
+      [].forEach.call(nav.querySelectorAll("a"), function(a){ a.classList.toggle("active", a.dataset.g === g); });
+      center(nav, nav.querySelector("a.active"));
+    }
+    curS = s;
+    [].forEach.call(sub.querySelectorAll("a"), function(a){ a.classList.toggle("active", a.dataset.t === s); });
+    center(sub, sub.querySelector("a.active"));
+  }
+  function go(id){
+    var t = document.getElementById(id);
     if (t) t.scrollIntoView({ behavior:"smooth", block:"start" });
+  }
+
+  nav.addEventListener("click", function(e){
+    var a = e.target.closest ? e.target.closest("a") : null;
+    if (!a) return;
+    e.preventDefault();
+    var x = G[a.dataset.g];
+    paint(x.g, x.first);
+    go(x.first);
   });
-});
-if ("IntersectionObserver" in window){
-  var io = new IntersectionObserver(function(es){
-    es.forEach(function(e){
-      if (e.isIntersecting){
-        links.forEach(function(a){ a.classList.toggle("active", a.dataset.t === e.target.id); });
-        var act = document.querySelector("#nav a.active"), nv = document.getElementById("nav");
-        if (act) nv.scrollTo({ left: act.offsetLeft - (nv.clientWidth - act.offsetWidth)/2, behavior:"auto" });
-      }
-    });
-  }, { rootMargin:"-35% 0px -55% 0px" });
-  ["dream","strategi","goal","jangka-panjang","content"].forEach(function(id){ io.observe(document.getElementById(id)); });
-}
+  sub.addEventListener("click", function(e){
+    var a = e.target.closest ? e.target.closest("a") : null;
+    if (!a) return;
+    e.preventDefault();
+    paint(S2G[a.dataset.t], a.dataset.t);
+    go(a.dataset.t);
+  });
+
+  paint("dream", "dream");
+  setHH();
+  window.addEventListener("resize", setHH);
+  window.addEventListener("load", setHH);
+
+  if ("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if (e.isIntersecting){
+          /* kekalkan sub "Senarai Makluman" jika pengguna baru memilihnya */
+          if (e.target.id === "kalendar" && curS === "kalMakluman") return;
+          paint(S2G[e.target.id], e.target.id);
+        }
+      });
+    }, { rootMargin:"-35% 0px -55% 0px" });
+    SEC.forEach(function(id){ io.observe(document.getElementById(id)); });
+  }
+})();
 
 /* Lightbox: klik gambar untuk lihat penuh */
 (function(){
@@ -515,7 +629,7 @@ if ("IntersectionObserver" in window){
   lk.addEventListener("click", function(){ sh.classList.remove("off"); lk.classList.remove("on"); });
 })();
 
-/* Strategi 2: Content Marketing → skrol ke Content Schedule */
+/* Strategi 2: Content Marketing → skrol ke Content Marketing */
 (function(){
   var c = document.getElementById("stratContent");
   function go(){
@@ -645,6 +759,208 @@ if ("IntersectionObserver" in window){
     if (rk.classList.contains("on")) hide(rk);
     else if (gk.classList.contains("on")) hide(gk);
   });
+})();
+
+/* ====== Kalendar Makluman (data daripada js/kalendar-data.js) ====== */
+(function(){
+  var K = window.KALENDAR || {};
+  var TYPES = [
+    { k:"customer", n:"Event Customer",    c:"ke" },
+    { k:"dealer",   n:"Event Dealer",      c:"kd" },
+    { k:"birthday", n:"Birthday Customer", c:"kb" }
+  ];
+  var STAT = {}, BDAY = [];
+  var cur = { y:0, m:0 }, sel = null;
+  var el = {
+    m: document.getElementById("kM"), d: document.getElementById("kD"), list: document.getElementById("kList"),
+    lt: document.getElementById("kLT"), all: document.getElementById("kAll"), stat: document.getElementById("kStat")
+  };
+
+  function myNow(){ return new Date(Date.now() + 8*3600*1000); }
+  function leap(y){ return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0; }
+
+  /* Event Customer & Event Dealer: tarikh tepat */
+  function buildStatic(){
+    STAT = {};
+    ["customer","dealer"].forEach(function(t){
+      var arr = (K[t] && K[t].data) || [];
+      arr.forEach(function(r){
+        if (!r || !r.tarikh) return;
+        var key = String(r.tarikh).trim();
+        (STAT[key] = STAT[key] || []).push({ t:t, tajuk: r.tajuk ? String(r.tajuk) : "(Tanpa tajuk)", link: r.link || K[t].link });
+      });
+    });
+  }
+
+  /* Semua makluman pada satu tarikh (YYYY-MM-DD) */
+  function evs(key){
+    var out = (STAT[key] || []).slice(), p = key.split("-");
+    var y = parseInt(p[0],10), mm = parseInt(p[1],10), dd = parseInt(p[2],10);
+    BDAY.forEach(function(b){
+      var d = (b.m === 2 && b.d === 29 && !leap(y)) ? 28 : b.d;
+      if (b.m === mm && d === dd) out.push({ t:"birthday", tajuk:"🎂 " + b.nama, link:(K.birthday && K.birthday.link) || "" });
+    });
+    return out;
+  }
+
+  function render(){
+    var y = cur.y, m = cur.m;
+    el.m.textContent = BULAN_P[m] + " " + y;
+    var first = (new Date(Date.UTC(y, m, 1)).getUTCDay() + 6) % 7;   /* Isnin = 0 */
+    var dim = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+    var n = myNow(), todayKey = n.getUTCFullYear() + "-" + pad(n.getUTCMonth()+1) + "-" + pad(n.getUTCDate());
+    var html = "", i, d, key, list, dots, cls;
+    for (i = 0; i < first; i++) html += '<button type="button" class="day empty" tabindex="-1" aria-hidden="true"></button>';
+    for (d = 1; d <= dim; d++){
+      key = y + "-" + pad(m+1) + "-" + pad(d);
+      list = evs(key); dots = "";
+      TYPES.forEach(function(t){
+        if (list.some(function(x){ return x.t === t.k; })) dots += '<i class="dt ' + t.c + '"></i>';
+      });
+      cls = "day" + (key === todayKey ? " today" : "") + (key === sel ? " sel" : "");
+      html += '<button type="button" class="' + cls + '" data-d="' + key + '" aria-label="' + d + ' ' + BULAN_P[m] + ' ' + y + '">' +
+        '<span>' + d + '</span><span class="dots">' + dots + '</span></button>';
+    }
+    el.d.innerHTML = html;
+    renderList();
+  }
+
+  /* Senarai makluman, diasingkan kepada 3 kumpulan */
+  function renderList(){
+    var y = cur.y, m = cur.m, dim = new Date(Date.UTC(y, m + 1, 0)).getUTCDate(), rows = [], d, key;
+    if (sel){
+      evs(sel).forEach(function(x){ x.key = sel; rows.push(x); });
+      el.lt.textContent = "Makluman · " + fmt(sel);
+      el.all.hidden = false;
+    } else {
+      for (d = 1; d <= dim; d++){
+        key = y + "-" + pad(m+1) + "-" + pad(d);
+        evs(key).forEach(function(x){ x.key = key; rows.push(x); });
+      }
+      el.lt.textContent = "Senarai Makluman · " + BULAN_P[m] + " " + y;
+      el.all.hidden = true;
+    }
+    var html = "";
+    TYPES.forEach(function(t){
+      var g = rows.filter(function(x){ return x.t === t.k; });
+      html += '<div class="mk-g"><div class="mk-gh"><i class="dt ' + t.c + '"></i><span>Makluman ' + t.n + '</span><em>' + g.length + '</em></div>';
+      if (!g.length) html += '<div class="mk-none">Tiada makluman</div>';
+      g.forEach(function(x){
+        var inner = '<i class="dt ' + t.c + '"></i><div class="mk-main"><div class="mk-t">' + esc(x.tajuk) + '</div><div class="mk-s">📅 ' + fmt(x.key) + '</div></div>' +
+          (x.link ? '<span class="mk-go">Lihat ›</span>' : '');
+        html += x.link
+          ? '<a class="mk-item" href="' + esc(x.link) + '" target="_blank" rel="noopener">' + inner + '</a>'
+          : '<div class="mk-item">' + inner + '</div>';
+      });
+      html += '</div>';
+    });
+    el.list.innerHTML = html;
+  }
+
+  /* ---- Birthday Customer (API) ---- */
+  function parseMD(v){
+    if (v === null || v === undefined || v === "") return null;
+    var s = String(v).trim(), a, dt;
+    if (/^\d{4}-\d{1,2}-\d{1,2}T/.test(s)){
+      dt = new Date(s); if (isNaN(dt)) return null;
+      dt = new Date(dt.getTime() + 8*3600*1000);
+      return { m: dt.getUTCMonth()+1, d: dt.getUTCDate() };
+    }
+    if ((a = s.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/))) return { m:+a[2], d:+a[3] };
+    if ((a = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/))) return { m:+a[2], d:+a[1] };
+    if ((a = s.match(/^(\d{1,2})[\/\-.](\d{1,2})$/))) return { m:+a[2], d:+a[1] };
+    dt = new Date(s);
+    if (!isNaN(dt)) return { m: dt.getMonth()+1, d: dt.getDate() };
+    return null;
+  }
+  function norm(s){ return String(s).toLowerCase().replace(/[^a-z0-9]/g, ""); }
+  function pick(row, keys){
+    var ks = Object.keys(row), i, j;
+    for (i = 0; i < keys.length; i++){
+      for (j = 0; j < ks.length; j++){
+        if (norm(ks[j]) === norm(keys[i]) && row[ks[j]] !== "" && row[ks[j]] !== null && row[ks[j]] !== undefined) return row[ks[j]];
+      }
+    }
+    return null;
+  }
+  function toRows(j){
+    var a = j;
+    if (a && !Array.isArray(a)) a = a.data || a.rows || a.result || a.results || a.records || a.items || a.birthday || a.birthdays || [];
+    if (!Array.isArray(a)) return [];
+    if (a.length && Array.isArray(a[0])){          /* jadual: baris pertama = tajuk lajur */
+      var h = a[0];
+      return a.slice(1).map(function(r){ var o = {}; h.forEach(function(k, i){ o[k] = r[i]; }); return o; });
+    }
+    return a.filter(function(r){ return r && typeof r === "object"; });
+  }
+  function parseBirthday(json, cfg){
+    var nk = cfg.MEDAN_NAMA || ["nama","name"], tk = cfg.MEDAN_TARIKH || ["tarikhlahir","birthday","tarikh"], out = [];
+    toRows(json).forEach(function(r){
+      var nama = pick(r, nk), md = parseMD(pick(r, tk));
+      if (!md){
+        Object.keys(r).some(function(k){
+          if (/\d{1,4}[\/\-.]\d{1,2}[\/\-.]\d{1,4}/.test(String(r[k]))){ md = parseMD(r[k]); return !!md; }
+          return false;
+        });
+      }
+      if (md && md.m >= 1 && md.m <= 12 && md.d >= 1 && md.d <= 31) out.push({ nama: nama ? String(nama) : "Customer", m:md.m, d:md.d });
+    });
+    return out;
+  }
+  function status(txt, retry){
+    el.stat.hidden = !txt;
+    el.stat.textContent = txt || "";
+    el.stat.style.pointerEvents = retry ? "auto" : "none";
+    el.stat.style.cursor = retry ? "pointer" : "default";
+    el.stat.style.color = retry ? "" : "var(--mut)";
+    el.stat.onclick = retry ? loadBirthday : null;
+  }
+  function loadBirthday(){
+    var cfg = K.birthday;
+    if (!cfg || !cfg.API_URL) return;
+    status("⏳ Memuatkan birthday…", false);
+    var q = [], ex = cfg.EXTRA || {};
+    q.push((cfg.PARAM_TOKEN || "token") + "=" + encodeURIComponent(cfg.TOKEN || ""));
+    q.push((cfg.PARAM_SHEET || "sheetId") + "=" + encodeURIComponent(cfg.SHEET_ID || ""));
+    Object.keys(ex).forEach(function(k){ q.push(encodeURIComponent(k) + "=" + encodeURIComponent(ex[k])); });
+    var url = cfg.API_URL + (cfg.API_URL.indexOf("?") > -1 ? "&" : "?") + q.join("&");
+    var ctl = ("AbortController" in window) ? new AbortController() : null;
+    var to = setTimeout(function(){ if (ctl) ctl.abort(); }, 20000);
+    fetch(url, ctl ? { signal: ctl.signal } : {})
+      .then(function(r){ return r.text(); })
+      .then(function(t){
+        clearTimeout(to);
+        BDAY = parseBirthday(JSON.parse(t), cfg);
+        status("", false);
+        render();
+      })
+      .catch(function(){
+        clearTimeout(to);
+        status("⚠️ Birthday gagal dimuatkan · Cuba lagi", true);
+      });
+  }
+
+  /* ---- Interaksi ---- */
+  el.d.addEventListener("click", function(e){
+    var b = e.target.closest ? e.target.closest(".day[data-d]") : null;
+    if (!b) return;
+    var k = b.getAttribute("data-d");
+    sel = (sel === k) ? null : k;
+    render();
+  });
+  el.all.addEventListener("click", function(){ sel = null; render(); });
+  document.getElementById("kPrev").addEventListener("click", function(){
+    cur.m--; if (cur.m < 0){ cur.m = 11; cur.y--; } sel = null; render();
+  });
+  document.getElementById("kNext").addEventListener("click", function(){
+    cur.m++; if (cur.m > 11){ cur.m = 0; cur.y++; } sel = null; render();
+  });
+
+  var n0 = myNow();
+  cur = { y:n0.getUTCFullYear(), m:n0.getUTCMonth() };
+  buildStatic();
+  render();
+  loadBirthday();
 })();
 
 /* Tema Light / Dark */
