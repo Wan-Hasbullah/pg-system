@@ -9,8 +9,9 @@ window.KALENDAR = {
   customer: {
     link: "https://ilmu-emas.pages.dev/makluman-terkini",
     data: [
-      /* Template — salin baris di bawah, buang tanda komen, kemudian isi:
-      { tajuk: "", tarikh: "2026-11-15" },
+      { tajuk: "Workshop Kaya Dengan Emas", tarikh: "2026-10-28" }
+      /* Template — salin baris di atas untuk tambah event lain (letak koma antara baris):
+      { tajuk: "", tarikh: "2026-11-15" }
       */
     ]
   },
@@ -19,8 +20,9 @@ window.KALENDAR = {
   dealer: {
     link: "https://ilmu-emas.pages.dev/makluman-terkini",
     data: [
-      /* Template:
-      { tajuk: "", tarikh: "2026-11-20" },
+      { tajuk: "PD Leadership Training (PLT)", tarikh: "2026-10-31" }
+      /* Template (letak koma antara baris):
+      { tajuk: "", tarikh: "2026-11-20" }
       */
     ]
   },
