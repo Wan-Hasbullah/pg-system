@@ -44,7 +44,8 @@ window.KALENDAR = {
     EXTRA: {},
 
     /* Nama lajur/medan dalam respons API (tidak sensitif huruf besar/kecil) */
-    MEDAN_NAMA:   ["nama", "name", "customer", "namacustomer"],
-    MEDAN_TARIKH: ["tarikhlahir", "birthday", "birthdate", "dob", "lahir", "tarikh"]
+    /* API Follow Up memulangkan: tabs → rows → { n: nama, p: telefon, d: D.O.B (yyyy-mm-dd), l: lokasi } */
+    MEDAN_NAMA:   ["n", "nama", "name"],
+    MEDAN_TARIKH: ["d", "dob", "tarikhlahir", "birthday"]
   }
 };
