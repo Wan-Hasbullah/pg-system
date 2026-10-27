@@ -885,6 +885,12 @@ tick(); setInterval(tick, 1000);
   }
   function toRows(j){
     var a = j;
+    if (a && a.ok === false) throw new Error(a.error || "API");
+    if (a && a.tabs && typeof a.tabs === "object"){      /* format Follow Up: { tabs:{ Nama Tab:{ rows:[{n,p,d,l}] } } } */
+      var all = [];
+      Object.keys(a.tabs).forEach(function(k){ all = all.concat((a.tabs[k] && a.tabs[k].rows) || []); });
+      return all.filter(function(r){ return r && typeof r === "object"; });
+    }
     if (a && !Array.isArray(a)) a = a.data || a.rows || a.result || a.results || a.records || a.items || a.birthday || a.birthdays || [];
     if (!Array.isArray(a)) return [];
     if (a.length && Array.isArray(a[0])){          /* jadual: baris pertama = tajuk lajur */
@@ -894,7 +900,7 @@ tick(); setInterval(tick, 1000);
     return a.filter(function(r){ return r && typeof r === "object"; });
   }
   function parseBirthday(json, cfg){
-    var nk = cfg.MEDAN_NAMA || ["nama","name"], tk = cfg.MEDAN_TARIKH || ["tarikhlahir","birthday","tarikh"], out = [];
+    var nk = cfg.MEDAN_NAMA || ["nama","name"], tk = cfg.MEDAN_TARIKH || ["tarikhlahir","birthday","tarikh"], out = [], seen = {};
     toRows(json).forEach(function(r){
       var nama = pick(r, nk), md = parseMD(pick(r, tk));
       if (!md){
@@ -903,7 +909,10 @@ tick(); setInterval(tick, 1000);
           return false;
         });
       }
-      if (md && md.m >= 1 && md.m <= 12 && md.d >= 1 && md.d <= 31) out.push({ nama: nama ? String(nama) : "Customer", m:md.m, d:md.d });
+      if (md && md.m >= 1 && md.m <= 12 && md.d >= 1 && md.d <= 31){
+        var nm = nama ? String(nama).trim() : "Customer", sk = nm.toUpperCase() + "|" + md.m + "|" + md.d;
+        if (!seen[sk]){ seen[sk] = 1; out.push({ nama:nm, m:md.m, d:md.d }); }
+      }
     });
     return out;
   }
