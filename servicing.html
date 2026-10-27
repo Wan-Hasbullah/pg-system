@@ -100,6 +100,7 @@ background-repeat:no-repeat;background-position:right 12px center;background-siz
 .cd.sel{box-shadow:inset 0 0 0 2px var(--ink)}
 .cd.sel .dn{color:var(--ink);font-weight:800}
 .dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--a2);box-shadow:0 0 0 2px rgba(255,255,255,.85)}
+.dot.bd{right:auto;left:5px;background:var(--a5)}
 
 /* Butang kalendar: Snap + Salin + Tambah */
 .cact{display:flex;gap:8px;margin-top:12px}
@@ -182,6 +183,7 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
 .chip.ok{background:var(--green);color:#fff}
 .chip.pr{background:#fff3cf;color:#7a5600;border-color:#efd58a}
 .chip.no{background:transparent;color:var(--mute);border-color:rgba(14,42,34,.22)}
+.chip.bd{background:var(--g5);color:#8a2246;border-color:#efb8c9}
 .chips.solo .chip{font-size:13px;padding:6px 12px}
 .msg{text-align:center;color:var(--mute);padding:40px 16px}
 :focus-visible{outline:3px solid #1b8f6b;outline-offset:2px}
@@ -268,6 +270,14 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
             <option value="">Semua umur</option>
             <option value="young">Anak Muda (18&ndash;25 tahun)</option>
             <option value="vet">Veteran (50 tahun ke atas)</option>
+          </select>
+        </label>
+        <label class="frow"><span>Birthday customer</span>
+          <select id="bdaySel" aria-label="Tapis mengikut birthday customer">
+            <option value="">Semua</option>
+            <option value="today">Hari ini</option>
+            <option value="week">7 hari akan datang</option>
+            <option value="month">Bulan ini</option>
           </select>
         </label>
         <label class="frow"><span>Lokasi</span>
@@ -373,6 +383,7 @@ const lsSet = (k, v) => { try { localStorage.setItem('fu_' + k, v); } catch (e) 
 let data = null, busy = false, loadedAt = 0;
 let active = TABS.includes(lsGet('tab')) ? lsGet('tab') : TABS[0];
 let topicFilter = '', statusFilter = '', ageFilter = '', locFilter = '';
+let bdayFilter = '', bdayPrevDay = null;
 const DAY_NAMES = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
 const MONTHS = ['Januari', 'Februari', 'Mac', 'April', 'Mei', 'Jun', 'Julai', 'Ogos', 'September', 'Oktober', 'November', 'Disember'];
 const WK = ['Ahd', 'Isn', 'Sel', 'Rab', 'Kha', 'Jum', 'Sab'];
@@ -398,6 +409,56 @@ function ageOf(iso) {
   const md = (now.getMonth() + 1) - Number(m[2]);
   if (md < 0 || (md === 0 && now.getDate() < Number(m[3]))) a--;
   return a;
+}
+
+/* ====== Birthday customer (bulan + hari daripada D.O.B; berulang setiap tahun) ====== */
+const isLeap = (y) => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+
+/* D.O.B 29 Feb dipaparkan pada 28 Feb dalam tahun bukan lompat */
+function bdayMD(iso, y) {
+  const m = /^\d{4}-(\d{2})-(\d{2})$/.exec(iso || '');
+  if (!m) return null;
+  const mm = Number(m[1]);
+  let dd = Number(m[2]);
+  if (mm === 2 && dd === 29 && !isLeap(y)) dd = 28;
+  return { m: mm, d: dd };
+}
+
+/* Senarai tarikh bagi pilihan penapis: hari ini / 7 hari akan datang / bulan ini */
+function bdayDates(kind) {
+  const now = new Date(), y = now.getFullYear(), mo = now.getMonth(), d0 = now.getDate(), out = [];
+  if (kind === 'today') out.push(new Date(y, mo, d0));
+  else if (kind === 'week') { for (let i = 0; i < 7; i++) out.push(new Date(y, mo, d0 + i)); }
+  else if (kind === 'month') { const n = new Date(y, mo + 1, 0).getDate(); for (let d = 1; d <= n; d++) out.push(new Date(y, mo, d)); }
+  return out;
+}
+
+function bdayMatch(iso, dates) {
+  for (let i = 0; i < dates.length; i++) {
+    const dt = dates[i], b = bdayMD(iso, dt.getFullYear());
+    if (b && b.m === dt.getMonth() + 1 && b.d === dt.getDate()) return true;
+  }
+  return false;
+}
+
+/* Bilangan birthday bagi setiap hari dalam bulan kalendar yang dipaparkan (tab semasa) */
+function bdayCounts() {
+  const out = {};
+  const tab = data && data.tabs[active];
+  if (!tab || tab.error || !tab.rows) return out;
+  tab.rows.forEach((r) => {
+    const b = bdayMD(r.d, cal.y);
+    if (b && b.m - 1 === cal.m) out[b.d] = (out[b.d] || 0) + 1;
+  });
+  return out;
+}
+
+/* Tetapkan penapis birthday: bila aktif, hari servicing sementara jadi "Semua hari" supaya semua birthday kelihatan */
+function setBday(v) {
+  if (v && !bdayFilter) { bdayPrevDay = dayFilter; dayFilter = 'all'; }
+  else if (!v && bdayFilter && bdayPrevDay !== null) { dayFilter = bdayPrevDay; }
+  if (!v) bdayPrevDay = null;
+  bdayFilter = v;
 }
 
 function loadTicks() {
@@ -439,6 +500,7 @@ function renderCal() {
   const days = new Date(cal.y, cal.m + 1, 0).getDate();
   const grid = $('#calGrid');
   const frag = document.createDocumentFragment();
+  const bd = bdayCounts();
   WK.forEach((w) => frag.append(el('span', 'cw', w)));
   for (let k = 0; k < first.getDay(); k++) frag.append(el('span', 'cd pad'));
   let total = 0;
@@ -454,7 +516,8 @@ function renderCal() {
     c.append(el('span', 'dn', String(d)));
     if (n) c.append(el('span', 'cn', String(n)));
     if (e) c.append(el('i', 'dot'));
-    c.setAttribute('aria-label', d + ' ' + MONTHS[cal.m] + ': ' + n + ' servis' + (e ? ', konten ' + e.c + ', live ' + e.l : ''));
+    if (bd[d]) c.append(el('i', 'dot bd'));
+    c.setAttribute('aria-label', d + ' ' + MONTHS[cal.m] + ': ' + n + ' servis' + (e ? ', konten ' + e.c + ', live ' + e.l : '') + (bd[d] ? ', ' + bd[d] + ' birthday customer' : ''));
     frag.append(c);
   }
   grid.replaceChildren(frag);
@@ -748,6 +811,8 @@ function ageMatch(iso) {
   return true;
 }
 
+const BDAY_LABEL = { today: 'Hari ini', week: '7 hari akan datang', month: 'Bulan ini' };
+
 /* Bina semula pilihan topik & lokasi bagi tab semasa (hanya jika senarai berubah) */
 function syncFilters(tab) {
   const topics = (tab && !tab.error && tab.topics) || [];
@@ -798,11 +863,22 @@ function syncFilters(tab) {
   as.value = ageFilter;
   as.classList.toggle('on', !!ageFilter);
 
+  // birthday customer (bilangan dikemas kini bagi setiap pilihan)
+  const bs = $('#bdaySel');
+  const brows = (tab && !tab.error && tab.rows) || [];
+  Array.from(bs.options).forEach((o) => {
+    if (!o.value) return;
+    const ds = bdayDates(o.value);
+    o.textContent = BDAY_LABEL[o.value] + ' (' + brows.filter((r) => bdayMatch(r.d, ds)).length + ')';
+  });
+  bs.value = bdayFilter;
+  bs.classList.toggle('on', !!bdayFilter);
+
   // butang padam + lencana bilangan penapis aktif
-  const extra = !!(topicFilter || statusFilter || ageFilter || locFilter);
+  const extra = !!(topicFilter || statusFilter || ageFilter || locFilter || bdayFilter);
   $('#clearBtn').hidden = !extra;
   $('#resetBtn').hidden = !extra;
-  const n = (dayFilter !== 'all' ? 1 : 0) + (topicFilter ? 1 : 0) + (statusFilter ? 1 : 0) + (ageFilter ? 1 : 0) + (locFilter ? 1 : 0);
+  const n = (dayFilter !== 'all' ? 1 : 0) + (topicFilter ? 1 : 0) + (statusFilter ? 1 : 0) + (ageFilter ? 1 : 0) + (locFilter ? 1 : 0) + (bdayFilter ? 1 : 0);
   const b = $('#fBadge');
   b.hidden = n === 0;
   b.textContent = String(n);
@@ -831,6 +907,7 @@ function render() {
   const tIdx = topicFilter ? tab.topics.indexOf(topicFilter) : -1;
   const size = CONFIG.GROUP_SIZE;
   const wanted = wantedDay();
+  const bw = bdayFilter ? bdayDates(bdayFilter) : null;
   const items = [];
   tab.rows.forEach((r, i) => {
     const g = Math.floor(i / size);
@@ -838,9 +915,10 @@ function render() {
     if (tIdx >= 0 && statusFilter && topicState(r.t[tIdx]) !== statusFilter) return;
     if (ageFilter && !ageMatch(r.d)) return;
     if (locFilter && (r.l || '') !== locFilter) return;
+    if (bw && !bdayMatch(r.d, bw)) return;
     items.push({ r: r, i: i, g: g });
   });
-  const filtered = wanted !== null || tIdx >= 0 || !!statusFilter || !!ageFilter || !!locFilter;
+  const filtered = wanted !== null || tIdx >= 0 || !!statusFilter || !!ageFilter || !!locFilter || !!bdayFilter;
   $('#count').textContent = filtered
     ? 'Dipaparkan ' + items.length + ' daripada ' + tab.rows.length + ' rekod'
     : tab.rows.length + ' rekod';
@@ -848,7 +926,7 @@ function render() {
     if (dayFilter === 'today' && !CONFIG.DAY_SLOTS.includes(new Date().getDay())) {
       return message('Hari ini tiada jadual servicing. Pilih hari lain atau "Semua hari".');
     }
-    if ((ageFilter || locFilter) && !data.masterOk) {
+    if ((ageFilter || locFilter || bdayFilter) && !data.masterOk) {
       return message('Data tab "Master" belum diterima. Kemas kini Code.gs dan deploy versi baharu.');
     }
     return message('Tiada rekod sepadan dengan penapis ini.');
@@ -890,6 +968,14 @@ function render() {
     if (num) { wa.href = 'https://wa.me/' + num; wa.target = '_blank'; wa.rel = 'noopener'; wa.setAttribute('aria-label', 'WhatsApp ' + r.n); }
     else wa.setAttribute('aria-disabled', 'true');
     const chips = el('div', 'chips' + (tIdx >= 0 ? ' solo' : ''));
+    if (bdayFilter) {
+      const bm = bdayMD(r.d, new Date().getFullYear());
+      if (bm) {
+        const bc = el('span', 'chip bd', '\uD83C\uDF82 ' + bm.d + ' ' + MONTHS[bm.m - 1]);
+        bc.title = 'Birthday customer';
+        chips.append(bc);
+      }
+    }
     tab.topics.forEach((topic, k) => {
       if (tIdx >= 0 && k !== tIdx) return;          // fokus pada satu topik
       const st = topicState(r.t[k]);
@@ -957,6 +1043,7 @@ function openPanel(o) {
 const panelOpen = () => !$('#fPanel').hidden;
 function resetFilters() {
   topicFilter = ''; statusFilter = ''; ageFilter = ''; locFilter = '';
+  setBday('');
   render();
 }
 
@@ -1035,12 +1122,14 @@ document.addEventListener('keydown', (e) => {
 document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => {
   active = b.dataset.tab;
   topicFilter = ''; statusFilter = ''; ageFilter = ''; locFilter = '';
+  setBday('');
   lsSet('tab', active);
   render();
   window.scrollTo({ top: 0 });
 }));
 $('#daySel').addEventListener('change', (e) => {
   dayFilter = e.target.value;
+  bdayPrevDay = null;
   lsSet('day', dayFilter);
   render();
 });
@@ -1056,6 +1145,10 @@ $('#statusSel').addEventListener('change', (e) => {
 });
 $('#ageSel').addEventListener('change', (e) => {
   ageFilter = e.target.value;
+  render();
+});
+$('#bdaySel').addEventListener('change', (e) => {
+  setBday(e.target.value);
   render();
 });
 $('#locSel').addEventListener('change', (e) => {
