@@ -202,6 +202,8 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
 .sh b{font-size:14px;font-weight:800}
 .sgo{font-size:11px;font-weight:800;color:#fff;background:var(--wa);border-radius:999px;padding:3px 10px}
 .sp{margin:6px 0 0;font-size:12px;line-height:1.45;color:var(--mute);white-space:pre-line;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.ssearch{margin-bottom:8px;padding-left:38px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%235d716a' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:12px center;background-size:18px 18px}
+.scount{margin:0 0 10px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--mute)}
 .splain{display:block;text-align:center;margin-top:12px;font-size:12px;font-weight:700;color:var(--green);text-decoration:underline}
 
 /* Desktop / tablet */
@@ -385,6 +387,8 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
   </div>
   <div class="mbody">
     <p id="sWho" class="swho"></p>
+    <input id="sSearch" class="fin ssearch" type="search" placeholder="Cari skrip (tajuk atau ayat)" autocomplete="off" aria-label="Cari skrip mengikut tajuk atau ayat">
+    <p id="sCount" class="scount" role="status"></p>
     <div id="sList" class="slist"></div>
     <a id="sPlain" class="splain" target="_blank" rel="noopener">Buka WhatsApp tanpa skrip</a>
   </div>
@@ -1177,25 +1181,46 @@ function closeScripts() {
   document.body.classList.remove('lock');
 }
 
-function openScripts(r, num) {
-  const nk = nickOf(r), call = nk || r.n;
-  $('#sTitle').textContent = 'Pilih Skrip';
-  $('#sWho').textContent = r.n + (nk ? ' \u00B7 dipanggil "' + nk + '"' : '');
+let sCtx = null;
+
+function renderScripts() {
+  if (!sCtx) return;
+  const q = $('#sSearch').value.toLowerCase().split(/\s+/).filter(Boolean);
   const frag = document.createDocumentFragment();
-  (window.SCRIPTS || []).forEach((s, i) => {
-    const txt = String(s.text || '').replace(/\[panggil\]/gi, call);
+  let n = 0;
+  sCtx.items.forEach((s, i) => {
+    const hay = (s.title + ' ' + s.txt).toLowerCase();       // cari dalam tajuk DAN ayat skrip
+    if (!q.every((w) => hay.includes(w))) return;
+    n++;
     const a = el('a', 'sitem');
-    a.href = 'https://wa.me/' + num + '?text=' + encodeURIComponent(txt);
+    a.href = 'https://wa.me/' + sCtx.num + '?text=' + encodeURIComponent(s.txt);
     a.target = '_blank';
     a.rel = 'noopener';
     a.style.borderLeftColor = 'var(--a' + (i % 8) + ')';
     const h = el('div', 'sh');
-    h.append(el('b', '', s.title || 'Skrip ' + (i + 1)), el('span', 'sgo', 'Hantar'));
-    a.append(h, el('p', 'sp', txt));
+    h.append(el('b', '', s.title), el('span', 'sgo', 'Hantar'));
+    a.append(h, el('p', 'sp', s.txt));
     a.addEventListener('click', () => setTimeout(closeScripts, 150));
     frag.append(a);
   });
+  if (!n) frag.append(el('p', 'msg', 'Tiada skrip sepadan dengan carian.'));
   $('#sList').replaceChildren(frag);
+  $('#sCount').textContent = q.length ? n + ' daripada ' + sCtx.items.length + ' skrip' : sCtx.items.length + ' skrip';
+}
+
+function openScripts(r, num) {
+  const nk = nickOf(r), call = nk || r.n;                    // [panggil] = nickname (lajur E); nama penuh hanya jika nickname kosong
+  $('#sTitle').textContent = 'Pilih Skrip';
+  $('#sWho').textContent = r.n + (nk ? ' \u00B7 dipanggil "' + nk + '"' : '');
+  sCtx = {
+    num: num,
+    items: (window.SCRIPTS || []).map((s, i) => ({
+      title: String(s.title || 'Skrip ' + (i + 1)),
+      txt: String(s.text || '').replace(/\[panggil\]/gi, call)
+    }))
+  };
+  $('#sSearch').value = '';
+  renderScripts();
   $('#sPlain').href = 'https://wa.me/' + num;
   $('#sPlain').onclick = () => setTimeout(closeScripts, 150);
   $('#sPanel').hidden = false;
@@ -1204,6 +1229,7 @@ function openScripts(r, num) {
   $('#sPanel').scrollTop = 0;
   $('#sPanel').focus({ preventScroll: true });
 }
+$('#sSearch').addEventListener('input', renderScripts);
 $('#sClose').addEventListener('click', closeScripts);
 $('#sBack').addEventListener('click', closeScripts);
 
