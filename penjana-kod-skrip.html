@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Penjana Skrip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0e2a22;--mute:#5d716a;--line:#d5e0dc;--bg:#f3f6f5;--green:#13795b;--gold:#c9a500}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 15px/1.4 "Plus Jakarta Sans",system-ui,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
+.top{background:linear-gradient(135deg,#0e2a22 0%,#15483a 100%);color:#fff;padding:calc(18px + env(safe-area-inset-top)) 16px 20px;box-shadow:inset 0 -1px 0 rgba(233,207,122,.35)}
+.wrap{max-width:760px;margin:0 auto}
+.top small{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#e9cf7a}
+.top h1{margin:3px 0 0;font-size:22px;font-weight:800;letter-spacing:-.02em}
+main{max-width:760px;margin:0 auto;padding:14px 12px 40px;display:grid;gap:12px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 6px 20px rgba(14,42,34,.06)}
+.lbl{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;font-size:11px;font-weight:700;color:var(--mute);letter-spacing:.04em;text-transform:uppercase}
+.fin{width:100%;font-family:inherit;font-weight:600;font-size:16px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;min-height:48px;box-shadow:0 1px 2px rgba(14,42,34,.05);appearance:none;-webkit-appearance:none}
+.fin:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(19,121,91,.18)}
+textarea.fin{min-height:190px;resize:vertical;line-height:1.5;font-weight:500}
+.field+.field{margin-top:14px}
+.chip{font:700 12px inherit;font-family:inherit;text-transform:none;letter-spacing:0;color:#7a5600;background:linear-gradient(135deg,#fbf1c4,#f3dc8a);border:1px solid #e6cf7a;border-radius:999px;padding:5px 12px;cursor:pointer}
+.chip:active{filter:brightness(.95)}
+.out{margin:0;padding:14px;border-radius:12px;background:#0e2a22;color:#d9f3e7;font:500 13px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-height:340px;overflow:auto;border:1px solid #15483a}
+.out.empty{color:#7fa597}
+.row{display:flex;gap:8px;margin-top:12px}
+.btn{flex:1;min-height:48px;border-radius:12px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{filter:brightness(.95)}
+.btn.main{border:0;color:#fff;background:linear-gradient(135deg,#0e2a22 0%,#15483a 100%);box-shadow:0 6px 16px rgba(14,42,34,.2),inset 0 1px 0 rgba(255,255,255,.10);flex:1.6}
+.btn.main svg{color:#e9cf7a}
+.btn.main.done{background:var(--green)}
+.btn.sec{border:1px solid var(--line);background:#fff;color:var(--ink)}
+.btn.sec:hover{border-color:var(--green)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.note{margin:12px 0 0;font-size:12px;color:var(--mute)}
+.note code{background:#eef3f1;border-radius:6px;padding:1px 6px;font-size:12px}
+:focus-visible{outline:3px solid #1b8f6b;outline-offset:2px}
+@media(min-width:760px){main{padding-top:20px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <small>skrip-data.js</small>
+    <h1>Penjana Kod Skrip</h1>
+  </div>
+</header>
+
+<main>
+  <section class="card" aria-label="Borang skrip">
+    <div class="field">
+      <label class="lbl" for="title"><span>Title</span></label>
+      <input id="title" class="fin" type="text" placeholder="cth: Selamat Hari Lahir" autocomplete="off">
+    </div>
+    <div class="field">
+      <label class="lbl" for="text"><span>Text</span><button id="ins" class="chip" type="button">+ [panggil]</button></label>
+      <textarea id="text" class="fin" placeholder="Tulis skrip di sini. Tekan Enter untuk baris baharu."></textarea>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Kod dijana">
+    <div class="lbl"><span>Kod dijana</span></div>
+    <pre id="out" class="out empty" aria-live="polite">Isi Title dan Text untuk menjana kod.</pre>
+    <div class="row">
+      <button id="clr" class="btn sec" type="button">Kosongkan</button>
+      <button id="copy" class="btn main" type="button" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+        <span>Salin kod</span>
+      </button>
+    </div>
+    <p class="note">Tampal kod ini dalam <code>window.SCRIPTS = [ ... ]</code> di <code>skrip-data.js</code>. Letak koma selepas <code>}</code> jika ada skrip lain selepasnya.</p>
+  </section>
+</main>
+
+<script>
+'use strict';
+const $ = (s) => document.querySelector(s);
+const tEl = $('#title'), xEl = $('#text'), out = $('#out'), cp = $('#copy');
+
+/* Hasilkan literal rentetan JS dalam petikan tunggal: \ -> \\, ' -> \', baris baharu -> \n */
+function lit(s) {
+  return "'" + s
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/\r\n|\r|\n/g, '\\n')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029') + "'";
+}
+
+function build() {
+  const t = tEl.value.trim();
+  const x = xEl.value.replace(/^\s+|\s+$/g, '');
+  if (!t && !x) return '';
+  return '{\n    title: ' + lit(t) + ',\n    text: ' + lit(x) + '\n},';
+}
+
+function update() {
+  const code = build();
+  out.textContent = code || 'Isi Title dan Text untuk menjana kod.';
+  out.classList.toggle('empty', !code);
+  cp.disabled = !code;
+}
+
+async function copyText(text) {
+  try {
+    if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return true; }
+  } catch (e) { /* cuba kaedah lama */ }
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly', '');
+  ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;font-size:16px';
+  document.body.append(ta);
+  ta.select();
+  ta.setSelectionRange(0, text.length);
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+  ta.remove();
+  return ok;
+}
+
+cp.addEventListener('click', async () => {
+  const code = build();
+  if (!code) return;
+  const ok = await copyText(code);
+  const s = cp.querySelector('span');
+  s.textContent = ok ? 'Disalin \u2713' : 'Gagal salin';
+  cp.classList.toggle('done', ok);
+  clearTimeout(cp._t);
+  cp._t = setTimeout(() => { s.textContent = 'Salin kod'; cp.classList.remove('done'); }, 1600);
+});
+
+/* Sisip [panggil] pada kedudukan kursor */
+$('#ins').addEventListener('click', () => {
+  const a = xEl.selectionStart, b = xEl.selectionEnd, tag = '[panggil]';
+  xEl.setRangeText(tag, a, b, 'end');
+  xEl.focus();
+  update();
+});
+
+$('#clr').addEventListener('click', () => { tEl.value = ''; xEl.value = ''; update(); tEl.focus(); });
+tEl.addEventListener('input', update);
+xEl.addEventListener('input', update);
+update();
+</script>
+</body>
+</html>
