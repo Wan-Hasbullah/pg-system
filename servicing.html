@@ -188,6 +188,22 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
 .msg{text-align:center;color:var(--mute);padding:40px 16px}
 :focus-visible{outline:3px solid #1b8f6b;outline-offset:2px}
 
+/* Nickname + popup skrip */
+.nickw{margin:5px 0 0 26px}
+.nick{display:inline-flex;align-items:center;max-width:100%;padding:3px 11px;border-radius:999px;font-family:inherit;font-weight:700;font-size:12px;color:#7a5600;background:linear-gradient(135deg,#fbf1c4,#f3dc8a);border:1px solid #e6cf7a;cursor:pointer;overflow-wrap:anywhere;text-align:left}
+.nick:active{filter:brightness(.95)}
+.nick.done{background:var(--green);color:#fff;border-color:var(--green)}
+.swho{margin:0 0 12px;font-size:13px;font-weight:600;color:var(--mute)}
+.slist{display:flex;flex-direction:column;gap:8px}
+.sitem{display:block;text-decoration:none;color:var(--ink);background:#fff;border:1px solid var(--line);border-left:4px solid var(--a0);border-radius:12px;padding:11px 12px;box-shadow:0 1px 2px rgba(14,42,34,.05)}
+.sitem:hover{border-color:var(--green)}
+.sitem:active{filter:brightness(.96)}
+.sh{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sh b{font-size:14px;font-weight:800}
+.sgo{font-size:11px;font-weight:800;color:#fff;background:var(--wa);border-radius:999px;padding:3px 10px}
+.sp{margin:6px 0 0;font-size:12px;line-height:1.45;color:var(--mute);white-space:pre-line;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.splain{display:block;text-align:center;margin-top:12px;font-size:12px;font-weight:700;color:var(--green);text-decoration:underline}
+
 /* Desktop / tablet */
 @media(min-width:640px){
   .grab{display:none}
@@ -355,6 +371,26 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
   </div>
 </div>
 
+<div id="sBack" class="mback" hidden></div>
+<div id="sPanel" class="mpanel" role="dialog" aria-modal="true" aria-labelledby="sTitle" tabindex="-1" hidden>
+  <div class="mhero">
+    <div class="grab"></div>
+    <div class="hrow">
+      <div>
+        <small>WhatsApp</small>
+        <h2 id="sTitle">Pilih Skrip</h2>
+      </div>
+      <button id="sClose" class="xbtn" type="button" aria-label="Tutup">&times;</button>
+    </div>
+  </div>
+  <div class="mbody">
+    <p id="sWho" class="swho"></p>
+    <div id="sList" class="slist"></div>
+    <a id="sPlain" class="splain" target="_blank" rel="noopener">Buka WhatsApp tanpa skrip</a>
+  </div>
+</div>
+
+<script src="js/skrip-data.js"></script>
 <script>
 'use strict';
 
@@ -957,6 +993,23 @@ function render() {
     const row = el('article', 'row' + (on ? ' ticked' : ''));
     const name = el('div', 'name');
     name.append(el('small', '', String(i + 1)), document.createTextNode(' ' + r.n));
+    const nk = nickOf(r);
+    if (nk) {
+      const nw = el('div', 'nickw');
+      const nb = el('button', 'nick', nk);
+      nb.type = 'button';
+      nb.title = 'Klik untuk salin';
+      nb.setAttribute('aria-label', 'Salin nickname ' + nk);
+      nb.addEventListener('click', async () => {
+        const ok = await copyText(nk);
+        nb.textContent = ok ? 'Disalin \u2713' : 'Gagal salin';
+        nb.classList.add('done');
+        clearTimeout(nb._t);
+        nb._t = setTimeout(() => { nb.textContent = nk; nb.classList.remove('done'); }, 1400);
+      });
+      nw.append(nb);
+      name.append(nw);
+    }
     const tk = el('button', 'tick' + (on ? ' on' : ''));
     tk.type = 'button';
     tk.setAttribute('aria-pressed', String(on));
@@ -967,6 +1020,11 @@ function render() {
     const wa = el('a', 'wa' + (num ? '' : ' off'), num ? 'WhatsApp' : 'Tiada no. sah');
     if (num) { wa.href = 'https://wa.me/' + num; wa.target = '_blank'; wa.rel = 'noopener'; wa.setAttribute('aria-label', 'WhatsApp ' + r.n); }
     else wa.setAttribute('aria-disabled', 'true');
+    if (num) wa.addEventListener('click', (ev) => {
+      if (!window.SCRIPTS || !window.SCRIPTS.length) return;   // tiada skrip: buka WhatsApp biasa
+      ev.preventDefault();
+      openScripts(r, num);
+    });
     const chips = el('div', 'chips' + (tIdx >= 0 ? ' solo' : ''));
     if (bdayFilter) {
       const bm = bdayMD(r.d, new Date().getFullYear());
@@ -1109,13 +1167,54 @@ function deleteEntry() {
   renderCal();
 }
 
+/* ====== Nickname (lajur E) & skrip WhatsApp ====== */
+const nickOf = (r) => String(r.k || r.nick || r.nickname || '').trim();
+const sOpen = () => !$('#sPanel').hidden;
+
+function closeScripts() {
+  $('#sPanel').hidden = true;
+  $('#sBack').hidden = true;
+  document.body.classList.remove('lock');
+}
+
+function openScripts(r, num) {
+  const nk = nickOf(r), call = nk || r.n;
+  $('#sTitle').textContent = 'Pilih Skrip';
+  $('#sWho').textContent = r.n + (nk ? ' \u00B7 dipanggil "' + nk + '"' : '');
+  const frag = document.createDocumentFragment();
+  (window.SCRIPTS || []).forEach((s, i) => {
+    const txt = String(s.text || '').replace(/\[panggil\]/gi, call);
+    const a = el('a', 'sitem');
+    a.href = 'https://wa.me/' + num + '?text=' + encodeURIComponent(txt);
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.style.borderLeftColor = 'var(--a' + (i % 8) + ')';
+    const h = el('div', 'sh');
+    h.append(el('b', '', s.title || 'Skrip ' + (i + 1)), el('span', 'sgo', 'Hantar'));
+    a.append(h, el('p', 'sp', txt));
+    a.addEventListener('click', () => setTimeout(closeScripts, 150));
+    frag.append(a);
+  });
+  $('#sList').replaceChildren(frag);
+  $('#sPlain').href = 'https://wa.me/' + num;
+  $('#sPlain').onclick = () => setTimeout(closeScripts, 150);
+  $('#sPanel').hidden = false;
+  $('#sBack').hidden = false;
+  document.body.classList.add('lock');
+  $('#sPanel').scrollTop = 0;
+  $('#sPanel').focus({ preventScroll: true });
+}
+$('#sClose').addEventListener('click', closeScripts);
+$('#sBack').addEventListener('click', closeScripts);
+
 $('#fBtn').addEventListener('click', () => openPanel(!panelOpen()));
 $('#fBack').addEventListener('click', () => openPanel(false));
 $('#fClose').addEventListener('click', () => openPanel(false));
 $('#fDone').addEventListener('click', () => openPanel(false));
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
-  if (modalOpen()) closeModal();
+  if (sOpen()) closeScripts();
+  else if (modalOpen()) closeModal();
   else if (panelOpen()) openPanel(false);
 });
 
