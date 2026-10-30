@@ -62,5 +62,32 @@ window.SCRIPTS = [
     title: '1️⃣3️⃣ Tips Mohd Zulkifli Shafie',
     text: 'Assalamualaikum [panggil] \n\nTeam kami ada sediakan tips daripada guru kami, Tuan Mohd Zulkifli Shafie, yang disusun kepada:\n\n1️⃣ #29 Tips Emas: tingkatkan kewangan dengan emas\n\n2️⃣ Check Point Kewangan: maksimumkan keuntungan dengan emas\n\nBoleh klik di sini:\nhttps://ilmu-emas.pages.dev#tips-mohd-zulkifli\n\n🔑 Password: sejak2021\n\n𝑷/𝑺 : 𝑷𝒂𝒈𝒆 𝒊𝒏𝒊 𝒌𝒉𝒂𝒔 𝒖𝒏𝒕𝒖𝒌 𝒑𝒆𝒏𝒚𝒊𝒎𝒑𝒂𝒏 𝒆𝒎𝒂𝒔 𝒅𝒊𝒃𝒂𝒘𝒂𝒉 𝒅𝒆𝒂𝒍𝒆𝒓𝒔𝒉𝒊𝒑 𝑾𝒂𝒏 𝑯𝒂𝒔𝒃𝒖𝒍𝒍𝒂𝒉 𝒔𝒂𝒉𝒂𝒋𝒂. 𝑻𝒊𝒅𝒂𝒌 𝒅𝒊𝒃𝒆𝒏𝒂𝒓𝒌𝒂𝒏 𝒃𝒆𝒓𝒊 𝒑𝒂𝒔𝒔𝒘𝒐𝒓𝒅 𝒌𝒆𝒑𝒂𝒅𝒂 𝒐𝒓𝒂𝒏𝒈 𝒍𝒂𝒊𝒏.'
   },
-   
+   {
+    title: 'PW - Skrip 1',
+    text: 'Assalamualaikum [panggil]\n\nSaya ada share berkenaan Private Webinar dekat group, dah baca dah?\n\nEsok pagi, guru emas saya Tuan Zulkifli Shafie akan sampaikan Private Webinar. Tuan Zul akan share macam mana nak capai simpanan 1 juta pertama based on pengalaman Tuan Zul sendiri. Dari tiada simpanan sampailah dapat capai simpanan 1 juta.'
+  },
+   {
+    title: 'PW - Prospek',
+    text: 'Since [panggil] berminat nak mulakan simpanan, saya cadangkan join webinar ni so that [panggil] dapat mulakan simpanan emas dengan cara betul.'
+   },
+   {
+    title: 'PW - Baru beli emas 3 bulan (New Customer)',
+    text: 'Since [panggil] baru mulakan simpanan, saya cadangkan join webinar ini supaya [panggil] dapat elakkan kesilapan dalam buat simpanan emas dan gandakan simpanan emas dengan cepat.'
+   },
+   {
+    title: 'PW - Lebih 3 bulan tak buat belian (Customer Inactive)',
+    text: 'Since mungkin [panggil] belum cukup faham cara kembangkan kekayaan dengan emas, saya cadangkan join webinar ini supaya [panggil] dapat menyimpan dengan betul sampai capai target simpanan.'
+  },
+   {
+    title: 'PW - Konsisten menyimpan 3 bulan (Active)',
+    text: 'Since [panggil] sudah konsisten menyimpan hampir setiap bulan, saya cadangkan join webinar ini supaya [panggil] dapat capai target simpanan dengan lebih cepat.'
+  },
+   {
+    title: 'PW - Skrip 3',
+    text: 'Yuran pendaftaran Private Webinar ni RM50. Sebab saya anak murid Tuan Zul, jadi Tuan Zul offer 5 tiket free untuk penyimpan emas dibawah dealership anak murid dia.'
+  },
+   {
+    title: 'PW - Skrip 4',
+    text: 'Saya dah reserve 1 tiket untuk [panggil] sebab saya yakin [panggil] serius nak menyimpan emas.\n\n[panggil] nak saya tolong daftar nama untuk webinar ni tak?'
+   },
 ];
