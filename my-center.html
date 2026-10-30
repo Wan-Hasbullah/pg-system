@@ -21,9 +21,9 @@
   --d-s:#079669;--d-c:#c48a14;--d-l:#e0436a;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;scroll-padding-top:var(--hh,140px);-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth;scroll-padding-top:var(--hh,80px);-webkit-text-size-adjust:100%}
 body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5;min-height:100vh;
-  padding-bottom:env(safe-area-inset-bottom,0)}
+  padding-bottom:calc(var(--dh,120px) + 12px)}
 body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;transform:translateZ(0);
   background-image:radial-gradient(900px 500px at 10% -10%,var(--glow),transparent 60%),radial-gradient(700px 400px at 100% 0,rgba(232,194,106,.08),transparent 60%)}
 .wrap{max-width:1100px;margin:0 auto;padding:0 18px}
@@ -42,12 +42,19 @@ nav a{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999
   border:1px solid transparent;white-space:nowrap;transition:.25s}
 nav a:hover{color:var(--txt);background:var(--card)}
 nav a.active{color:var(--em);background:var(--glow);border-color:color-mix(in srgb,var(--em) 35%,transparent)}
-.theme{width:38px;height:38px;border-radius:12px;border:1px solid var(--card-b);background:var(--card);color:var(--txt);cursor:pointer;font-size:16px;flex:none;transition:.25s}
+.theme{width:38px;height:38px;border-radius:12px;border:1px solid var(--card-b);background:var(--card);color:var(--txt);cursor:pointer;font-size:16px;flex:none;transition:.25s;margin-left:auto}
 .theme:hover{border-color:var(--gold)}
 
-/* Sub navigasi (kekal/tetap di bawah header) */
-.sub-bar{border-top:1px solid var(--card-b)}
-.subnav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;padding:8px 0}
+/* Navigasi bawah (kekal/tetap) */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:60;padding-bottom:env(safe-area-inset-bottom,0);
+  background:color-mix(in srgb,var(--bg) 93%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transform:translateZ(0);
+  border-top:1px solid var(--card-b);box-shadow:0 -16px 40px -24px rgba(0,0,0,.6)}
+.dock::before{content:"";position:absolute;inset:0 0 auto 0;height:2px;background:linear-gradient(90deg,transparent,var(--gold) 25%,var(--em) 75%,transparent);opacity:.75}
+.dock nav#nav{margin:0 auto;justify-content:center;padding:8px 0 10px}
+
+/* Sub navigasi (kekal/tetap di atas navigasi utama dalam dock) */
+.sub-bar{border-bottom:1px solid var(--card-b)}
+.subnav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;padding:8px 0;justify-content:center}
 .subnav::-webkit-scrollbar{display:none}
 .subnav a{display:flex;align-items:center;gap:6px;padding:6px 13px;border-radius:10px;font-size:12.5px;font-weight:600;color:var(--mut);text-decoration:none;
   border:1px solid transparent;white-space:nowrap;transition:.25s}
@@ -139,6 +146,17 @@ section + section::after{content:"";position:absolute;top:-4px;left:50%;width:10
 a.strat{display:block;text-decoration:none;color:var(--txt)}
 .strat.clk{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .strat.clk:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* Amalan (Tilawah, Qadha Solat, Wirid) */
+a.am{display:block;text-decoration:none;color:var(--txt);-webkit-tap-highlight-color:transparent}
+a.am:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.am .sec-ic{margin-bottom:16px}
+.am h3{min-height:0}
+.am .chips{margin:0 0 14px}
+.am .date{margin-bottom:14px}
+.chip.on{color:var(--gold);border-color:color-mix(in srgb,var(--gold) 55%,transparent);background:color-mix(in srgb,var(--gold) 12%,transparent)}
+.am-go{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid var(--card-b);font-size:12.5px;font-weight:700;color:var(--gold)}
+.am .stat b.txt{font-size:19px}
 
 /* Dream Jangka Panjang */
 .lt h3{min-height:0;margin:6px 0 14px}
@@ -245,10 +263,10 @@ footer b{color:var(--gold)}
 
 @media(max-width:640px){
   .brand small{display:none}
-  .bar{gap:10px;height:auto;flex-wrap:wrap;row-gap:8px;padding:10px 0 4px}
-  .brand{flex:1}
-  nav{order:3;width:100%;margin-left:0}
+  .bar{height:60px}
+  .dock nav#nav{justify-content:flex-start;padding:7px 0 8px}
   nav a{padding:8px 11px;font-size:12.5px;flex:1;justify-content:center}
+  .subnav{justify-content:flex-start}
   .grid,.grid.two{grid-template-columns:1fr}
   .frame iframe{height:70vh;min-height:480px}
   .hero{padding-top:30px}
@@ -268,15 +286,22 @@ footer b{color:var(--gold)}
 <header class="top" id="top">
   <div class="wrap bar">
     <div class="brand"><div class="logo">◆</div><div>My Center<small>Dream &amp; Business</small></div></div>
+    <button class="theme" id="theme" aria-label="Tukar tema">🌓</button>
+  </div>
+</header>
+
+<!-- Navigasi bawah (kekal/tetap) -->
+<div class="dock" id="dock">
+  <div class="sub-bar"><div class="wrap"><nav class="subnav" id="subnav" style="margin-left:0"></nav></div></div>
+  <div class="wrap">
     <nav id="nav">
       <a href="#dream" data-g="dream">🌙 Dream</a>
       <a href="#kalendar" data-g="kalendar">🗓️ Kalendar</a>
+      <a href="#tilawah" data-g="amalan">🕌 Amalan</a>
       <a href="#goal" data-g="business">💼 Business Center</a>
     </nav>
-    <button class="theme" id="theme" aria-label="Tukar tema">🌓</button>
   </div>
-  <div class="sub-bar"><div class="wrap"><nav class="subnav" id="subnav" style="margin-left:0"></nav></div></div>
-</header>
+</div>
 
 <main class="wrap">
   <div class="hero">
@@ -344,6 +369,46 @@ footer b{color:var(--gold)}
         <div id="kList"></div>
       </div>
     </article>
+  </section>
+
+  <!-- ===== AMALAN ===== -->
+  <section id="tilawah">
+    <div class="sec-h"><div class="sec-ic">📖</div><div><h2>Tilawah</h2><p>Auto kemas kini mengikut turutan juzuk</p></div></div>
+    <div class="grid">
+      <a class="card am" id="tilCard" href="https://deen-track.pages.dev/jadual-tilawah" target="_blank" rel="noopener">
+        <div class="sec-ic">📖</div>
+        <div class="no">Amalan 1</div>
+        <h3 class="has-sub">Tilawah</h3>
+        <p class="sub" id="tilSub">Sehari 1 juzuk</p>
+        <div class="stat"><div><small>Jumlah Khatam</small><b id="tilK">0</b></div><div><small>Juzuk Terkini</small><b id="tilJ">0</b></div></div>
+        <span class="date" id="tilD">📅 —</span>
+        <div class="meta"><span id="tilM">Juzuk — / 30</span><b id="tilP">0%</b></div>
+        <div class="track"><div class="fill" id="tilF"></div></div>
+        <div class="am-go"><span id="tilN">Juzuk seterusnya: —</span><span>Buka Jadual ›</span></div>
+      </a>
+    </div>
+  </section>
+
+  <section id="qadha">
+    <div class="sec-h"><div class="sec-ic">🕋</div><div><h2>Qadha Solat</h2><p>Auto kemas kini mengikut turutan solat</p></div></div>
+    <div class="grid">
+      <article class="card am" id="qdCard">
+        <div class="sec-ic">🕋</div>
+        <div class="no">Amalan 2</div>
+        <h3 class="has-sub">Qadha Solat</h3>
+        <p class="sub" id="qdSub">Sehari 1 solat qadha</p>
+        <div class="stat"><div><small>Solat Hari Ini</small><b class="txt" id="qdT">—</b></div><div><small>Jumlah Qadha</small><b id="qdJ">0</b></div></div>
+        <div class="chips" id="qdChips"></div>
+        <span class="date" id="qdD">📅 —</span>
+        <div class="meta"><span id="qdN">Seterusnya: —</span><b id="qdR">0 pusingan</b></div>
+        <div class="track"><div class="fill" id="qdF"></div></div>
+      </article>
+    </div>
+  </section>
+
+  <section id="wirid">
+    <div class="sec-h"><div class="sec-ic">📿</div><div><h2>Wirid</h2><p>Jumlah bacaan dikira automatik sejak tarikh mula</p></div></div>
+    <div class="grid" id="wiridGrid"></div>
   </section>
 
   <!-- ===== BUSINESS CENTER ===== -->
@@ -446,6 +511,19 @@ var GOALS = [
   { tajuk: "1000 Frontline", tarikh: "2027-04-30", mula: "2026-10-12", target: 1000, total: 394 }
 ];
 
+/* ====== DATA AMALAN (ubah di sini sahaja) ======
+   TILAWAH : sehari 1 juzuk sejak "mula". "rujuk" + "juzuk" = juzuk terkini pada tarikh rujukan (selepas itu auto bergerak 1 juzuk sehari, kitaran 1–30)
+   QADHA   : sehari 1 solat qadha mengikut "urutan", bermula pada tarikh "mula" dengan solat pertama
+   WIRID   : jumlah = (bilangan hari sejak "mula" termasuk hari ini) × "harian" */
+var TILAWAH = { mula: "2016-10-25", rujuk: "2026-10-30", juzuk: 23, link: "https://deen-track.pages.dev/jadual-tilawah" };
+var QADHA   = { mula: "2026-10-31", urutan: ["Subuh","Zohor","Asar","Maghrib","Isyak"] };
+var WIRID_LINK = "https://deen-track.pages.dev/zikir-track";
+var WIRID = [
+  { nama: "Istighfar",       ikon: "🤲", mula: "2026-09-01", harian: 1000 },
+  { nama: "Selawat",         ikon: "🌹", mula: "2026-09-01", harian: 1000 },
+  { nama: "Bacaan Ruqyah",   ikon: "🛡️", mula: "2026-09-13", harian: 20 }
+];
+
 var BULAN = ["Jan","Feb","Mac","Apr","Mei","Jun","Jul","Ogo","Sep","Okt","Nov","Dis"];
 var BULAN_P = ["Januari","Februari","Mac","April","Mei","Jun","Julai","Ogos","September","Oktober","November","Disember"];
 var EXTS = ["jpg","jpeg","png","webp"];
@@ -529,24 +607,102 @@ build(DREAMS, "dreamGrid", "Dream");
 build(GOALS,  "goalGrid",  "Goal");
 tick(); setInterval(tick, 1000);
 
-/* Navigasi 2 peringkat: Dream / Kalendar / Business Center + sub navigasi (kekal di atas) */
+/* ====== Amalan: Tilawah, Qadha Solat, Wirid (auto kira mengikut tarikh Malaysia) ====== */
+(function(){
+  var HARI = ["Ahad","Isnin","Selasa","Rabu","Khamis","Jumaat","Sabtu"];
+  function dn(s){ var p = s.split("-"); return Date.UTC(+p[0], +p[1]-1, +p[2]) / 86400000; }   /* nombor hari */
+  function mod(a, b){ return ((a % b) + b) % b; }
+  function nowDay(){ return Math.floor((Date.now() + 8*3600*1000) / 86400000); }                /* hari ini (GMT+8) */
+  function tgl(n){ var d = new Date(n * 86400000); return HARI[d.getUTCDay()] + ", " + d.getUTCDate() + " " + BULAN[d.getUTCMonth()] + " " + d.getUTCFullYear(); }
+  function $(id){ return document.getElementById(id); }
+
+  /* Kerangka Qadha (chip solat) & Wirid */
+  $("qdChips").innerHTML = QADHA.urutan.map(function(s, i){ return '<span class="chip" data-i="' + i + '"><i>🕋</i> ' + s + '</span>'; }).join("");
+  $("wiridGrid").innerHTML = WIRID.map(function(w, i){
+    return '<a class="card am" href="' + WIRID_LINK + '" target="_blank" rel="noopener">' +
+      '<div class="sec-ic">' + w.ikon + '</div>' +
+      '<div class="no">Wirid ' + (i+1) + '</div>' +
+      '<h3 class="has-sub">' + w.nama + '</h3>' +
+      '<p class="sub">' + num(w.harian) + ' kali sehari · sejak ' + fmt(w.mula) + '</p>' +
+      '<div class="stat"><div><small>Jumlah Bacaan</small><b id="w' + i + 'J">0</b></div><div><small>Jumlah Hari</small><b id="w' + i + 'H">0</b></div></div>' +
+      '<span class="date" id="w' + i + 'D">📅 —</span>' +
+      '<div class="am-go"><span>Termasuk hari ini</span><span>Buka Zikir Track ›</span></div>' +
+    '</a>';
+  }).join("");
+
+  function update(){
+    var t = nowDay();
+
+    /* --- Tilawah --- */
+    var T = TILAWAH, a = dn(T.rujuk), diff = t - a;
+    var inc  = a - dn(T.mula) + 1;                         /* hari sejak mula hingga tarikh rujukan (termasuk) */
+    var base = inc - mod(inc - T.juzuk, 30);               /* jumlah juzuk dibaca pada tarikh rujukan, sepadan juzuk terkini */
+    var total = Math.max(0, base + diff);
+    var khatam = Math.floor(total / 30);
+    var juz = mod(T.juzuk - 1 + diff, 30) + 1;
+    $("tilSub").textContent = "Sehari 1 juzuk · sejak " + fmt(T.mula);
+    $("tilK").textContent = num(khatam);
+    $("tilJ").textContent = "Juzuk " + juz;
+    $("tilD").textContent = "📅 " + tgl(t);
+    $("tilM").textContent = "Juzuk " + juz + " / 30 · " + num(total) + " juzuk dibaca";
+    $("tilP").textContent = Math.round(juz / 30 * 100) + "%";
+    $("tilF").style.transform = "scaleX(" + (juz / 30) + ")";
+    $("tilN").textContent = "Seterusnya: Juzuk " + (juz % 30 + 1);
+
+    /* --- Qadha Solat --- */
+    var Q = QADHA, L = Q.urutan, n = L.length, d = t - dn(Q.mula), idx, jumlah, nxt, pusing, pct;
+    if (d < 0){
+      idx = 0; jumlah = 0; pusing = 0; pct = 0; nxt = L[0];
+      $("qdT").textContent = "Belum bermula";
+      $("qdD").textContent = "⏳ Bermula dalam " + (-d) + " hari · " + fmt(Q.mula);
+    } else {
+      idx = d % n; jumlah = d + 1; pusing = Math.floor(jumlah / n); nxt = L[(d + 1) % n];
+      pct = ((idx + 1) / n) * 100;
+      $("qdT").textContent = L[idx];
+      $("qdD").textContent = "📅 " + tgl(t);
+    }
+    $("qdSub").textContent = "Sehari 1 solat · bermula " + fmt(Q.mula) + " (" + L[0] + ")";
+    $("qdJ").textContent = num(jumlah);
+    $("qdN").textContent = (d < 0 ? "Solat pertama: " : "Esok: ") + nxt;
+    $("qdR").textContent = pusing + " pusingan";
+    $("qdF").style.transform = "scaleX(" + (pct / 100) + ")";
+    [].forEach.call($("qdChips").children, function(c){ c.classList.toggle("on", parseInt(c.getAttribute("data-i"), 10) === idx); });
+
+    /* --- Wirid --- */
+    WIRID.forEach(function(w, i){
+      var hari = Math.max(0, t - dn(w.mula) + 1);
+      $("w" + i + "J").textContent = num(hari * w.harian);
+      $("w" + i + "H").textContent = num(hari);
+      $("w" + i + "D").textContent = hari > 0 ? "📅 Sejak " + fmt(w.mula) : "⏳ Bermula " + fmt(w.mula);
+    });
+  }
+  update();
+  setInterval(update, 30000);
+  document.addEventListener("visibilitychange", function(){ if (!document.hidden) update(); });
+})();
+
+/* Navigasi 2 peringkat (di bawah, kekal): Dream / Kalendar / Amalan / Business Center + sub navigasi */
 (function(){
   var GROUPS = [
     { g:"dream",    first:"dream",    subs:[["dream","🌙 3 Dream Terawal"],["jangka-panjang","🏛️ Dream Jangka Panjang"]] },
     { g:"kalendar", first:"kalendar", subs:[["kalendar","🗓️ Kalendar"],["kalMakluman","📢 Senarai Makluman"]] },
+    { g:"amalan",   first:"tilawah",  subs:[["tilawah","📖 Tilawah"],["qadha","🕋 Qadha Solat"],["wirid","📿 Wirid"]] },
     { g:"business", first:"goal",     subs:[["goal","🎯 Goal"],["strategi","♟️ Strategi"],["content","📣 Content Marketing"]] }
   ];
-  var SEC = ["dream","jangka-panjang","kalendar","goal","strategi","content"];
+  var SEC = ["dream","jangka-panjang","kalendar","tilawah","qadha","wirid","goal","strategi","content"];
   var S2G = {}, G = {};
   GROUPS.forEach(function(x){ G[x.g] = x; x.subs.forEach(function(s){ S2G[s[0]] = x.g; }); });
 
-  var nav = document.getElementById("nav"), sub = document.getElementById("subnav"), head = document.getElementById("top");
+  var nav = document.getElementById("nav"), sub = document.getElementById("subnav"), head = document.getElementById("top"), dock = document.getElementById("dock");
   var curG = "", curS = "";
 
   function center(box, act){
     if (act) box.scrollTo({ left: act.offsetLeft - (box.clientWidth - act.offsetWidth)/2, behavior:"auto" });
   }
-  function setHH(){ document.documentElement.style.setProperty("--hh", (head.offsetHeight + 8) + "px"); }
+  function setHH(){
+    document.documentElement.style.setProperty("--hh", (head.offsetHeight + 8) + "px");
+    document.documentElement.style.setProperty("--dh", dock.offsetHeight + "px");
+  }
 
   function paint(g, s){
     if (g !== curG){
