@@ -158,6 +158,20 @@ a.am:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .am-go{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid var(--card-b);font-size:12.5px;font-weight:700;color:var(--gold)}
 .am .stat b.txt{font-size:19px}
 
+/* Qadha Solat: jumlah setiap waktu solat + peringatan 5 pagi */
+.chip .qc{display:inline-block;min-width:24px;padding:1px 8px;border-radius:99px;text-align:center;font-size:12px;font-weight:800;line-height:1.5;font-variant-numeric:tabular-nums;
+  color:var(--gold);background:color-mix(in srgb,var(--gold) 16%,transparent)}
+.chip.on .qc{color:#1a1405;background:linear-gradient(135deg,var(--gold),var(--gold2))}
+.qd-act{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--card-b)}
+.qd-btn{flex:1 1 150px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 12px;border-radius:12px;border:1px solid var(--card-b);
+  background:var(--box);color:var(--txt);font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;transition:.25s;-webkit-tap-highlight-color:transparent}
+.qd-btn:hover{border-color:var(--gold)}
+.qd-btn.pri{border:0;color:#1a1405;background:linear-gradient(135deg,var(--gold),var(--gold2));box-shadow:0 10px 24px -12px var(--gold)}
+.qd-btn.pri:hover{filter:brightness(1.08)}
+.qd-btn.ok{color:var(--em);border-color:color-mix(in srgb,var(--em) 50%,transparent);background:var(--glow)}
+.qd-btn:disabled{opacity:.55;cursor:not-allowed}
+.qd-hint{margin-top:10px;font-size:11.5px;line-height:1.5;color:var(--mut)}
+
 /* Dream Jangka Panjang */
 .lt h3{min-height:0;margin:6px 0 14px}
 .lt .sec-ic{margin-bottom:16px}
@@ -277,6 +291,7 @@ footer b{color:var(--gold)}
   .card.cal{padding:18px 14px}
   .card.cal .day{min-height:46px;font-size:12.5px}
   .mk-go{display:none}
+  .qd-btn{flex:1 1 100%}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
@@ -400,8 +415,13 @@ footer b{color:var(--gold)}
         <div class="stat"><div><small>Solat Hari Ini</small><b class="txt" id="qdT">—</b></div><div><small>Jumlah Qadha</small><b id="qdJ">0</b></div></div>
         <div class="chips" id="qdChips"></div>
         <span class="date" id="qdD">📅 —</span>
-        <div class="meta"><span id="qdN">Seterusnya: —</span><b id="qdR">0 pusingan</b></div>
+        <div class="meta"><span id="qdN">Seterusnya: —</span><b id="qdR">0 solat</b></div>
         <div class="track"><div class="fill" id="qdF"></div></div>
+        <div class="qd-act">
+          <button type="button" class="qd-btn pri" id="qdIcs">📅 Peringatan 5 Pagi (Kalendar)</button>
+          <button type="button" class="qd-btn" id="qdNotif">🔔 Aktifkan Notifikasi</button>
+        </div>
+        <p class="qd-hint" id="qdHint">Peringatan Kalendar berbunyi tepat 5 pagi setiap hari walaupun app ditutup. Notifikasi browser pula hanya berfungsi apabila halaman ini sedang dibuka.</p>
       </article>
     </div>
   </section>
@@ -514,6 +534,7 @@ var GOALS = [
 /* ====== DATA AMALAN (ubah di sini sahaja) ======
    TILAWAH : sehari 1 juzuk sejak "mula". "rujuk" + "juzuk" = juzuk terkini pada tarikh rujukan (selepas itu auto bergerak 1 juzuk sehari, kitaran 1–30)
    QADHA   : sehari 1 solat qadha mengikut "urutan", bermula pada tarikh "mula" dengan solat pertama
+             Jumlah Qadha = bilangan pusingan LENGKAP (Subuh hingga Isyak = 1). Setiap solat mempunyai jumlah sendiri.
    WIRID   : jumlah = (bilangan hari sejak "mula" termasuk hari ini) × "harian" */
 var TILAWAH = { mula: "2016-10-25", rujuk: "2026-10-30", juzuk: 23, link: "https://deen-track.pages.dev/jadual-tilawah" };
 var QADHA   = { mula: "2026-10-31", urutan: ["Subuh","Zohor","Asar","Maghrib","Isyak"] };
@@ -616,8 +637,8 @@ tick(); setInterval(tick, 1000);
   function tgl(n){ var d = new Date(n * 86400000); return HARI[d.getUTCDay()] + ", " + d.getUTCDate() + " " + BULAN[d.getUTCMonth()] + " " + d.getUTCFullYear(); }
   function $(id){ return document.getElementById(id); }
 
-  /* Kerangka Qadha (chip solat) & Wirid */
-  $("qdChips").innerHTML = QADHA.urutan.map(function(s, i){ return '<span class="chip" data-i="' + i + '"><i>🕋</i> ' + s + '</span>'; }).join("");
+  /* Kerangka Qadha (chip solat + jumlah setiap solat) & Wirid */
+  $("qdChips").innerHTML = QADHA.urutan.map(function(s, i){ return '<span class="chip" data-i="' + i + '"><i>🕋</i> ' + s + ' <b class="qc" id="qc' + i + '">0</b></span>'; }).join("");
   $("wiridGrid").innerHTML = WIRID.map(function(w, i){
     return '<a class="card am" href="' + WIRID_LINK + '" target="_blank" rel="noopener">' +
       '<div class="sec-ic">' + w.ikon + '</div>' +
@@ -662,11 +683,16 @@ tick(); setInterval(tick, 1000);
       $("qdD").textContent = "📅 " + tgl(t);
     }
     $("qdSub").textContent = "Sehari 1 solat · bermula " + fmt(Q.mula) + " (" + L[0] + ")";
-    $("qdJ").textContent = num(jumlah);
+    $("qdJ").textContent = num(pusing);                                      /* Jumlah Qadha = pusingan lengkap sahaja */
     $("qdN").textContent = (d < 0 ? "Solat pertama: " : "Esok: ") + nxt;
-    $("qdR").textContent = pusing + " pusingan";
+    $("qdR").textContent = num(jumlah) + " solat diqadha";                   /* jumlah semua solat yang telah diqadha */
     $("qdF").style.transform = "scaleX(" + (pct / 100) + ")";
-    [].forEach.call($("qdChips").children, function(c){ c.classList.toggle("on", parseInt(c.getAttribute("data-i"), 10) === idx); });
+    [].forEach.call($("qdChips").children, function(c){
+      var i = parseInt(c.getAttribute("data-i"), 10);
+      c.classList.toggle("on", i === idx);
+      /* jumlah setiap waktu solat: bilangan hari (0..d) yang jatuh pada solat ini */
+      $("qc" + i).textContent = num(d >= i ? Math.floor((d - i) / n) + 1 : 0);
+    });
 
     /* --- Wirid --- */
     WIRID.forEach(function(w, i){
@@ -679,6 +705,106 @@ tick(); setInterval(tick, 1000);
   update();
   setInterval(update, 30000);
   document.addEventListener("visibilitychange", function(){ if (!document.hidden) update(); });
+})();
+
+/* ====== Peringatan Qadha Solat pukul 5 pagi (waktu Malaysia) ======
+   1) Butang "Peringatan 5 Pagi (Kalendar)": muat turun fail .ics. Ia mencipta 5 acara berulang
+      (satu untuk setiap solat, ulang setiap 5 hari) dengan penggera tepat 5:00 pagi. Berfungsi di iPhone / Android / Google Calendar
+      walaupun app ditutup — kaedah paling dipercayai tanpa pelayan.
+   2) Butang "Notifikasi": notifikasi browser, dipaparkan selepas 5:00 pagi apabila halaman dibuka (sekali sehari). */
+(function(){
+  var HOUR = 5, KEY_ON = "qd-notif", KEY_LAST = "qd-notif-last";
+  function $(id){ return document.getElementById(id); }
+  function dn(s){ var p = s.split("-"); return Date.UTC(+p[0], +p[1]-1, +p[2]) / 86400000; }
+  function my(){ return new Date(Date.now() + 8*3600*1000); }
+  function dayNo(){ return Math.floor(my().getTime() / 86400000); }
+  function key(){ var n = my(); return n.getUTCFullYear() + "-" + pad(n.getUTCMonth()+1) + "-" + pad(n.getUTCDate()); }
+  function store(k, v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch(e){} return null; }
+
+  /* ---- 1) Fail kalendar (.ics) ---- */
+  function z(d){ return d.getUTCFullYear() + pad(d.getUTCMonth()+1) + pad(d.getUTCDate()) + "T" + pad(d.getUTCHours()) + pad(d.getUTCMinutes()) + pad(d.getUTCSeconds()) + "Z"; }
+  function makeICS(){
+    var L = QADHA.urutan, n = L.length, base = dn(QADHA.mula), stamp = z(new Date());
+    var out = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//My Center//Qadha Solat//MS","CALSCALE:GREGORIAN","METHOD:PUBLISH","X-WR-CALNAME:Qadha Solat"];
+    L.forEach(function(s, i){
+      /* 05:00 GMT+8 = 21:00 UTC hari sebelumnya (Malaysia tiada waktu musim panas) */
+      var st = new Date((base + i) * 86400000 - 3*3600*1000), en = new Date(st.getTime() + 15*60*1000);
+      out.push(
+        "BEGIN:VEVENT",
+        "UID:qadha-" + i + "-" + L[i].toLowerCase() + "@mycenter",
+        "DTSTAMP:" + stamp,
+        "DTSTART:" + z(st),
+        "DTEND:" + z(en),
+        "RRULE:FREQ=DAILY;INTERVAL=" + n,
+        "SUMMARY:🕋 Qadha Solat " + s + " hari ini",
+        "DESCRIPTION:Hari ini giliran qadha solat " + s + ". Semoga dipermudahkan.",
+        "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:Qadha solat " + s + " hari ini","TRIGGER:PT0S","END:VALARM",
+        "END:VEVENT"
+      );
+    });
+    out.push("END:VCALENDAR");
+    return out.join("\r\n");
+  }
+  $("qdIcs").addEventListener("click", function(){
+    var blob = new Blob([makeICS()], { type:"text/calendar;charset=utf-8" });
+    var url = URL.createObjectURL(blob), a = document.createElement("a");
+    a.href = url; a.download = "peringatan-qadha-solat.ics";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+  });
+
+  /* ---- 2) Notifikasi browser ---- */
+  var btn = $("qdNotif"), hint = $("qdHint");
+  var supported = ("Notification" in window);
+
+  function todayInfo(){
+    var L = QADHA.urutan, n = L.length, d = dayNo() - dn(QADHA.mula);
+    if (d < 0) return null;
+    return { cur: L[d % n], nxt: L[(d + 1) % n] };
+  }
+  function paintBtn(){
+    if (!supported){ btn.disabled = true; btn.textContent = "🔕 Notifikasi tidak disokong"; return; }
+    if (Notification.permission === "denied"){ btn.disabled = true; btn.textContent = "🔕 Disekat dalam tetapan browser"; btn.classList.remove("ok"); return; }
+    var on = Notification.permission === "granted" && store(KEY_ON) === "1";
+    btn.classList.toggle("ok", on);
+    btn.textContent = on ? "🔔 Notifikasi Aktif ✓" : "🔔 Aktifkan Notifikasi";
+  }
+  function fire(){
+    var info = todayInfo();
+    if (!info) return;
+    var title = "🕋 Qadha Solat Hari Ini", body = "Hari ini qadha solat " + info.cur + ". Esok: " + info.nxt + ".";
+    try { new Notification(title, { body: body, tag: "qadha-" + key() }); }
+    catch(e){
+      /* Android Chrome memerlukan service worker; cuba jika ada */
+      if (navigator.serviceWorker && navigator.serviceWorker.getRegistration){
+        navigator.serviceWorker.getRegistration().then(function(r){ if (r) r.showNotification(title, { body: body, tag: "qadha-" + key() }); }).catch(function(){});
+      }
+    }
+  }
+  function check(){
+    if (!supported || Notification.permission !== "granted" || store(KEY_ON) !== "1") return;
+    if (my().getUTCHours() < HOUR) return;
+    if (store(KEY_LAST) === key()) return;
+    store(KEY_LAST, key());
+    fire();
+  }
+  btn.addEventListener("click", function(){
+    if (!supported || Notification.permission === "denied") return;
+    if (Notification.permission === "granted" && store(KEY_ON) === "1"){ store(KEY_ON, "0"); paintBtn(); return; }
+    var done = function(p){
+      if (p === "granted"){ store(KEY_ON, "1"); check(); }
+      paintBtn();
+    };
+    try {
+      var r = Notification.requestPermission(done);
+      if (r && r.then) r.then(done);
+    } catch(e){ paintBtn(); }
+  });
+
+  paintBtn();
+  check();
+  setInterval(check, 30000);
+  document.addEventListener("visibilitychange", function(){ if (!document.hidden) check(); });
 })();
 
 /* Navigasi 2 peringkat (di bawah, kekal): Dream / Kalendar / Amalan / Business Center + sub navigasi */
