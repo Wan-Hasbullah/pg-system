@@ -143,6 +143,8 @@ background-repeat:no-repeat;background-position:right 12px center;background-siz
 .fin:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(19,121,91,.18)}
 .fin.num{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.three .fin.num{padding:11px 8px;text-align:center}
 .emsg{margin:0 0 10px;font-size:12px;font-weight:600;color:#b3261e}
 .mbody .ffoot{margin-top:6px}
 .fres.edel{color:#b3261e;border-color:#efc9c5;flex:.9}
@@ -204,6 +206,18 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
 .sp{margin:6px 0 0;font-size:12px;line-height:1.45;color:var(--mute);white-space:pre-line;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .ssearch{margin-bottom:8px;padding-left:38px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%235d716a' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:12px center;background-size:18px 18px}
 .scount{margin:0 0 10px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--mute)}
+.shead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.shead .scount{margin:0}
+.spo{font:700 12px inherit;font-family:inherit;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;white-space:nowrap}
+.spo.on{background:linear-gradient(135deg,#f3dc8a,#c9a500);color:#2b2200;border-color:#e6cf7a}
+.srow{display:flex;gap:8px;align-items:stretch}
+.srow .sitem{flex:1;min-width:0}
+.srow.pinned .sitem{border-color:#e6cf7a;background:#fffdf3}
+.spin{flex:0 0 44px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--mute);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;-webkit-tap-highlight-color:transparent}
+.spin:hover{border-color:var(--a4)}
+.spin:active{filter:brightness(.95)}
+.spin.on{background:linear-gradient(135deg,#f3dc8a,#c9a500);color:#2b2200;border-color:#e6cf7a;box-shadow:0 4px 12px rgba(201,165,0,.28)}
+.spin.on svg{fill:currentColor}
 .splain{display:block;text-align:center;margin-top:12px;font-size:12px;font-weight:700;color:var(--green);text-decoration:underline}
 
 /* Desktop / tablet */
@@ -254,7 +268,7 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
       <button id="fBtn" class="fbtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="fPanel">
         <span class="fl">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>
-          Servis Sekarang
+          Servicing Sekarang
         </span>
         <span class="fr">
           <i id="fBadge" class="badge" hidden>0</i>
@@ -262,7 +276,7 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
         </span>
       </button>
       <div id="fBack" class="fback" hidden></div>
-      <div id="fPanel" class="fpanel" role="dialog" aria-label="Penapis servis" tabindex="-1" hidden>
+      <div id="fPanel" class="fpanel" role="dialog" aria-label="Penapis servicing" tabindex="-1" hidden>
         <div class="grab"></div>
         <div class="fhead">
           <h2>Penapis</h2>
@@ -315,7 +329,7 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
   </div>
   <p id="status" class="meta" role="status" style="margin-top:2px"></p>
 
-  <section class="cal" aria-label="Kalendar servis">
+  <section class="cal" aria-label="Kalendar servicing">
     <div class="ch">
       <button id="calPrev" class="cnav" type="button" aria-label="Bulan sebelum">&lsaquo;</button>
       <div class="ct"><b id="calTitle"></b><span id="calSum"></span></div>
@@ -331,7 +345,7 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
         <span>Salin</span>
       </button>
-      <button id="calAdd" class="cbtn add" type="button" aria-label="Tambah rekod konten dan live" title="Tambah rekod konten &amp; live">
+      <button id="calAdd" class="cbtn add" type="button" aria-label="Tambah rekod servicing, konten dan live" title="Tambah rekod servicing, konten &amp; live">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
       </button>
     </div>
@@ -357,7 +371,10 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
     <label class="frow"><span>Tarikh</span>
       <input id="eDate" class="fin" type="date" aria-label="Tarikh">
     </label>
-    <div class="two">
+    <div class="three">
+      <label class="frow"><span>Servicing</span>
+        <input id="eServ" class="fin num" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="0" autocomplete="off" aria-label="Jumlah servicing">
+      </label>
       <label class="frow"><span>Konten</span>
         <input id="eContent" class="fin num" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="0" autocomplete="off" aria-label="Jumlah konten">
       </label>
@@ -388,7 +405,7 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 40px}
   <div class="mbody">
     <p id="sWho" class="swho"></p>
     <input id="sSearch" class="fin ssearch" type="search" placeholder="Cari skrip (tajuk atau ayat)" autocomplete="off" aria-label="Cari skrip mengikut tajuk atau ayat">
-    <p id="sCount" class="scount" role="status"></p>
+    <div class="shead"><p id="sCount" class="scount" role="status"></p><button id="sPinOnly" class="spo" type="button" aria-pressed="false">Pin sahaja (0)</button></div>
     <div id="sList" class="slist"></div>
     <a id="sPlain" class="splain" target="_blank" rel="noopener">Buka WhatsApp tanpa skrip</a>
   </div>
@@ -510,13 +527,17 @@ let ticks = loadTicks();
 const tickCount = (key) => ticks[key] ? Object.keys(ticks[key]).length : 0;
 const isTicked = (id) => !!(ticks[ymd(new Date())] && ticks[ymd(new Date())][id]);
 
-/* entries = { 'yyyy-mm-dd': { c: konten, l: live } }  -> disimpan di localStorage */
+/* entries = { 'yyyy-mm-dd': { s: servicing manual, c: konten, l: live } }  -> disimpan di localStorage */
 function loadEntries() {
   try { const j = JSON.parse(lsGet('entries') || '{}'); return j && typeof j === 'object' ? j : {}; }
   catch (e) { return {}; }
 }
 let entries = loadEntries();
 let selDate = null;
+
+/* Servicing manual (daripada borang +) dan jumlah servicing = tick kad + manual */
+const manualSvc = (key) => (entries[key] && Number(entries[key].s)) || 0;
+const svcTotal = (key) => tickCount(key) + manualSvc(key);
 
 function toggleTick(id, btn, row) {
   const k = ymd(new Date());
@@ -546,7 +567,7 @@ function renderCal() {
   let total = 0;
   for (let d = 1; d <= days; d++) {
     const key = cal.y + '-' + pad(cal.m + 1) + '-' + pad(d);
-    const n = tickCount(key);
+    const n = svcTotal(key);
     const e = entries[key];
     total += n;
     const c = el('div', 'cd' + (n ? ' has' : '') + (n >= 10 ? ' l3' : n >= 5 ? ' l2' : '') + (key === todayK ? ' today' : '') + (key === selDate ? ' sel' : ''));
@@ -557,13 +578,14 @@ function renderCal() {
     if (n) c.append(el('span', 'cn', String(n)));
     if (e) c.append(el('i', 'dot'));
     if (bd[d]) c.append(el('i', 'dot bd'));
-    c.setAttribute('aria-label', d + ' ' + MONTHS[cal.m] + ': ' + n + ' servis' + (e ? ', konten ' + e.c + ', live ' + e.l : '') + (bd[d] ? ', ' + bd[d] + ' birthday customer' : ''));
+    c.setAttribute('aria-label', d + ' ' + MONTHS[cal.m] + ': ' + n + ' servicing' + (e ? ', konten ' + e.c + ', live ' + e.l : '') + (bd[d] ? ', ' + bd[d] + ' birthday customer' : ''));
     frag.append(c);
   }
   grid.replaceChildren(frag);
   $('#calTitle').textContent = MONTHS[cal.m] + ' ' + cal.y;
-  $('#calSum').textContent = 'Hari ini ' + tickCount(todayK) + ' \u00B7 Bulan ini ' + total;
+  $('#calSum').textContent = 'Hari ini ' + svcTotal(todayK) + ' \u00B7 Bulan ini ' + total;
   renderDet();
+  saveState();
 }
 
 /* Senarai rekod bagi tarikh yang dipilih (di bawah kalendar) */
@@ -581,7 +603,7 @@ function renderDet() {
   eb.addEventListener('click', () => openModal(selDate));
   head.append(t, eb);
   const stats = el('div', 'stats');
-  [['Servis', tickCount(selDate), 0], ['Konten', e ? e.c : 0, 2], ['Live', e ? e.l : 0, 5]].forEach((x) => {
+  [['Servicing', svcTotal(selDate), 0], ['Konten', e ? e.c : 0, 2], ['Live', e ? e.l : 0, 5]].forEach((x) => {
     const s = el('div', 'stat');
     s.style.background = 'var(--g' + x[2] + ')';
     s.style.setProperty('--sa', 'var(--a' + x[2] + ')');
@@ -590,6 +612,7 @@ function renderDet() {
   });
   const kids = [head, stats];
   if (!e) kids.push(el('p', 'dnote', 'Belum ada rekod konten & live untuk tarikh ini.'));
+  else kids.push(el('p', 'dnote', 'Servicing = ' + tickCount(selDate) + ' tick kad + ' + manualSvc(selDate) + ' rekod manual.'));
   box.replaceChildren(...kids);
   box.hidden = false;
 }
@@ -598,17 +621,17 @@ function renderDet() {
 function monthTotal() {
   const days = new Date(cal.y, cal.m + 1, 0).getDate();
   let t = 0;
-  for (let d = 1; d <= days; d++) t += tickCount(cal.y + '-' + pad(cal.m + 1) + '-' + pad(d));
+  for (let d = 1; d <= days; d++) t += svcTotal(cal.y + '-' + pad(cal.m + 1) + '-' + pad(d));
   return t;
 }
 
-/* Teks: satu blok bagi setiap tarikh yang ada servis atau rekod (bulan yang sedang dipaparkan) */
+/* Teks: satu blok bagi setiap tarikh yang ada servicing atau rekod (bulan yang sedang dipaparkan) */
 function calText() {
   const days = new Date(cal.y, cal.m + 1, 0).getDate();
   const blocks = [];
   for (let d = 1; d <= days; d++) {
     const key = cal.y + '-' + pad(cal.m + 1) + '-' + pad(d);
-    const n = tickCount(key);
+    const n = svcTotal(key);
     const e = entries[key];
     if (!n && !e) continue;
     blocks.push(
@@ -694,7 +717,7 @@ async function buildCalImage() {
   ctx.fillText(MONTHS[cal.m] + ' ' + cal.y, P, 52);
   ctx.fillStyle = '#e9cf7a';
   ctx.font = '600 15px ' + FF;
-  ctx.fillText('Kalendar Servis', P, 78);
+  ctx.fillText('Kalendar Servicing', P, 78);
   ctx.textAlign = 'right';
   ctx.fillStyle = '#e9cf7a';
   ctx.font = '800 40px ' + FF;
@@ -717,7 +740,7 @@ async function buildCalImage() {
     const col = idx % 7, row = Math.floor(idx / 7);
     const x = P + col * (CW + GAP), y = gy + row * (CH + GAP);
     const key = cal.y + '-' + pad(cal.m + 1) + '-' + pad(d);
-    const n = tickCount(key);
+    const n = svcTotal(key);
     ctx.fillStyle = n >= 10 ? '#9bd9bc' : n >= 5 ? '#bfe8d3' : n > 0 ? '#dcf3e7' : '#f3f6f5';
     rr(ctx, x, y, CW, CH, 12); ctx.fill();
     if (key === todayK) {
@@ -756,13 +779,13 @@ async function snapCal() {
   try {
     const blob = await buildCalImage();
     if (!blob) throw new Error('BLOB');
-    const name = 'kalendar-servis-' + cal.y + '-' + pad(cal.m + 1) + '.png';
+    const name = 'kalendar-servicing-' + cal.y + '-' + pad(cal.m + 1) + '.png';
     const touch = window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
     if (touch && navigator.canShare && navigator.share) {
       const file = new File([blob], name, { type: 'image/png' });
       if (navigator.canShare({ files: [file] })) {
         try {
-          await navigator.share({ files: [file], title: 'Kalendar Servis ' + MONTHS[cal.m] + ' ' + cal.y });
+          await navigator.share({ files: [file], title: 'Kalendar Servicing ' + MONTHS[cal.m] + ' ' + cal.y });
           flash(btn, 'Siap');
           return;
         } catch (e) {
@@ -855,6 +878,7 @@ const BDAY_LABEL = { today: 'Hari ini', week: '7 hari akan datang', month: 'Bula
 
 /* Bina semula pilihan topik & lokasi bagi tab semasa (hanya jika senarai berubah) */
 function syncFilters(tab) {
+  const loaded = !!(tab && !tab.error && tab.rows);     // penapis tersimpan tidak dipadam sebelum data tersedia
   const topics = (tab && !tab.error && tab.topics) || [];
   const sig = active + '|' + topics.join('\u0001');
   const sel = $('#topicSel');
@@ -873,7 +897,7 @@ function syncFilters(tab) {
   }
   // pastikan topik yang dipilih masih wujud
   const idx = topics.indexOf(topicFilter);
-  if (topicFilter && idx < 0) { topicFilter = ''; statusFilter = ''; }
+  if (loaded && topicFilter && idx < 0) { topicFilter = ''; statusFilter = ''; }
   sel.value = idx >= 0 ? String(idx) : '';
   sel.classList.toggle('on', !!topicFilter);
   const st = $('#statusSel');
@@ -894,7 +918,7 @@ function syncFilters(tab) {
     ls.append(a);
     locs.forEach((x) => { const o = el('option', '', x[0] + ' (' + x[1] + ')'); o.value = x[0]; ls.append(o); });
   }
-  if (locFilter && !locs.some((x) => x[0] === locFilter)) locFilter = '';
+  if (loaded && locFilter && !locs.some((x) => x[0] === locFilter)) locFilter = '';
   ls.value = locFilter;
   ls.classList.toggle('on', !!locFilter);
 
@@ -1017,8 +1041,8 @@ function render() {
     const tk = el('button', 'tick' + (on ? ' on' : ''));
     tk.type = 'button';
     tk.setAttribute('aria-pressed', String(on));
-    tk.setAttribute('aria-label', 'Tanda sudah diservis: ' + r.n);
-    tk.title = 'Tanda sudah diservis (hilang esok)';
+    tk.setAttribute('aria-label', 'Tanda sudah servicing: ' + r.n);
+    tk.title = 'Tanda sudah servicing (hilang esok)';
     tk.addEventListener('click', () => toggleTick(id, tk, row));
     const num = waNumber(r.p);
     const wa = el('a', 'wa' + (num ? '' : ' off'), num ? 'WhatsApp' : 'Tiada no. sah');
@@ -1051,6 +1075,7 @@ function render() {
     cards.append(row);
   });
   $('#list').replaceChildren(frag);
+  applyScroll();
 }
 
 function friendly(e) {
@@ -1081,8 +1106,12 @@ async function fetchData(fresh) {
     if (!j.ok) throw new Error(j.error || 'API');
     data = j;
     loadedAt = Date.now();
+    lsSet('data', JSON.stringify(j));          // simpan salinan supaya paparan terus pulih bila masuk semula
+    lsSet('dataAt', String(loadedAt));
     setStatus('Dikemas kini ' + new Date().toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit' }));
+    const keepY = window.scrollY;
     render();
+    if (!scrollPending && Math.abs(window.scrollY - keepY) > 1) window.scrollTo(0, keepY);   // kekal pada kedudukan sedia ada
   } catch (e) {
     setStatus(friendly(e) + (data ? ' Data lama masih dipaparkan.' : ''), 'err');
     if (!data) message('Data belum dapat dipaparkan.');
@@ -1109,7 +1138,7 @@ function resetFilters() {
   render();
 }
 
-/* ====== Popup form rekod harian (Konten & Live) ====== */
+/* ====== Popup form rekod harian (Servicing, Konten & Live) ====== */
 const modalOpen = () => !$('#ePanel').hidden;
 
 function eMsg(text) {
@@ -1122,6 +1151,7 @@ function eMsg(text) {
 function fillForm() {
   const k = $('#eDate').value;
   const e = /^\d{4}-\d{2}-\d{2}$/.test(k) ? entries[k] : null;
+  $('#eServ').value = e && e.s ? String(e.s) : '';
   $('#eContent').value = e ? String(e.c) : '';
   $('#eLive').value = e ? String(e.l) : '';
   $('#eTitle').textContent = e ? 'Ubah Rekod' : 'Tambah Rekod';
@@ -1149,10 +1179,11 @@ function closeModal() {
 function saveEntry() {
   const k = $('#eDate').value;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(k)) { eMsg('Sila pilih tarikh.'); return; }
+  const s = parseInt($('#eServ').value || '0', 10) || 0;
   const c = parseInt($('#eContent').value || '0', 10) || 0;
   const l = parseInt($('#eLive').value || '0', 10) || 0;
-  if (!c && !l && !entries[k]) { eMsg('Isi sekurang-kurangnya satu nilai (konten atau live).'); return; }
-  if (!c && !l) delete entries[k]; else entries[k] = { c: c, l: l };
+  if (!s && !c && !l && !entries[k]) { eMsg('Isi sekurang-kurangnya satu nilai (servicing, konten atau live).'); return; }
+  if (!s && !c && !l) delete entries[k]; else entries[k] = { s: s, c: c, l: l };
   lsSet('entries', JSON.stringify(entries));
   const p = k.split('-');
   cal.y = Number(p[0]); cal.m = Number(p[1]) - 1;
@@ -1181,6 +1212,20 @@ function closeScripts() {
   document.body.classList.remove('lock');
 }
 
+/* Pin skrip (disimpan dalam localStorage; kunci = tajuk skrip) */
+const PIN_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17v5M9 3h6l-1 6 3 3v2H7v-2l3-3z"/></svg>';
+function loadPins() {
+  try { const j = JSON.parse(lsGet('pins') || '[]'); return Array.isArray(j) ? j : []; }
+  catch (e) { return []; }
+}
+let sPinOnly = lsGet('pinonly') === '1';
+function togglePin(title) {
+  const p = loadPins(), i = p.indexOf(title);
+  if (i >= 0) p.splice(i, 1); else p.push(title);
+  lsSet('pins', JSON.stringify(p));
+  renderScripts();
+}
+
 let sCtx = null;
 
 function renderScripts() {
@@ -1188,7 +1233,13 @@ function renderScripts() {
   const q = $('#sSearch').value.toLowerCase().split(/\s+/).filter(Boolean);
   const frag = document.createDocumentFragment();
   let n = 0;
-  sCtx.items.forEach((s, i) => {
+  const pins = loadPins();
+  const list = sCtx.items.map((s, i) => ({ s: s, i: i, pin: pins.includes(s.title) }));
+  const pinTotal = list.filter((x) => x.pin).length;
+  const shown = list.filter((x) => !sPinOnly || x.pin);
+  shown.sort((a, b) => (b.pin ? 1 : 0) - (a.pin ? 1 : 0) || a.i - b.i);   // skrip dipin di atas
+  shown.forEach((x) => {
+    const s = x.s, i = x.i;
     const hay = (s.title + ' ' + s.txt).toLowerCase();       // cari dalam tajuk DAN ayat skrip
     if (!q.every((w) => hay.includes(w))) return;
     n++;
@@ -1201,9 +1252,22 @@ function renderScripts() {
     h.append(el('b', '', s.title), el('span', 'sgo', 'Hantar'));
     a.append(h, el('p', 'sp', s.txt));
     a.addEventListener('click', () => setTimeout(closeScripts, 150));
-    frag.append(a);
+    const w = el('div', 'srow' + (x.pin ? ' pinned' : ''));
+    const pb = el('button', 'spin' + (x.pin ? ' on' : ''));
+    pb.type = 'button';
+    pb.innerHTML = PIN_SVG;
+    pb.setAttribute('aria-pressed', String(x.pin));
+    pb.setAttribute('aria-label', (x.pin ? 'Buang pin: ' : 'Pin skrip: ') + s.title);
+    pb.title = x.pin ? 'Buang pin' : 'Pin skrip ini';
+    pb.addEventListener('click', () => togglePin(s.title));
+    w.append(a, pb);
+    frag.append(w);
   });
-  if (!n) frag.append(el('p', 'msg', 'Tiada skrip sepadan dengan carian.'));
+  if (!n) frag.append(el('p', 'msg', sPinOnly && !q.length && !pinTotal ? 'Belum ada skrip dipin. Tekan ikon pin pada skrip pilihan anda.' : 'Tiada skrip sepadan dengan carian.'));
+  const po = $('#sPinOnly');
+  po.textContent = 'Pin sahaja (' + pinTotal + ')';
+  po.setAttribute('aria-pressed', String(sPinOnly));
+  po.classList.toggle('on', sPinOnly);
   $('#sList').replaceChildren(frag);
   $('#sCount').textContent = q.length ? n + ' daripada ' + sCtx.items.length + ' skrip' : sCtx.items.length + ' skrip';
 }
@@ -1230,6 +1294,7 @@ function openScripts(r, num) {
   $('#sPanel').focus({ preventScroll: true });
 }
 $('#sSearch').addEventListener('input', renderScripts);
+$('#sPinOnly').addEventListener('click', () => { sPinOnly = !sPinOnly; lsSet('pinonly', sPinOnly ? '1' : '0'); renderScripts(); });
 $('#sClose').addEventListener('click', closeScripts);
 $('#sBack').addEventListener('click', closeScripts);
 
@@ -1316,10 +1381,68 @@ $('#eBack').addEventListener('click', closeModal);
 $('#eSave').addEventListener('click', saveEntry);
 $('#eDel').addEventListener('click', deleteEntry);
 $('#eDate').addEventListener('change', fillForm);
-['#eContent', '#eLive'].forEach((s) => {
+['#eServ', '#eContent', '#eLive'].forEach((s) => {
   $(s).addEventListener('input', (e) => { e.target.value = e.target.value.replace(/\D/g, ''); eMsg(''); });
   $(s).addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); saveEntry(); } });
 });
+
+/* ====== Kekal di tempat asal: simpan & pulihkan keadaan paparan ====== */
+/* Disimpan: tab, hari, semua penapis, bulan kalendar, tarikh dipilih dan kedudukan skrol.
+   Data sheet turut disimpan supaya paparan terus pulih tanpa menunggu muat semula. */
+const ST_KEY = 'state';
+let lastY = 0, scrollPending = 0, scrollTimer = 0;
+
+function saveState() {
+  lsSet(ST_KEY, JSON.stringify({
+    tab: active, day: dayFilter, topic: topicFilter, status: statusFilter, age: ageFilter, loc: locFilter,
+    bday: bdayFilter, bdayPrev: bdayPrevDay, cy: cal.y, cm: cal.m, sel: selDate, y: lastY
+  }));
+}
+
+function applyScroll() {
+  if (!scrollPending) return;
+  const y = scrollPending;
+  scrollPending = 0;
+  requestAnimationFrame(() => window.scrollTo(0, y));
+}
+
+function restoreState() {
+  let s = null;
+  try { s = JSON.parse(lsGet(ST_KEY) || 'null'); } catch (e) { s = null; }
+  if (!s || typeof s !== 'object') return;
+  if (TABS.includes(s.tab)) active = s.tab;
+  if (s.day === 'all' || s.day === 'today' || CONFIG.DAY_SLOTS.map(String).includes(String(s.day))) dayFilter = String(s.day);
+  if (typeof s.topic === 'string') topicFilter = s.topic;
+  if (topicFilter && ['no', 'pr', 'ok'].includes(s.status)) statusFilter = s.status;
+  if (s.age === 'young' || s.age === 'vet') ageFilter = s.age;
+  if (typeof s.loc === 'string') locFilter = s.loc;
+  if (BDAY_LABEL[s.bday]) {
+    bdayFilter = s.bday;
+    bdayPrevDay = typeof s.bdayPrev === 'string' ? s.bdayPrev : null;
+  }
+  if (Number.isInteger(s.cy) && Number.isInteger(s.cm) && s.cm >= 0 && s.cm <= 11) { cal.y = s.cy; cal.m = s.cm; }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s.sel || '')) selDate = s.sel;
+  lastY = Number(s.y) > 0 ? Math.round(Number(s.y)) : 0;
+  scrollPending = lastY;
+  try {
+    const raw = lsGet('data');
+    const j = raw ? JSON.parse(raw) : null;
+    if (j && j.ok && j.tabs) { data = j; loadedAt = Number(lsGet('dataAt')) || 0; }
+  } catch (e) { /* abaikan salinan rosak */ }
+}
+
+function noteScroll() {
+  if (scrollPending) return;                // jangan timpa kedudukan tersimpan sebelum dipulihkan
+  lastY = Math.round(window.scrollY);
+}
+window.addEventListener('scroll', () => {
+  clearTimeout(scrollTimer);
+  scrollTimer = setTimeout(() => { noteScroll(); saveState(); }, 150);
+}, { passive: true });
+['pointerdown', 'wheel', 'touchstart', 'keydown'].forEach((ev) =>
+  window.addEventListener(ev, () => { scrollPending = 0; }, { passive: true, capture: true }));
+window.addEventListener('pagehide', () => { noteScroll(); saveState(); });
+try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) { /* abaikan */ }
 
 /* Tukar hari (lepas tengah malam): tick hari semalam hilang, kiraan kalendar kekal */
 function checkDay() {
@@ -1329,11 +1452,11 @@ function checkDay() {
 setInterval(() => { if (!document.hidden) fetchData(false); }, CONFIG.REFRESH_MS);
 setInterval(checkDay, 30000);
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) {
-    checkDay();
-    if (Date.now() - loadedAt > CONFIG.REFRESH_MS) fetchData(false);
-  }
+  if (document.hidden) { noteScroll(); saveState(); return; }
+  checkDay();
+  if (Date.now() - loadedAt > CONFIG.REFRESH_MS) fetchData(false);
 });
+restoreState();
 render();
 fetchData(false);
 </script>
