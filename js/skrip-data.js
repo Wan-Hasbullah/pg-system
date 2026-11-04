@@ -99,11 +99,11 @@ window.SCRIPTS = [
     text: 'Assalamualaikum [panggil]\n\n🎙️ G100 TALK SHOW SEDANG BERLANGSUNG!\n\nJom bersama-sama tonton LIVE sekarang!\n\nTonton LIVE melalui dua platform:\n\n🔵 Facebook\nhttps://www.fb.com/pgg100network\n\n🔴 YouTube\nhttps://youtube.com/c/pgg100network\n\nJangan lepaskan ilmu & perkongsian dalam G100 Talk Show malam ini!'
    },
    {
-    title: 'TS : Semasa',
+    title: 'TS : Dealer',
     text: 'Assalamualaikum [panggil]\n\nNak bagitahu ada promosi jadi dealer Public Gold.\n\n⏰ Tamat esok (Khamis), jam 12.00 tgh hari\n\nBeli emas untuk simpanan/pelaburan, terus *free jadi dealer*:\n\n✅ Normal Dealer: GAP RM10,000 + Wealth Card RM500\n✅ Priority Dealer: GAP RM20,000 + Wealth Card RM500\n\nDealer layak dapat insentif (komisyen) atas belian sendiri dan belian customer yang diperkenalkan.\n\nButiran penuh di sini 👉 https://ilmu-emas.pages.dev/#kelebihan-dealer'
    },
    {
-    title: 'TS : Semasa',
+    title: 'TS : Kalkulator',
     text: 'Assalamualaikum [panggil]\n\nSelepas tengok Talk Show tadi, apa yang paling menarik perhatian [panggil]?\n\nKalau [panggil] nak terus praktikkan, cuba kalkulator percuma ni untuk tahu berapa perlu simpan sebulan:\n\n👉 https://ilmu-emas.pages.dev#kalkulator-target-simpanan\n\nPilih Target Kecemasan, Target RM atau Target Gram. Kalau [panggil] tak kisah, lepas cuba share hasilnya dengan saya ya'
    },
 ];
