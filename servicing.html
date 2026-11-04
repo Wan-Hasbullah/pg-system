@@ -231,6 +231,26 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 4px}
 .spin.on svg{fill:currentColor}
 .splain{display:block;text-align:center;margin-top:12px;font-size:12px;font-weight:700;color:var(--green);text-decoration:underline}
 
+/* ===== KEMASKINI: pautan di popup skrip, butang (+) & borang skrip ===== */
+.splain.top{margin:0 0 12px;padding:12px 14px;border-radius:14px;text-decoration:none;font-size:13px;color:var(--green);border:1px solid rgba(19,121,91,.28);background:linear-gradient(180deg,#ffffff 0%,#f1faf6 100%);box-shadow:0 6px 16px rgba(14,42,34,.06),inset 0 1px 0 #fff}
+.splain.top:hover{border-color:var(--green)}
+.splain.top:active{filter:brightness(.96)}
+.stele{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 12px;padding:12px 14px;border-radius:14px;text-decoration:none;font-weight:700;font-size:13px;color:#7a5600;border:1px solid #e6cf7a;background:linear-gradient(135deg,#fffaf0 0%,#fbf1c4 100%);box-shadow:0 6px 16px rgba(201,165,0,.16),inset 0 1px 0 rgba(255,255,255,.7)}
+.stele svg{color:#b58f00;flex:0 0 auto}
+.stele:hover{border-color:#c9a500}
+.stele:active{filter:brightness(.96)}
+.hbtns{display:flex;align-items:center;gap:8px}
+.xbtn.plus{display:flex;align-items:center;justify-content:center;padding:0;border:0;color:#2b2200;background:linear-gradient(135deg,#f3dc8a,#c9a500);box-shadow:0 6px 16px rgba(201,165,0,.28),inset 0 1px 0 rgba(255,255,255,.45)}
+.xbtn.plus:active{filter:brightness(.95)}
+#cBack{z-index:40}
+#cPanel{z-index:41}
+textarea.fin{min-height:150px;resize:vertical;line-height:1.5;font-weight:500;display:block;font-size:16px}
+.crow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.crow>span{font-size:11px;font-weight:700;color:var(--mute);letter-spacing:.04em;text-transform:uppercase}
+.ptag{display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-weight:800;font-size:13px;color:#7a5600;padding:7px 13px;border-radius:999px;border:1px solid #e6cf7a;cursor:pointer;background:linear-gradient(135deg,#fbf1c4,#f3dc8a);box-shadow:0 4px 12px rgba(201,165,0,.2);-webkit-tap-highlight-color:transparent}
+.ptag:active{filter:brightness(.95)}
+.chint{margin:6px 0 12px;font-size:11px;color:var(--mute)}
+
 /* Desktop / tablet */
 @media(min-width:640px){
   .grab{display:none}
@@ -246,6 +266,7 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 4px}
   .mhero{border-radius:20px 20px 0 0;padding-top:18px}
   .fin{font-size:15px}
   .fin.num{font-size:18px}
+  textarea.fin{font-size:15px}
   .totop{right:22px;bottom:22px}
 }
 @media(min-width:960px){
@@ -459,15 +480,54 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 4px}
         <small>WhatsApp</small>
         <h2 id="sTitle">Pilih Skrip</h2>
       </div>
-      <button id="sClose" class="xbtn" type="button" aria-label="Tutup">&times;</button>
+      <div class="hbtns">
+        <button id="sAdd" class="xbtn plus" type="button" aria-label="Tambah skrip baharu" title="Tambah skrip baharu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <button id="sClose" class="xbtn" type="button" aria-label="Tutup">&times;</button>
+      </div>
     </div>
   </div>
   <div class="mbody">
     <p id="sWho" class="swho"></p>
+    <a id="sPlain" class="splain top" target="_blank" rel="noopener">Buka WhatsApp tanpa skrip</a>
     <input id="sSearch" class="fin ssearch" type="search" placeholder="Cari skrip (tajuk atau ayat)" autocomplete="off" aria-label="Cari skrip mengikut tajuk atau ayat">
+    <a id="sTele" class="stele" href="https://t.me/c/2792771174/3" target="_blank" rel="noopener">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14"/></svg>
+      Muat turun poster (Telegram)
+    </a>
     <div class="shead"><p id="sCount" class="scount" role="status"></p><button id="sPinOnly" class="spo" type="button" aria-pressed="false">Pin sahaja (0)</button></div>
     <div id="sList" class="slist"></div>
-    <a id="sPlain" class="splain" target="_blank" rel="noopener">Buka WhatsApp tanpa skrip</a>
+  </div>
+</div>
+
+<!-- ===== POPUP TAMBAH SKRIP ===== -->
+<div id="cBack" class="mback" hidden></div>
+<div id="cPanel" class="mpanel" role="dialog" aria-modal="true" aria-labelledby="cTitle" tabindex="-1" hidden>
+  <div class="mhero">
+    <div class="grab"></div>
+    <div class="hrow">
+      <div>
+        <small>Skrip baharu</small>
+        <h2 id="cTitle">Tambah Skrip</h2>
+      </div>
+      <button id="cClose" class="xbtn" type="button" aria-label="Tutup">&times;</button>
+    </div>
+  </div>
+  <div class="mbody">
+    <label class="frow"><span>Tajuk</span>
+      <input id="cName" class="fin" type="text" maxlength="80" placeholder="Contoh: Follow up pelanggan baharu" autocomplete="off" aria-label="Tajuk skrip">
+    </label>
+    <div class="crow">
+      <span>Text</span>
+      <button id="cTag" class="ptag" type="button" aria-label="Masukkan [panggil] pada kedudukan kursor">[panggil]</button>
+    </div>
+    <textarea id="cText" class="fin" placeholder="Tulis ayat skrip di sini. Tekan butang [panggil] untuk masukkan nickname pelanggan." aria-label="Text skrip"></textarea>
+    <p class="chint">[panggil] akan digantikan dengan nickname pelanggan (atau nama penuh jika nickname kosong).</p>
+    <p id="cMsg" class="emsg" role="alert" hidden></p>
+    <div class="ffoot">
+      <button id="cSave" class="fdone" type="button">Simpan Skrip</button>
+    </div>
   </div>
 </div>
 
@@ -1172,7 +1232,7 @@ function render() {
     if (num) { wa.href = 'https://wa.me/' + num; wa.target = '_blank'; wa.rel = 'noopener'; wa.setAttribute('aria-label', 'WhatsApp ' + r.n); }
     else wa.setAttribute('aria-disabled', 'true');
     if (num) wa.addEventListener('click', (ev) => {
-      if (!window.SCRIPTS || !window.SCRIPTS.length) return;   // tiada skrip: buka WhatsApp biasa
+      /* Panel skrip sentiasa dibuka (ada butang + untuk tambah skrip sendiri; pautan "tanpa skrip" ada di dalam) */
       ev.preventDefault();
       openScripts(r, num);
     });
@@ -1361,6 +1421,23 @@ function togglePin(title) {
   renderScripts();
 }
 
+/* ====== Skrip tambahan sendiri (disimpan dalam localStorage) ====== */
+function loadMyScripts() {
+  try {
+    const j = JSON.parse(lsGet('myscripts') || '[]');
+    return Array.isArray(j) ? j.filter((x) => x && typeof x.title === 'string' && typeof x.text === 'string') : [];
+  } catch (e) { return []; }
+}
+
+/* Gabung skrip sendiri (di atas) + skrip sedia ada, dan gantikan [panggil] */
+function scriptItems(call) {
+  const base = (window.SCRIPTS || []).map((s) => ({ title: String(s.title || ''), text: String(s.text || '') }));
+  return loadMyScripts().concat(base).map((s, i) => ({
+    title: s.title || 'Skrip ' + (i + 1),
+    txt: s.text.replace(/\[panggil\]/gi, call)
+  }));
+}
+
 let sCtx = null;
 
 function renderScripts() {
@@ -1413,10 +1490,8 @@ function openScripts(r, num) {
   $('#sWho').textContent = r.n + (nk ? ' \u00B7 dipanggil "' + nk + '"' : '');
   sCtx = {
     num: num,
-    items: (window.SCRIPTS || []).map((s, i) => ({
-      title: String(s.title || 'Skrip ' + (i + 1)),
-      txt: String(s.text || '').replace(/\[panggil\]/gi, call)
-    }))
+    call: call,
+    items: scriptItems(call)
   };
   $('#sSearch').value = '';
   renderScripts();
@@ -1428,10 +1503,72 @@ function openScripts(r, num) {
   $('#sPanel').scrollTop = 0;
   $('#sPanel').focus({ preventScroll: true });
 }
+
+/* ====== Popup tambah skrip (+) ====== */
+const cOpen = () => !$('#cPanel').hidden;
+
+function cMsg(text) {
+  const m = $('#cMsg');
+  m.textContent = text || '';
+  m.hidden = !text;
+}
+
+function openAddScript() {
+  $('#cName').value = '';
+  $('#cText').value = '';
+  cMsg('');
+  $('#cPanel').hidden = false;
+  $('#cBack').hidden = false;
+  $('#cPanel').scrollTop = 0;
+  $('#cName').focus({ preventScroll: true });
+}
+
+function closeAddScript() {
+  $('#cPanel').hidden = true;
+  $('#cBack').hidden = true;
+  if (sOpen()) $('#sAdd').focus({ preventScroll: true });
+}
+
+/* Masukkan [panggil] pada kedudukan kursor dalam ruang text */
+function insertTag() {
+  const ta = $('#cText'), tag = '[panggil]';
+  const s = ta.selectionStart == null ? ta.value.length : ta.selectionStart;
+  const e = ta.selectionEnd == null ? s : ta.selectionEnd;
+  ta.value = ta.value.slice(0, s) + tag + ta.value.slice(e);
+  const pos = s + tag.length;
+  ta.focus({ preventScroll: true });
+  ta.setSelectionRange(pos, pos);
+  cMsg('');
+}
+
+function saveScript() {
+  const title = $('#cName').value.trim();
+  const text = $('#cText').value.trim();
+  if (!title) { cMsg('Sila isi tajuk skrip.'); return; }
+  if (!text) { cMsg('Sila isi text skrip.'); return; }
+  const mine = loadMyScripts();
+  const exist = mine.concat((window.SCRIPTS || []).map((s) => ({ title: String(s.title || '') })));
+  if (exist.some((x) => x.title.toLowerCase() === title.toLowerCase())) { cMsg('Tajuk ini sudah wujud. Guna tajuk lain.'); return; }
+  mine.unshift({ title: title, text: text });                 // skrip terbaharu di atas
+  lsSet('myscripts', JSON.stringify(mine));
+  if (sCtx) sCtx.items = scriptItems(sCtx.call);
+  $('#sSearch').value = '';
+  closeAddScript();
+  renderScripts();
+  $('#sPanel').scrollTop = 0;
+}
+
 $('#sSearch').addEventListener('input', renderScripts);
 $('#sPinOnly').addEventListener('click', () => { sPinOnly = !sPinOnly; lsSet('pinonly', sPinOnly ? '1' : '0'); renderScripts(); });
 $('#sClose').addEventListener('click', closeScripts);
 $('#sBack').addEventListener('click', closeScripts);
+$('#sAdd').addEventListener('click', openAddScript);
+$('#cClose').addEventListener('click', closeAddScript);
+$('#cBack').addEventListener('click', closeAddScript);
+$('#cTag').addEventListener('click', insertTag);
+$('#cSave').addEventListener('click', saveScript);
+['#cName', '#cText'].forEach((s) => $(s).addEventListener('input', () => cMsg('')));
+$('#cName').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('#cText').focus(); } });
 
 document.querySelectorAll('.fbtn').forEach((b) => b.addEventListener('click', () => openPanel(!panelOpen(), b)));
 $('#fBack').addEventListener('click', () => openPanel(false));
@@ -1440,7 +1577,8 @@ $('#fDone').addEventListener('click', () => openPanel(false));
 
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
-  if (sOpen()) closeScripts();
+  if (cOpen()) closeAddScript();
+  else if (sOpen()) closeScripts();
   else if (modalOpen()) closeModal();
   else if (panelOpen()) openPanel(false);
 });
