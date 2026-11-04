@@ -183,7 +183,7 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 4px}
 .day{font-size:11px;font-weight:700;color:var(--ink);background:rgba(255,255,255,.75);border-radius:999px;padding:3px 10px;white-space:nowrap}
 .day.now{background:var(--emer);color:#fff}
 .cards{display:grid;grid-template-columns:1fr;gap:8px}
-.row{display:grid;grid-template-columns:1fr auto;grid-template-areas:"n t" "w w" "c c";gap:10px;background:#fff;box-shadow:0 2px 10px rgba(14,42,34,.06);border-left:5px solid var(--acc,var(--green));border-radius:14px;padding:12px;align-items:center}
+.row{display:grid;grid-template-columns:1fr;grid-template-areas:"n" "w" "c";gap:10px;background:#fff;box-shadow:0 2px 10px rgba(14,42,34,.06);border-left:5px solid var(--acc,var(--green));border-radius:14px;padding:12px;align-items:center}
 .row.ticked{background:rgba(255,255,255,.96);box-shadow:inset 0 0 0 1px rgba(19,121,91,.45),0 2px 10px rgba(14,42,34,.06)}
 .name{grid-area:n;font-weight:700;font-size:16px;min-width:0;overflow-wrap:anywhere}
 .name small{display:inline-block;min-width:26px;color:var(--mute);font-weight:600}
@@ -243,7 +243,7 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 4px}
   .fpanel{top:50%;left:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);width:400px;border-radius:20px;border:1px solid var(--line);box-shadow:0 24px 64px rgba(14,42,34,.28);max-height:90vh;padding:18px}
   .frow select{font-size:14px}
   .cal{max-width:460px}
-  .row{grid-template-columns:1fr auto auto;grid-template-areas:"n w t" "c c c";align-items:center;gap:8px 12px}
+    .row{grid-template-columns:1fr auto;grid-template-areas:"n w" "c c";align-items:center;gap:8px 12px}
   .wa{min-height:40px;font-size:13px;padding:9px 16px}
   .tick{width:40px;height:40px}
   .mpanel{top:50%;left:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);width:400px;border-radius:20px;max-height:90vh;padding-bottom:18px;box-shadow:0 24px 64px rgba(14,42,34,.32)}
@@ -276,7 +276,9 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 4px}
     <nav class="tabs" role="tablist" aria-label="Kategori">
       <button class="tab" role="tab" data-tab="Stranger">Stranger</button>
       <button class="tab" role="tab" data-tab="Inner Circle">Inner Circle</button>
-      <button class="tab" role="tab" data-tab="Dealer">Dealer</button>
+            <button class="tab" role="tab" data-tab="Dealer">Dealer</button>
+      <button class="tab" role="tab" data-tab="Junior Account">Junior Account</button>
+      <button class="tab" role="tab" data-tab="Junior Account Sahaja">Junior Account Sahaja</button>
     </nav>
 
     <div class="fbar">
@@ -495,7 +497,7 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 4px}
 
 /* ====== KONFIGURASI (ubah di sini sahaja) ====== */
 const CONFIG = {
-  API_URL: 'https://script.google.com/macros/s/AKfycbwsVoo92_hK8Mz5NaCXTwo-mq0CT5c5_w0QqG7lu9X1rABInZbS8QB8NNVNXNJ2KTqXXg/exec',
+  API_URL: 'https://script.google.com/macros/s/AKfycbwxwNp8Krtj4a11hLWpzPeEZNVAGxQwO-jaSpgQQVlyLfRkcxHazX-2h7l-KpaU8MgROQ/exec',
   TOKEN: 'Wn7kQ4xZp9RtL2vMb8Hc5YdF',                                                  // mesti sama dengan CONFIG.TOKEN dalam Code.gs
   SHEET_ID: '1jSUGR1Zv6EFEILCpT4C7EVD1qjO2vVtk9avr2Fzptb8',                           // mesti sama dengan CONFIG.SHEET_ID dalam Code.gs
   GIDS: {},                                                                          // dikosongkan: gid tab diambil automatik daripada Code.gs
@@ -507,7 +509,7 @@ const CONFIG = {
   YOUNG_MIN: 18, YOUNG_MAX: 25,             // Anak Muda
   VETERAN_MIN: 50                           // Veteran
 };
-const TABS = ['Stranger', 'Inner Circle', 'Dealer'];
+const TABS = ['Stranger', 'Inner Circle', 'Dealer', 'Junior Account', 'Junior Account Sahaja'];
 const DONE = ['dah', 'true', 'yes', 'ya', '\u2713', '\u2714'];       // hijau
 const PROGRESS = ['proses'];                                         // kuning
 const NOTNEED = ['tak perlu', 'takperlu', 'tidak perlu', 'tidakperlu']; // merah
@@ -693,7 +695,7 @@ function renderDet() {
   });
   const kids = [head, stats];
   if (!e) kids.push(el('p', 'dnote', 'Belum ada rekod konten & live untuk tarikh ini.'));
-  else kids.push(el('p', 'dnote', 'Servicing = ' + tickCount(selDate) + ' tick kad + ' + manualSvc(selDate) + ' rekod manual.'));
+    else kids.push(el('p', 'dnote', tickCount(selDate) ? 'Servicing = ' + tickCount(selDate) + ' tanda lama + ' + manualSvc(selDate) + ' rekod manual.' : 'Servicing daripada rekod manual (butang +).'));
   box.replaceChildren(...kids);
   box.hidden = false;
 }
@@ -1123,8 +1125,7 @@ function render() {
       frag.append(group);
     }
     const id = active + '|' + r.n + '|' + r.p;
-    const on = isTicked(id);
-    const row = el('article', 'row' + (on ? ' ticked' : ''));
+        const row = el('article', 'row');
     const name = el('div', 'name');
     name.append(el('small', '', String(i + 1)), document.createTextNode(' ' + r.n));
     const nk = nickOf(r);
@@ -1144,12 +1145,7 @@ function render() {
       nw.append(nb);
       name.append(nw);
     }
-    const tk = el('button', 'tick' + (on ? ' on' : ''));
-    tk.type = 'button';
-    tk.setAttribute('aria-pressed', String(on));
-    tk.setAttribute('aria-label', 'Tanda sudah servicing: ' + r.n);
-    tk.title = 'Tanda sudah servicing (hilang esok)';
-    tk.addEventListener('click', () => toggleTick(id, tk, row));
+    
     const num = waNumber(r.p);
     const wa = el('a', 'wa' + (num ? '' : ' off'), num ? 'WhatsApp' : 'Tiada no. sah');
     if (num) { wa.href = 'https://wa.me/' + num; wa.target = '_blank'; wa.rel = 'noopener'; wa.setAttribute('aria-label', 'WhatsApp ' + r.n); }
@@ -1177,7 +1173,7 @@ function render() {
       chip.title = st === 'ok' ? 'Dah' : st === 'pr' ? 'Proses' : st === 'nt' ? 'Tak perlu' : 'Belum';
       chips.append(chip);
     });
-    row.append(name, wa, tk, chips);
+        row.append(name, wa, chips);
     cards.append(row);
   });
   $('#list').replaceChildren(frag);
