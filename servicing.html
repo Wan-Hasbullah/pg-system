@@ -350,6 +350,7 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 4px}
   </div>
   <label class="frow"><span>Kategori</span>
     <select id="tabSel" aria-label="Pilih kategori">
+      <option value="Semua">Semua</option>
       <option value="Stranger">Stranger</option>
       <option value="Inner Circle">Inner Circle</option>
       <option value="Dealer">Dealer</option>
@@ -376,8 +377,23 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 4px}
   <label class="frow"><span>Umur</span>
     <select id="ageSel" aria-label="Tapis mengikut umur">
       <option value="">Semua umur</option>
-      <option value="young">Anak Muda (18&ndash;25 tahun)</option>
-      <option value="vet">Veteran (50 tahun ke atas)</option>
+      <optgroup label="M30 &amp; Veteran">
+        <option value="young">Anak Muda (18&ndash;25 tahun)</option>
+        <option value="vet">Veteran (50 tahun ke atas)</option>
+      </optgroup>
+      <optgroup label="&#9472;&#9472;&#9472;&#9472;&#9472;&nbsp; Julat umur &nbsp;&#9472;&#9472;&#9472;&#9472;&#9472;">
+        <option value="b0">Below 18</option>
+        <option value="b1">18 - 25</option>
+        <option value="b2">26 - 30</option>
+        <option value="b3">31 - 35</option>
+        <option value="b4">36 - 40</option>
+        <option value="b5">41 - 45</option>
+        <option value="b6">46 - 50</option>
+        <option value="b7">51 - 55</option>
+        <option value="b8">56 - 60</option>
+        <option value="b9">60 and above</option>
+        <option value="none">Tiada tarikh lahir</option>
+      </optgroup>
     </select>
   </label>
   <label class="frow"><span>Birthday customer</span>
@@ -475,6 +491,7 @@ const CONFIG = {
   DEDUPE_PHONE_TABS: ['Junior Account Sahaja']   // tab yang dibuang no. telefon berulang (simpan satu sahaja)
 };
 const TABS = ['Stranger', 'Inner Circle', 'Dealer', 'Junior Account', 'Junior Account Sahaja'];
+const VIEWS = ['Semua'].concat(TABS);        // 'Semua' = gabungan semua kategori
 const DONE = ['dah', 'true', 'yes', 'ya', '\u2713', '\u2714'];       // hijau
 const PROGRESS = ['proses'];                                         // kuning
 const NOTNEED = ['tak perlu', 'takperlu', 'tidak perlu', 'tidakperlu']; // merah
@@ -484,7 +501,7 @@ const lsGet = (k) => { try { return localStorage.getItem('fu_' + k); } catch (e)
 const lsSet = (k, v) => { try { localStorage.setItem('fu_' + k, v); } catch (e) { /* abaikan */ } };
 
 let data = null, busy = false, loadedAt = 0;
-let active = TABS.includes(lsGet('tab')) ? lsGet('tab') : TABS[0];
+let active = VIEWS.includes(lsGet('tab')) ? lsGet('tab') : TABS[0];
 let topicFilter = '', statusFilter = '', ageFilter = '', locFilter = '';
 let bdayFilter = '', bdayPrevDay = null;
 const DAY_NAMES = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
@@ -534,6 +551,31 @@ function rowsOf(name, tab) {
   return out;
 }
 
+/* ====== Kategori "Semua": gabung semua tab (topik disatukan; tick kekal ikut tab asal) ====== */
+const allCache = new WeakMap();
+function allTab() {
+  if (!data) return null;
+  let out = allCache.get(data);
+  if (!out) {
+    const names = TABS.filter((n) => data.tabs[n] && !data.tabs[n].error && data.tabs[n].rows);
+    const topics = [];
+    names.forEach((n) => data.tabs[n].topics.forEach((t) => { if (!topics.includes(t)) topics.push(t); }));
+    const rows = [];
+    names.forEach((n) => {
+      const t = data.tabs[n], map = t.topics.map((x) => topics.indexOf(x));
+      rowsOf(n, t).forEach((r) => {
+        const tt = new Array(topics.length).fill('');
+        r.t.forEach((v, k) => { tt[map[k]] = v; });
+        rows.push(Object.assign({}, r, { t: tt, _tab: n }));
+      });
+    });
+    out = { topics: topics, rows: rows };
+    allCache.set(data, out);
+  }
+  return out;
+}
+const curTab = () => active === 'Semua' ? allTab() : (data && data.tabs[active]);
+
 /* ====== Birthday customer (bulan + hari daripada D.O.B; berulang setiap tahun) ====== */
 const isLeap = (y) => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
 
@@ -567,7 +609,7 @@ function bdayMatch(iso, dates) {
 /* Bilangan birthday bagi setiap hari dalam bulan kalendar yang dipaparkan (tab semasa) */
 function bdayCounts() {
   const out = {};
-  const tab = data && data.tabs[active];
+  const tab = curTab();
   rowsOf(active, tab).forEach((r) => {
     const b = bdayMD(r.d, cal.y);
     if (b && b.m - 1 === cal.m) out[b.d] = (out[b.d] || 0) + 1;
@@ -942,12 +984,20 @@ function locationList(rows) {
   return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0], 'ms'));
 }
 
-function ageMatch(iso) {
+/* Julat umur (min, maks). "60 and above" bermula 61 supaya tidak bertindih dengan 56 - 60 */
+const AGE_BANDS = [['b0', 0, 17], ['b1', 18, 25], ['b2', 26, 30], ['b3', 31, 35], ['b4', 36, 40], ['b5', 41, 45],
+  ['b6', 46, 50], ['b7', 51, 55], ['b8', 56, 60], ['b9', 61, 200]];
+const ageValid = (v) => v === 'young' || v === 'vet' || v === 'none' || AGE_BANDS.some((b) => b[0] === v);
+
+function ageMatch(iso, f) {
+  f = f === undefined ? ageFilter : f;
   const a = ageOf(iso);
+  if (f === 'none') return a === null;
   if (a === null) return false;
-  if (ageFilter === 'young') return a >= CONFIG.YOUNG_MIN && a <= CONFIG.YOUNG_MAX;
-  if (ageFilter === 'vet') return a >= CONFIG.VETERAN_MIN;
-  return true;
+  if (f === 'young') return a >= CONFIG.YOUNG_MIN && a <= CONFIG.YOUNG_MAX;
+  if (f === 'vet') return a >= CONFIG.VETERAN_MIN;
+  const b = AGE_BANDS.find((x) => x[0] === f);
+  return b ? a >= b[1] && a <= b[2] : true;
 }
 
 const BDAY_LABEL = { today: 'Hari ini', week: '7 hari akan datang', month: 'Bulan ini' };
@@ -1002,6 +1052,11 @@ function syncFilters(tab) {
 
   // umur
   const as = $('#ageSel');
+  Array.from(as.options).forEach((o) => {
+    if (!o.value) return;
+    if (!o.dataset.l) o.dataset.l = o.textContent;
+    o.textContent = o.dataset.l + ' (' + rows0.filter((r) => ageMatch(r.d, o.value)).length + ')';
+  });
   as.value = ageFilter;
   as.classList.toggle('on', !!ageFilter);
 
@@ -1028,7 +1083,7 @@ function syncFilters(tab) {
 
 function render() {
   $('#sheetBtn').href = sheetUrl(active);
-  const tab = data && data.tabs[active];
+  const tab = curTab();
   syncDay();
   syncFilters(tab);
   renderCal();
@@ -1089,7 +1144,7 @@ function render() {
       group.append(gh, cards);
       frag.append(group);
     }
-    const id = active + '|' + r.n + '|' + r.p;
+    const id = (r._tab || active) + '|' + r.n + '|' + r.p;
     const ticked = isTicked(id);
     const row = el('article', 'row' + (ticked ? ' ticked' : ''));
     const name = el('div', 'name');
@@ -1131,6 +1186,7 @@ function render() {
     tk.addEventListener('click', () => toggleTick(id, tk, row));
 
     const chips = el('div', 'chips' + (tIdx >= 0 ? ' solo' : ''));
+    if (active === 'Semua' && r._tab) chips.append(el('span', 'chip no', r._tab));
     if (bdayFilter) {
       const bm = bdayMD(r.d, new Date().getFullYear());
       if (bm) {
@@ -1494,11 +1550,11 @@ function restoreState() {
   let s = null;
   try { s = JSON.parse(lsGet(ST_KEY) || 'null'); } catch (e) { s = null; }
   if (!s || typeof s !== 'object') return;
-  if (TABS.includes(s.tab)) active = s.tab;
+  if (VIEWS.includes(s.tab)) active = s.tab;
   if (s.day === 'all' || s.day === 'today' || CONFIG.DAY_SLOTS.map(String).includes(String(s.day))) dayFilter = String(s.day);
   if (typeof s.topic === 'string') topicFilter = s.topic;
   if (topicFilter && ['no', 'pr', 'ok', 'nt'].includes(s.status)) statusFilter = s.status;
-  if (s.age === 'young' || s.age === 'vet') ageFilter = s.age;
+  if (ageValid(s.age)) ageFilter = s.age;
   if (typeof s.loc === 'string') locFilter = s.loc;
   if (BDAY_LABEL[s.bday]) {
     bdayFilter = s.bday;
