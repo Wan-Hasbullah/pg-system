@@ -199,6 +199,7 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 4px}
 .chip{font-size:12px;font-weight:600;border-radius:999px;padding:5px 10px;border:1px solid transparent}
 .chip.ok{background:var(--green);color:#fff}
 .chip.pr{background:#fff3cf;color:#7a5600;border-color:#efd58a}
+.chip.nt{background:#fde3e1;color:#a4231b;border-color:#f2b8b5}
 .chip.no{background:transparent;color:var(--mute);border-color:rgba(14,42,34,.22)}
 .chip.bd{background:var(--g5);color:#8a2246;border-color:#efb8c9}
 .chips.solo .chip{font-size:13px;padding:6px 12px}
@@ -276,7 +277,6 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 4px}
       <button class="tab" role="tab" data-tab="Stranger">Stranger</button>
       <button class="tab" role="tab" data-tab="Inner Circle">Inner Circle</button>
       <button class="tab" role="tab" data-tab="Dealer">Dealer</button>
-      <button class="tab" role="tab" data-tab="No Tak Aktif">No Tak Aktif</button>
     </nav>
 
     <div class="fbar">
@@ -376,8 +376,9 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 4px}
     <select id="statusSel" aria-label="Tapis mengikut status" disabled>
       <option value="">Semua status</option>
       <option value="no">Belum</option>
-      <option value="pr">Dalam proses</option>
-      <option value="ok">Sudah</option>
+      <option value="pr">Proses</option>
+      <option value="ok">Dah</option>
+      <option value="nt">Tak perlu</option>
     </select>
     <small class="hint">Pilih topik dahulu</small>
   </label>
@@ -494,7 +495,7 @@ main{max-width:1100px;margin:0 auto;padding:12px 12px 4px}
 
 /* ====== KONFIGURASI (ubah di sini sahaja) ====== */
 const CONFIG = {
-  API_URL: 'https://script.google.com/macros/s/AKfycbziMx5DLMgRln8tIfXTsEp3DGabOh20uvKC36ZRLWiQpN03ZDVxRqtEtOrsQuJm5qSg-A/exec',   // <-- TEMPAT TAMPAL LINK WEB APP DARI APPS SCRIPT (berakhir dengan /exec)
+  API_URL: 'https://script.google.com/macros/s/AKfycbziMx5DLMgRln8tIfXTsEp3DGabOh20uvKC36ZRLWiQpN03ZDVxRqtEtOrsQuJm5qSg-A/exec',
   TOKEN: 'Wn7kQ4xZp9RtL2vMb8Hc5YdF',                                                  // mesti sama dengan CONFIG.TOKEN dalam Code.gs
   SHEET_ID: '1jSUGR1Zv6EFEILCpT4C7EVD1qjO2vVtk9avr2Fzptb8',                           // mesti sama dengan CONFIG.SHEET_ID dalam Code.gs
   GIDS: {},                                                                          // dikosongkan: gid tab diambil automatik daripada Code.gs
@@ -506,9 +507,10 @@ const CONFIG = {
   YOUNG_MIN: 18, YOUNG_MAX: 25,             // Anak Muda
   VETERAN_MIN: 50                           // Veteran
 };
-const TABS = ['Stranger', 'Inner Circle', 'Dealer', 'No Tak Aktif'];
-const DONE = ['dah', 'true', 'yes', 'ya', '\u2713', '\u2714'];
-const PROGRESS = ['proses'];
+const TABS = ['Stranger', 'Inner Circle', 'Dealer'];
+const DONE = ['dah', 'true', 'yes', 'ya', '\u2713', '\u2714'];       // hijau
+const PROGRESS = ['proses'];                                         // kuning
+const NOTNEED = ['tak perlu', 'takperlu', 'tidak perlu', 'tidakperlu']; // merah
 
 const $ = (s) => document.querySelector(s);
 const lsGet = (k) => { try { return localStorage.getItem('fu_' + k); } catch (e) { return null; } };
@@ -914,10 +916,12 @@ function waNumber(raw) {
   return d.length >= 9 && d.length <= 15 ? d : '';
 }
 
+/* Status topik: Dah = hijau (ok), Proses = kuning (pr), Tak perlu = merah (nt), selain itu = belum (no) */
 function topicState(v) {
-  const s = String(v || '').trim().toLowerCase();
+  const s = String(v || '').trim().toLowerCase().replace(/\s+/g, ' ');
   if (DONE.includes(s)) return 'ok';
   if (PROGRESS.includes(s)) return 'pr';
+  if (NOTNEED.includes(s)) return 'nt';
   return 'no';
 }
 
@@ -1093,7 +1097,7 @@ function render() {
       return message('Hari ini tiada jadual servicing. Pilih hari lain atau "Semua hari".');
     }
     if ((ageFilter || locFilter || bdayFilter) && !data.masterOk) {
-      return message('Data tab "Master" belum diterima. Kemas kini Code.gs dan deploy versi baharu.');
+      return message('Data tab "Semua Data" belum diterima. Kemas kini Code.gs dan deploy versi baharu.');
     }
     return message('Tiada rekod sepadan dengan penapis ini.');
   }
@@ -1168,9 +1172,9 @@ function render() {
       if (tIdx >= 0 && k !== tIdx) return;          // fokus pada satu topik
       const st = topicState(r.t[k]);
       if (tIdx < 0 && st === 'no' && !CONFIG.SHOW_EMPTY_TOPICS) return;
-      const mark = st === 'ok' ? '\u2713 ' : st === 'pr' ? '\u25D0 ' : '';
+      const mark = st === 'ok' ? '\u2713 ' : st === 'pr' ? '\u25D0 ' : st === 'nt' ? '\u2715 ' : '';
       const chip = el('span', 'chip ' + st, mark + topic);
-      chip.title = st === 'ok' ? 'Sudah' : st === 'pr' ? 'Dalam proses' : 'Belum';
+      chip.title = st === 'ok' ? 'Dah' : st === 'pr' ? 'Proses' : st === 'nt' ? 'Tak perlu' : 'Belum';
       chips.append(chip);
     });
     row.append(name, wa, tk, chips);
@@ -1537,7 +1541,7 @@ function restoreState() {
   if (TABS.includes(s.tab)) active = s.tab;
   if (s.day === 'all' || s.day === 'today' || CONFIG.DAY_SLOTS.map(String).includes(String(s.day))) dayFilter = String(s.day);
   if (typeof s.topic === 'string') topicFilter = s.topic;
-  if (topicFilter && ['no', 'pr', 'ok'].includes(s.status)) statusFilter = s.status;
+  if (topicFilter && ['no', 'pr', 'ok', 'nt'].includes(s.status)) statusFilter = s.status;
   if (s.age === 'young' || s.age === 'vet') ageFilter = s.age;
   if (typeof s.loc === 'string') locFilter = s.loc;
   if (BDAY_LABEL[s.bday]) {
