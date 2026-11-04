@@ -251,6 +251,24 @@ textarea.fin{min-height:150px;resize:vertical;line-height:1.5;font-weight:500;di
 .ptag:active{filter:brightness(.95)}
 .chint{margin:6px 0 12px;font-size:11px;color:var(--mute)}
 
+/* ===== KEMASKINI 2: ubah/padam skrip + ruang rekod tarikh gelap ===== */
+.srow{flex-wrap:wrap}
+.sbar{flex:0 0 100%;display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-top:-2px}
+.stag{margin-right:auto;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#9a7b00}
+.sbtn{font:700 12px inherit;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:0 16px;border-radius:999px;cursor:pointer;color:var(--ink);background:#fff;border:1px solid var(--line);-webkit-tap-highlight-color:transparent}
+.sbtn:hover{border-color:var(--green)}
+.sbtn:active{filter:brightness(.95)}
+.sbtn.del{color:#b3261e;border-color:#efc9c5}
+.sbtn.del:hover{border-color:#b3261e}
+.cdet{background:linear-gradient(160deg,#0e2a22 0%,#15483a 100%);border:1px solid #1d5a49;box-shadow:0 12px 28px rgba(14,42,34,.28),inset 0 1px 0 rgba(233,207,122,.28)}
+.cdet .dt small{color:#e9cf7a}
+.cdet .dt b{color:#fff}
+.cdet .dedit{color:#2b2200;background:linear-gradient(135deg,#f3dc8a,#c9a500);box-shadow:0 6px 14px rgba(201,165,0,.3),inset 0 1px 0 rgba(255,255,255,.45)}
+.cdet .stat{background:rgba(255,255,255,.09)!important;border-left-color:var(--sa)}
+.cdet .stat span{color:rgba(255,255,255,.72)}
+.cdet .stat b{color:#fff}
+.cdet .dnote{color:rgba(255,255,255,.7)}
+
 /* Desktop / tablet */
 @media(min-width:640px){
   .grab{display:none}
@@ -491,11 +509,11 @@ textarea.fin{min-height:150px;resize:vertical;line-height:1.5;font-weight:500;di
   <div class="mbody">
     <p id="sWho" class="swho"></p>
     <a id="sPlain" class="splain top" target="_blank" rel="noopener">Buka WhatsApp tanpa skrip</a>
-    <input id="sSearch" class="fin ssearch" type="search" placeholder="Cari skrip (tajuk atau ayat)" autocomplete="off" aria-label="Cari skrip mengikut tajuk atau ayat">
     <a id="sTele" class="stele" href="https://t.me/c/2792771174/3" target="_blank" rel="noopener">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14"/></svg>
       Muat turun poster (Telegram)
     </a>
+    <input id="sSearch" class="fin ssearch" type="search" placeholder="Cari skrip (tajuk atau ayat)" autocomplete="off" aria-label="Cari skrip mengikut tajuk atau ayat">
     <div class="shead"><p id="sCount" class="scount" role="status"></p><button id="sPinOnly" class="spo" type="button" aria-pressed="false">Pin sahaja (0)</button></div>
     <div id="sList" class="slist"></div>
   </div>
@@ -508,7 +526,7 @@ textarea.fin{min-height:150px;resize:vertical;line-height:1.5;font-weight:500;di
     <div class="grab"></div>
     <div class="hrow">
       <div>
-        <small>Skrip baharu</small>
+        <small id="cSmall">Skrip baharu</small>
         <h2 id="cTitle">Tambah Skrip</h2>
       </div>
       <button id="cClose" class="xbtn" type="button" aria-label="Tutup">&times;</button>
@@ -1133,7 +1151,7 @@ function syncFilters(tab) {
   // butang padam + lencana bilangan penapis aktif
   const extra = !!(topicFilter || statusFilter || ageFilter || locFilter || bdayFilter);
   $('#clearBtn').hidden = !extra;
-  $('#resetBtn').hidden = !extra;
+  $('#resetBtn').hidden = false;               // butang padam penapis sentiasa kelihatan
   const n = (dayFilter !== 'all' ? 1 : 0) + (topicFilter ? 1 : 0) + (statusFilter ? 1 : 0) + (ageFilter ? 1 : 0) + (locFilter ? 1 : 0) + (bdayFilter ? 1 : 0);
   document.querySelectorAll('.fbtn .badge').forEach((b) => {
     b.hidden = n === 0;
@@ -1431,10 +1449,13 @@ function loadMyScripts() {
 
 /* Gabung skrip sendiri (di atas) + skrip sedia ada, dan gantikan [panggil] */
 function scriptItems(call) {
-  const base = (window.SCRIPTS || []).map((s) => ({ title: String(s.title || ''), text: String(s.text || '') }));
-  return loadMyScripts().concat(base).map((s, i) => ({
+  const base = (window.SCRIPTS || []).map((s) => ({ title: String(s.title || ''), text: String(s.text || ''), mine: false }));
+  const mine = loadMyScripts().map((s, k) => ({ title: s.title, text: s.text, mine: true, mi: k }));
+  return mine.concat(base).map((s, i) => ({
     title: s.title || 'Skrip ' + (i + 1),
-    txt: s.text.replace(/\[panggil\]/gi, call)
+    txt: s.text.replace(/\[panggil\]/gi, call),
+    mine: s.mine,
+    mi: s.mi
   }));
 }
 
@@ -1473,6 +1494,19 @@ function renderScripts() {
     pb.title = x.pin ? 'Buang pin' : 'Pin skrip ini';
     pb.addEventListener('click', () => togglePin(s.title));
     w.append(a, pb);
+    if (s.mine) {                                            // skrip sendiri: butang Ubah & Padam
+      const bar = el('div', 'sbar');
+      const eb = el('button', 'sbtn', 'Ubah');
+      eb.type = 'button';
+      eb.setAttribute('aria-label', 'Ubah skrip: ' + s.title);
+      eb.addEventListener('click', () => openAddScript(s.mi));
+      const db = el('button', 'sbtn del', 'Padam');
+      db.type = 'button';
+      db.setAttribute('aria-label', 'Padam skrip: ' + s.title);
+      db.addEventListener('click', () => deleteScript(s.mi));
+      bar.append(el('span', 'stag', 'Skrip saya'), eb, db);
+      w.append(bar);
+    }
     frag.append(w);
   });
   if (!n) frag.append(el('p', 'msg', sPinOnly && !q.length && !pinTotal ? 'Belum ada skrip dipin. Tekan ikon pin pada skrip pilihan anda.' : 'Tiada skrip sepadan dengan carian.'));
@@ -1513,9 +1547,16 @@ function cMsg(text) {
   m.hidden = !text;
 }
 
-function openAddScript() {
-  $('#cName').value = '';
-  $('#cText').value = '';
+let cEdit = -1;                                              // -1 = skrip baharu; selain itu = indeks skrip sendiri yang diubah
+function openAddScript(idx) {
+  const mine = loadMyScripts();
+  cEdit = Number.isInteger(idx) && mine[idx] ? idx : -1;
+  const ed = cEdit >= 0;
+  $('#cName').value = ed ? mine[cEdit].title : '';
+  $('#cText').value = ed ? mine[cEdit].text : '';
+  $('#cTitle').textContent = ed ? 'Ubah Skrip' : 'Tambah Skrip';
+  $('#cSmall').textContent = ed ? 'Edit skrip' : 'Skrip baharu';
+  $('#cSave').textContent = ed ? 'Simpan Perubahan' : 'Simpan Skrip';
   cMsg('');
   $('#cPanel').hidden = false;
   $('#cBack').hidden = false;
@@ -1547,9 +1588,20 @@ function saveScript() {
   if (!title) { cMsg('Sila isi tajuk skrip.'); return; }
   if (!text) { cMsg('Sila isi text skrip.'); return; }
   const mine = loadMyScripts();
-  const exist = mine.concat((window.SCRIPTS || []).map((s) => ({ title: String(s.title || '') })));
-  if (exist.some((x) => x.title.toLowerCase() === title.toLowerCase())) { cMsg('Tajuk ini sudah wujud. Guna tajuk lain.'); return; }
-  mine.unshift({ title: title, text: text });                 // skrip terbaharu di atas
+  const lc = title.toLowerCase();
+  const dup = mine.some((x, k) => k !== cEdit && x.title.toLowerCase() === lc)
+    || (window.SCRIPTS || []).some((s) => String(s.title || '').toLowerCase() === lc);
+  if (dup) { cMsg('Tajuk ini sudah wujud. Guna tajuk lain.'); return; }
+  if (cEdit >= 0 && mine[cEdit]) {
+    const old = mine[cEdit].title;
+    mine[cEdit] = { title: title, text: text };
+    if (old !== title) {                                      // pin ikut tajuk: pindahkan ke tajuk baharu
+      const p = loadPins(), i = p.indexOf(old);
+      if (i >= 0) { p[i] = title; lsSet('pins', JSON.stringify(p)); }
+    }
+  } else {
+    mine.unshift({ title: title, text: text });               // skrip terbaharu di atas
+  }
   lsSet('myscripts', JSON.stringify(mine));
   if (sCtx) sCtx.items = scriptItems(sCtx.call);
   $('#sSearch').value = '';
@@ -1558,11 +1610,25 @@ function saveScript() {
   $('#sPanel').scrollTop = 0;
 }
 
+/* Padam skrip sendiri (dengan pengesahan) */
+function deleteScript(i) {
+  const mine = loadMyScripts();
+  if (!mine[i]) return;
+  if (!window.confirm('Padam skrip "' + mine[i].title + '"?')) return;
+  const t = mine[i].title;
+  mine.splice(i, 1);
+  lsSet('myscripts', JSON.stringify(mine));
+  const p = loadPins().filter((x) => x !== t);
+  lsSet('pins', JSON.stringify(p));
+  if (sCtx) sCtx.items = scriptItems(sCtx.call);
+  renderScripts();
+}
+
 $('#sSearch').addEventListener('input', renderScripts);
 $('#sPinOnly').addEventListener('click', () => { sPinOnly = !sPinOnly; lsSet('pinonly', sPinOnly ? '1' : '0'); renderScripts(); });
 $('#sClose').addEventListener('click', closeScripts);
 $('#sBack').addEventListener('click', closeScripts);
-$('#sAdd').addEventListener('click', openAddScript);
+$('#sAdd').addEventListener('click', () => openAddScript());
 $('#cClose').addEventListener('click', closeAddScript);
 $('#cBack').addEventListener('click', closeAddScript);
 $('#cTag').addEventListener('click', insertTag);
