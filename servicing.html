@@ -1348,6 +1348,11 @@ const panelOpen = () => !$('#fPanel').hidden;
 function resetFilters() {
   topicFilter = ''; statusFilter = ''; ageFilter = ''; locFilter = '';
   setBday('');
+  active = 'Semua';                          // Kategori -> Semua
+  lsSet('tab', active);
+  dayFilter = 'all';                         // Hari servicing -> Semua hari
+  bdayPrevDay = null;
+  lsSet('day', dayFilter);
   render();
 }
 
