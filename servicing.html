@@ -70,6 +70,7 @@ background-repeat:no-repeat;background-position:right 12px center;background-siz
 .meta{display:flex;justify-content:space-between;gap:10px;margin-top:8px;font-size:12px;color:var(--mute);min-height:16px}
 .meta p{margin:0}
 .status.err{color:#b3261e;font-weight:600}
+.meta.err{color:#b3261e;font-weight:600}
 .clear{font:700 12px inherit;font-family:inherit;color:var(--green);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
 .clear[hidden]{display:none}
 
@@ -268,6 +269,11 @@ textarea.fin{min-height:150px;resize:vertical;line-height:1.5;font-weight:500;di
 .cdet .stat span{color:rgba(255,255,255,.72)}
 .cdet .stat b{color:#fff}
 .cdet .dnote{color:rgba(255,255,255,.7)}
+
+/* ===== KEMASKINI 3: chip boleh ditekan (tulis ke sheet) ===== */
+button.chip{font-family:inherit;appearance:none;-webkit-appearance:none;cursor:pointer;min-height:32px;display:inline-flex;align-items:center;line-height:1.2;-webkit-tap-highlight-color:transparent}
+button.chip:active{filter:brightness(.92)}
+button.chip.busy{opacity:.6;cursor:progress}
 
 /* Desktop / tablet */
 @media(min-width:640px){
@@ -555,7 +561,7 @@ textarea.fin{min-height:150px;resize:vertical;line-height:1.5;font-weight:500;di
 
 /* ====== KONFIGURASI (ubah di sini sahaja) ====== */
 const CONFIG = {
-  API_URL: 'https://script.google.com/macros/s/AKfycbwxwNp8Krtj4a11hLWpzPeEZNVAGxQwO-jaSpgQQVlyLfRkcxHazX-2h7l-KpaU8MgROQ/exec',
+  API_URL: 'https://script.google.com/macros/s/AKfycbwCXS0N9NzdW_okvAV7AtsmOegy5kNx6ijQJ7XP0YvBXVJUK4WoCuttq0ChonnfltMpKA/exec',
   TOKEN: 'Wn7kQ4xZp9RtL2vMb8Hc5YdF',                                                  // mesti sama dengan CONFIG.TOKEN dalam Code.gs
   SHEET_ID: '1jSUGR1Zv6EFEILCpT4C7EVD1qjO2vVtk9avr2Fzptb8',                           // mesti sama dengan CONFIG.SHEET_ID dalam Code.gs
   GIDS: {},                                                                          // dikosongkan: gid tab diambil automatik daripada Code.gs
@@ -579,6 +585,7 @@ const lsGet = (k) => { try { return localStorage.getItem('fu_' + k); } catch (e)
 const lsSet = (k, v) => { try { localStorage.setItem('fu_' + k, v); } catch (e) { /* abaikan */ } };
 
 let data = null, busy = false, loadedAt = 0;
+let pendingW = 0;                            // bilangan simpanan chip yang sedang berjalan
 let active = VIEWS.includes(lsGet('tab')) ? lsGet('tab') : TABS[0];
 let topicFilter = '', statusFilter = '', ageFilter = '', locFilter = '';
 let bdayFilter = '', bdayPrevDay = null;
@@ -1159,6 +1166,75 @@ function syncFilters(tab) {
   });
 }
 
+/* ====== Chip topik: tekan = Dah (hijau) / tekan lagi = kosong; sheet dikemas kini ====== */
+function chipLook(chip, topic, st) {
+  const mark = st === 'ok' ? '\u2713 ' : st === 'pr' ? '\u25D0 ' : st === 'nt' ? '\u2715 ' : '';
+  chip.className = 'chip ' + st + (chip.dataset.busy ? ' busy' : '');
+  chip.textContent = mark + topic;
+  chip.title = st === 'ok' ? 'Dah \u00B7 tekan untuk batal'
+    : (st === 'pr' ? 'Proses' : st === 'nt' ? 'Tak perlu' : 'Belum') + ' \u00B7 tekan untuk tanda Dah';
+  chip.setAttribute('aria-pressed', String(st === 'ok'));
+}
+
+/* Kemas kini semua salinan baris yang sama (gid + rn), termasuk paparan "Semua" */
+function patchTopic(r, gid, rn, topic, k, val) {
+  r.t[k] = val;
+  Object.keys(data.tabs).forEach((n) => {
+    const t = data.tabs[n];
+    if (!t || t.error || !t.rows || String(t.gid) !== String(gid)) return;
+    const ti = t.topics.indexOf(topic);
+    if (ti < 0) return;
+    t.rows.forEach((x) => { if (x.rn === rn) x.t[ti] = val; });
+  });
+  allCache.delete(data);                      // bina semula gabungan "Semua" pada render seterusnya
+}
+
+const WRITE_ERR = {
+  TOKEN_SALAH: 'token tidak sepadan', SIBUK: 'pelayan sibuk, cuba lagi', TAB_TIADA: 'tab tidak dijumpai',
+  TOPIK_TIADA: 'lajur topik tidak dijumpai', BARIS_TIADA: 'baris tidak dijumpai dalam sheet',
+  BARIS_PELBAGAI: 'nama + telefon berulang dalam sheet', NILAI_TIDAK_SAH: 'nilai tidak sah',
+  ACTION_TIDAK_SAH: 'Code.gs belum dikemas kini / di-deploy versi baharu'
+};
+
+async function setTopic(r, tabName, topic, k, chip) {
+  if (chip.dataset.busy) return;
+  const src = data && data.tabs[tabName];
+  if (r.rn == null || !src || !src.gid) {
+    setStatus('Tekan Refresh dahulu untuk mengaktifkan tick pada chip.', 'err');
+    return;
+  }
+  const gid = src.gid, rn0 = r.rn;
+  const prev = r.t[k];
+  const next = topicState(prev) === 'ok' ? '' : 'Dah';
+
+  chip.dataset.busy = '1';
+  patchTopic(r, gid, rn0, topic, k, next);                    // kemas kini serta-merta
+  chipLook(chip, topic, topicState(next));
+  pendingW++;
+  try {
+    const res = await fetch(CONFIG.API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },   // elak preflight CORS
+      body: JSON.stringify({ token: CONFIG.TOKEN, action: 'setStatus', gid: gid, rn: rn0, name: r.n, phone: r.p, topic: topic, value: next })
+    });
+    const j = await res.json();
+    if (!j.ok) throw new Error(j.error || 'API');
+    if (j.rn && j.rn !== rn0) r.rn = j.rn;
+    setStatus('Disimpan ' + new Date().toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+  } catch (e) {
+    patchTopic(r, gid, rn0, topic, k, prev);                  // kembalikan
+    delete chip.dataset.busy;
+    chipLook(chip, topic, topicState(prev));
+    const code = String(e && e.message);
+    setStatus('Gagal simpan ke sheet (' + (WRITE_ERR[code] || (e instanceof TypeError ? 'tiada sambungan' : code)) + '). Dikembalikan.', 'err');
+  } finally {
+    pendingW--;
+    delete chip.dataset.busy;
+    chip.classList.remove('busy');
+    lsSet('data', JSON.stringify(data));
+  }
+}
+
 function render() {
   $('#sheetBtn').href = sheetUrl(active);
   const tab = curTab();
@@ -1277,9 +1353,10 @@ function render() {
       if (tIdx >= 0 && k !== tIdx) return;          // fokus pada satu topik
       const st = topicState(r.t[k]);
       if (tIdx < 0 && st === 'no' && !CONFIG.SHOW_EMPTY_TOPICS) return;
-      const mark = st === 'ok' ? '\u2713 ' : st === 'pr' ? '\u25D0 ' : st === 'nt' ? '\u2715 ' : '';
-      const chip = el('span', 'chip ' + st, mark + topic);
-      chip.title = st === 'ok' ? 'Dah' : st === 'pr' ? 'Proses' : st === 'nt' ? 'Tak perlu' : 'Belum';
+      const chip = el('button', 'chip ' + st);
+      chip.type = 'button';
+      chipLook(chip, topic, st);
+      chip.addEventListener('click', () => setTopic(r, r._tab || active, topic, k, chip));
       chips.append(chip);
     });
     row.append(name, wa, tk, chips);
@@ -1300,7 +1377,7 @@ function friendly(e) {
 }
 
 async function fetchData(fresh) {
-  if (busy) return;
+  if (busy || pendingW) return;               // jangan timpa data semasa ada simpanan sedang berjalan
   busy = true;
   $('#refreshBtn').disabled = true;
   setStatus('Memuat data\u2026');
