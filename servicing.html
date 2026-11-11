@@ -111,7 +111,7 @@ background-repeat:no-repeat;background-position:right 12px center;background-siz
 .leg span{display:inline-flex;align-items:center;gap:5px}
 .leg .dot{box-shadow:none}
 
-/* Butang: Snap + Salin + Tambah + Buka Sheet + Refresh */
+/* Butang: Snap + Salin + Tambah + Buka Sheet */
 .cact{display:flex;gap:8px;margin-top:12px}
 .cbtn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 12px;border-radius:12px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap;text-decoration:none}
 .cbtn:active{filter:brightness(.95)}
@@ -275,11 +275,26 @@ button.chip{font-family:inherit;appearance:none;-webkit-appearance:none;cursor:p
 button.chip:active{filter:brightness(.92)}
 button.chip.busy{opacity:.6;cursor:progress}
 
+/* ===== KEMASKINI 4: butang (+) Kenalan Saya di sebelah filter ===== */
+.fbar{display:flex;align-items:stretch;gap:8px}
+.fbar .fbtn{flex:1 1 auto;min-width:0}
+.fplus{flex:0 0 52px;width:52px;min-height:52px;display:flex;align-items:center;justify-content:center;padding:0;border:0;border-radius:16px;cursor:pointer;color:#2b2200;font-family:inherit;
+background:linear-gradient(135deg,#f6e7a6 0%,#e0bd3c 55%,#c9a500 100%);
+box-shadow:0 10px 24px rgba(201,165,0,.32),inset 0 1px 0 rgba(255,255,255,.55);-webkit-tap-highlight-color:transparent}
+.fplus:hover{filter:brightness(1.04)}
+.fplus:active{filter:brightness(.94);transform:scale(.98)}
+.lhero{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:12px 14px;border-radius:14px;border:1px solid #e6cf7a;background:linear-gradient(135deg,#fffaf0 0%,#fbf1c4 100%);box-shadow:0 6px 16px rgba(201,165,0,.14),inset 0 1px 0 rgba(255,255,255,.7)}
+.lhero svg{flex:0 0 auto;color:#b58f00}
+.lhero p{margin:0;font-size:12px;line-height:1.45;font-weight:600;color:#7a5600}
+.lphone{display:inline-block;font-size:12px;font-weight:600;color:var(--mute);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.lnote{margin:2px 0 12px;font-size:11px;color:var(--mute)}
+
 /* Desktop / tablet */
 @media(min-width:640px){
   .grab{display:none}
   .fbtn{width:auto;min-width:280px}
   .tbar{max-width:460px}
+  .fbar{max-width:460px}
   .fpanel{top:50%;left:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);width:400px;border-radius:20px;border:1px solid var(--line);box-shadow:0 24px 64px rgba(14,42,34,.28);max-height:90vh;padding:18px}
   .frow select{font-size:14px}
   .cal{max-width:460px}
@@ -311,20 +326,16 @@ button.chip.busy{opacity:.6;cursor:progress}
   </div>
 </header>
 
-<!-- ===== 1) BUKA SHEET + REFRESH ===== -->
+<!-- ===== 1) BUKA SHEET ===== -->
 <section class="ctrl">
   <div class="tbar">
     <a id="sheetBtn" class="cbtn copy" target="_blank" rel="noopener" aria-label="Buka Google Sheet bagi kategori semasa">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="3"/><path d="M4 9.5h16M10 9.5v11"/></svg>
       <span>Buka Sheet</span>
     </a>
-    <button id="refreshBtn" class="cbtn snap" type="button" aria-label="Ambil data terkini daripada sheet">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>
-      <span>Refresh</span>
-    </button>
   </div>
 
-  <!-- ===== 2) FILTER (satu sahaja; kategori ada di dalam) ===== -->
+  <!-- ===== 2) FILTER (kategori ada di dalam) + BUTANG (+) KENALAN SAYA ===== -->
   <div class="fbar">
     <button class="fbtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="fPanel">
       <span class="fl">
@@ -335,6 +346,9 @@ button.chip.busy{opacity:.6;cursor:progress}
         <i class="badge" hidden>0</i>
         <svg class="chev" width="14" height="14" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </span>
+    </button>
+    <button id="lAdd" class="fplus" type="button" aria-haspopup="dialog" aria-label="Tambah kenalan sendiri" title="Tambah kenalan sendiri (Kenalan Saya)">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
     </button>
   </div>
 </section>
@@ -401,6 +415,7 @@ button.chip.busy{opacity:.6;cursor:progress}
       <option value="Dealer">Dealer</option>
       <option value="Junior Account">Junior Account</option>
       <option value="Junior Account Sahaja">Junior Account Sahaja</option>
+      <option value="Kenalan Saya">Kenalan Saya</option>
     </select>
   </label>
   <label class="frow"><span>Hari servicing</span>
@@ -494,6 +509,39 @@ button.chip.busy{opacity:.6;cursor:progress}
   </div>
 </div>
 
+<!-- ===== POPUP KENALAN SAYA (nickname + no. WhatsApp) ===== -->
+<div id="lBack" class="mback" hidden></div>
+<div id="lPanel" class="mpanel" role="dialog" aria-modal="true" aria-labelledby="lTitle" tabindex="-1" hidden>
+  <div class="mhero">
+    <div class="grab"></div>
+    <div class="hrow">
+      <div>
+        <small>Kenalan Saya</small>
+        <h2 id="lTitle">Tambah Kenalan</h2>
+      </div>
+      <button id="lClose" class="xbtn" type="button" aria-label="Tutup">&times;</button>
+    </div>
+  </div>
+  <div class="mbody">
+    <div class="lhero">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg>
+      <p>Disimpan peribadi dalam peranti ini sahaja. Tersenarai di penapis &gt; Kategori &gt; Kenalan Saya.</p>
+    </div>
+    <label class="frow"><span>Nickname</span>
+      <input id="lNick" class="fin" type="text" maxlength="40" placeholder="Contoh: Abang Ali" autocomplete="off" aria-label="Nickname">
+    </label>
+    <label class="frow"><span>No. WhatsApp</span>
+      <input id="lPhone" class="fin" type="tel" inputmode="tel" maxlength="20" placeholder="Contoh: 0123456789" autocomplete="off" aria-label="Nombor WhatsApp">
+    </label>
+    <p class="lnote">Nombor bermula 0 akan ditukar kepada kod negara +60 secara automatik.</p>
+    <p id="lMsg" class="emsg" role="alert" hidden></p>
+    <div class="ffoot">
+      <button id="lDel" class="fres edel" type="button" hidden>Padam</button>
+      <button id="lSave" class="fdone" type="button">Simpan Kenalan</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== POPUP SKRIP WHATSAPP ===== -->
 <div id="sBack" class="mback" hidden></div>
 <div id="sPanel" class="mpanel" role="dialog" aria-modal="true" aria-labelledby="sTitle" tabindex="-1" hidden>
@@ -575,7 +623,8 @@ const CONFIG = {
   DEDUPE_PHONE_TABS: ['Junior Account Sahaja']   // tab yang dibuang no. telefon berulang (simpan satu sahaja)
 };
 const TABS = ['Stranger', 'Inner Circle', 'Dealer', 'Junior Account', 'Junior Account Sahaja'];
-const VIEWS = ['Semua'].concat(TABS);        // 'Semua' = gabungan semua kategori
+const MY = 'Kenalan Saya';                   // kategori khas: kenalan sendiri (disimpan di localStorage)
+const VIEWS = ['Semua'].concat(TABS, [MY]);  // 'Semua' = gabungan semua kategori
 const DONE = ['dah', 'true', 'yes', 'ya', '\u2713', '\u2714'];       // hijau
 const PROGRESS = ['proses'];                                         // kuning
 const NOTNEED = ['tak perlu', 'takperlu', 'tidak perlu', 'tidakperlu']; // merah
@@ -636,6 +685,24 @@ function rowsOf(name, tab) {
   return out;
 }
 
+/* ====== Kenalan Saya (localStorage): nickname + no. WhatsApp ====== */
+function loadContacts() {
+  try {
+    const j = JSON.parse(lsGet('contacts') || '[]');
+    return Array.isArray(j) ? j.filter((x) => x && typeof x.nick === 'string' && typeof x.phone === 'string') : [];
+  } catch (e) { return []; }
+}
+let contacts = loadContacts();
+const saveContacts = () => lsSet('contacts', JSON.stringify(contacts));
+
+/* Bentuk sama seperti tab sheet supaya penapis, kad & skrip WhatsApp berfungsi seperti biasa */
+function localTab() {
+  return {
+    topics: [],
+    rows: contacts.map((c) => ({ n: c.nick, p: c.phone, k: '', d: '', l: '', t: [], rn: null, _local: true, cid: c.id }))
+  };
+}
+
 /* ====== Kategori "Semua": gabung semua tab (topik disatukan; tick kekal ikut tab asal) ====== */
 const allCache = new WeakMap();
 function allTab() {
@@ -659,7 +726,7 @@ function allTab() {
   }
   return out;
 }
-const curTab = () => active === 'Semua' ? allTab() : (data && data.tabs[active]);
+const curTab = () => active === MY ? localTab() : active === 'Semua' ? allTab() : (data && data.tabs[active]);
 
 /* ====== Birthday customer (bulan + hari daripada D.O.B; berulang setiap tahun) ====== */
 const isLeap = (y) => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
@@ -1092,6 +1159,8 @@ function syncFilters(tab) {
   const loaded = !!(tab && !tab.error && tab.rows);     // penapis tersimpan tidak dipadam sebelum data tersedia
   const rows0 = rowsOf(active, tab);
   const topics = (tab && !tab.error && tab.topics) || [];
+  const myOpt = Array.from($('#tabSel').options).find((o) => o.value === MY);
+  if (myOpt) myOpt.textContent = MY + ' (' + contacts.length + ')';
   $('#tabSel').value = active;
   const sig = active + '|' + topics.join('\u0001');
   const sel = $('#topicSel');
@@ -1200,7 +1269,7 @@ async function setTopic(r, tabName, topic, k, chip) {
   if (chip.dataset.busy) return;
   const src = data && data.tabs[tabName];
   if (r.rn == null || !src || !src.gid) {
-    setStatus('Tekan Refresh dahulu untuk mengaktifkan tick pada chip.', 'err');
+    setStatus('Data belum sedia. Tunggu sebentar atau muat semula halaman.', 'err');
     return;
   }
   const gid = src.gid, rn0 = r.rn;
@@ -1242,17 +1311,17 @@ function render() {
   syncFilters(tab);
   renderCal();
   $('#count').textContent = '';
-  if (!data) return;
+  if (!data && active !== MY) return;
 
   if (!tab) return message('Tab "' + active + '" tiada dalam respons pelayan.');
   if (tab.error === 'TAB_TIADA') return message('Tab "' + active + '" tidak dijumpai dalam spreadsheet. Semak nama tab dalam Code.gs.');
   if (tab.error === 'HEADER_TIDAK_JUMPA') return message('Header "Name" dan "Telephone" tidak dijumpai pada baris 1 tab "' + active + '".');
   const rows = rowsOf(active, tab);
-  if (!rows.length) return message('Tiada rekod dalam tab ini.');
+  if (!rows.length) return message(active === MY ? 'Belum ada kenalan. Tekan butang + di sebelah penapis untuk menambah.' : 'Tiada rekod dalam tab ini.');
 
   const tIdx = topicFilter ? tab.topics.indexOf(topicFilter) : -1;
   const size = CONFIG.GROUP_SIZE;
-  const wanted = wantedDay();
+  const wanted = active === MY ? null : wantedDay();     // Kenalan Saya: semua kenalan dipaparkan (tiada jadual hari)
   const bw = bdayFilter ? bdayDates(bdayFilter) : null;
   const items = [];
   rows.forEach((r, i) => {
@@ -1272,7 +1341,7 @@ function render() {
     if (dayFilter === 'today' && !CONFIG.DAY_SLOTS.includes(new Date().getDay())) {
       return message('Hari ini tiada jadual servicing. Pilih hari lain atau "Semua hari".');
     }
-    if ((ageFilter || locFilter || bdayFilter) && !data.masterOk) {
+    if (active !== MY && (ageFilter || locFilter || bdayFilter) && !data.masterOk) {
       return message('Data tab "Semua Data" belum diterima. Kemas kini Code.gs dan deploy versi baharu.');
     }
     return message('Tiada rekod sepadan dengan penapis ini.');
@@ -1292,7 +1361,9 @@ function render() {
       const gh = el('div', 'gh');
       gh.append(
         el('p', 'gl', 'Nama ' + (g * size + 1) + '\u2013' + Math.min((g + 1) * size, rows.length)),
-        el('span', 'day' + (dv === today ? ' now' : ''), DAY_NAMES[dv] + (dv === today ? ' \u00B7 Hari ini' : ''))
+        active === MY
+          ? el('span', 'day', MY)
+          : el('span', 'day' + (dv === today ? ' now' : ''), DAY_NAMES[dv] + (dv === today ? ' \u00B7 Hari ini' : ''))
       );
       cards = el('div', 'cards');
       group.append(gh, cards);
@@ -1319,6 +1390,11 @@ function render() {
       });
       nw.append(nb);
       name.append(nw);
+    }
+    if (r._local) {                                     // kenalan sendiri: papar no. WhatsApp
+      const lp = el('div', 'nickw');
+      lp.append(el('span', 'lphone', '+' + waNumber(r.p)));
+      name.append(lp);
     }
 
     const num = waNumber(r.p);
@@ -1348,6 +1424,17 @@ function render() {
         bc.title = 'Birthday customer';
         chips.append(bc);
       }
+    }
+    if (r._local) {                                     // kenalan sendiri: butang Ubah & Padam
+      const eb = el('button', 'chip no', 'Ubah');
+      eb.type = 'button';
+      eb.setAttribute('aria-label', 'Ubah kenalan ' + r.n);
+      eb.addEventListener('click', () => openContact(r.cid));
+      const db = el('button', 'chip nt', 'Padam');
+      db.type = 'button';
+      db.setAttribute('aria-label', 'Padam kenalan ' + r.n);
+      db.addEventListener('click', () => deleteContact(r.cid));
+      chips.append(eb, db);
     }
     tab.topics.forEach((topic, k) => {
       if (tIdx >= 0 && k !== tIdx) return;          // fokus pada satu topik
@@ -1379,7 +1466,6 @@ function friendly(e) {
 async function fetchData(fresh) {
   if (busy || pendingW) return;               // jangan timpa data semasa ada simpanan sedang berjalan
   busy = true;
-  $('#refreshBtn').disabled = true;
   setStatus('Memuat data\u2026');
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), 20000);
@@ -1402,11 +1488,10 @@ async function fetchData(fresh) {
     if (!scrollPending && Math.abs(window.scrollY - keepY) > 1) window.scrollTo(0, keepY);   // kekal pada kedudukan sedia ada
   } catch (e) {
     setStatus(friendly(e) + (data ? ' Data lama masih dipaparkan.' : ''), 'err');
-    if (!data) message('Data belum dapat dipaparkan.');
+    if (!data && active !== MY) message('Data belum dapat dipaparkan.');
   } finally {
     clearTimeout(timer);
     busy = false;
-    $('#refreshBtn').disabled = false;
   }
 }
 
@@ -1495,6 +1580,74 @@ function deleteEntry() {
   }
   closeModal();
   renderCal();
+}
+
+/* ====== Popup Kenalan Saya (+ di sebelah penapis): nickname + no. WhatsApp ====== */
+const lOpen = () => !$('#lPanel').hidden;
+let lEdit = null;                                            // null = kenalan baharu; selain itu = id kenalan yang diubah
+
+function lMsg(text) {
+  const m = $('#lMsg');
+  m.textContent = text || '';
+  m.hidden = !text;
+}
+
+function openContact(id) {
+  const c = id ? contacts.find((x) => x.id === id) : null;
+  lEdit = c ? c.id : null;
+  $('#lNick').value = c ? c.nick : '';
+  $('#lPhone').value = c ? c.phone : '';
+  $('#lTitle').textContent = c ? 'Ubah Kenalan' : 'Tambah Kenalan';
+  $('#lSave').textContent = c ? 'Simpan Perubahan' : 'Simpan Kenalan';
+  $('#lDel').hidden = !c;
+  lMsg('');
+  $('#lPanel').hidden = false;
+  $('#lBack').hidden = false;
+  document.body.classList.add('lock');
+  $('#lPanel').scrollTop = 0;
+  $('#lNick').focus({ preventScroll: true });
+}
+
+function closeContact() {
+  $('#lPanel').hidden = true;
+  $('#lBack').hidden = true;
+  document.body.classList.remove('lock');
+  $('#lAdd').focus({ preventScroll: true });
+}
+
+function saveContact() {
+  const nick = $('#lNick').value.trim().replace(/\s+/g, ' ');
+  const raw = $('#lPhone').value.trim();
+  if (!nick) { lMsg('Sila isi nickname.'); return; }
+  if (!raw) { lMsg('Sila isi no. WhatsApp.'); return; }
+  const phone = waNumber(raw);
+  if (!phone) { lMsg('No. WhatsApp tidak sah. Contoh: 0123456789'); return; }
+  const dup = contacts.find((x) => x.phone === phone && x.id !== lEdit);
+  if (dup) { lMsg('No. ini sudah ada dalam Kenalan Saya (' + dup.nick + ').'); return; }
+  if (lEdit) {
+    const c = contacts.find((x) => x.id === lEdit);
+    if (c) { c.nick = nick; c.phone = phone; }
+  } else {
+    contacts.unshift({ id: 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), nick: nick, phone: phone });   // terbaharu di atas
+  }
+  saveContacts();
+  closeContact();
+  active = MY;                               // terus paparkan senarai Kenalan Saya
+  topicFilter = ''; statusFilter = ''; ageFilter = ''; locFilter = '';
+  setBday('');
+  lsSet('tab', active);
+  render();
+  setStatus('Kenalan disimpan');
+}
+
+function deleteContact(id) {
+  const c = contacts.find((x) => x.id === id);
+  if (!c) return;
+  if (!window.confirm('Padam kenalan "' + c.nick + '"?')) return;
+  contacts = contacts.filter((x) => x.id !== id);
+  saveContacts();
+  if (lOpen()) closeContact();
+  render();
 }
 
 /* ====== Nickname (lajur E) & skrip WhatsApp ====== */
@@ -1718,6 +1871,17 @@ $('#cSave').addEventListener('click', saveScript);
 ['#cName', '#cText'].forEach((s) => $(s).addEventListener('input', () => cMsg('')));
 $('#cName').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('#cText').focus(); } });
 
+/* Kenalan Saya: butang (+) di sebelah penapis */
+$('#lAdd').addEventListener('click', () => openContact());
+$('#lClose').addEventListener('click', closeContact);
+$('#lBack').addEventListener('click', closeContact);
+$('#lSave').addEventListener('click', saveContact);
+$('#lDel').addEventListener('click', () => { if (lEdit) deleteContact(lEdit); });
+$('#lNick').addEventListener('input', () => lMsg(''));
+$('#lNick').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('#lPhone').focus(); } });
+$('#lPhone').addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^\d+\s-]/g, ''); lMsg(''); });
+$('#lPhone').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); saveContact(); } });
+
 document.querySelectorAll('.fbtn').forEach((b) => b.addEventListener('click', () => openPanel(!panelOpen(), b)));
 $('#fBack').addEventListener('click', () => openPanel(false));
 $('#fClose').addEventListener('click', () => openPanel(false));
@@ -1726,6 +1890,7 @@ $('#fDone').addEventListener('click', () => openPanel(false));
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
   if (cOpen()) closeAddScript();
+  else if (lOpen()) closeContact();
   else if (sOpen()) closeScripts();
   else if (modalOpen()) closeModal();
   else if (panelOpen()) openPanel(false);
@@ -1769,7 +1934,6 @@ $('#locSel').addEventListener('change', (e) => {
 });
 $('#clearBtn').addEventListener('click', resetFilters);
 $('#resetBtn').addEventListener('click', resetFilters);
-$('#refreshBtn').addEventListener('click', () => fetchData(true));
 
 $('#calPrev').addEventListener('click', () => { cal.m--; if (cal.m < 0) { cal.m = 11; cal.y--; } renderCal(); });
 $('#calNext').addEventListener('click', () => { cal.m++; if (cal.m > 11) { cal.m = 0; cal.y++; } renderCal(); });
