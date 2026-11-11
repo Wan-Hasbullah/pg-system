@@ -289,6 +289,21 @@ box-shadow:0 10px 24px rgba(201,165,0,.32),inset 0 1px 0 rgba(255,255,255,.55);-
 .lphone{display:inline-block;font-size:12px;font-weight:600;color:var(--mute);font-variant-numeric:tabular-nums;letter-spacing:.01em}
 .lnote{margin:2px 0 12px;font-size:11px;color:var(--mute)}
 
+/* ===== KEMASKINI 5: folder skrip ===== */
+.fold{display:flex;gap:8px;overflow-x:auto;margin:0 -2px 10px;padding:2px 2px 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.fold::-webkit-scrollbar{display:none}
+.fchip{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 8px 0 13px;border-radius:999px;font:700 13px inherit;font-family:inherit;color:var(--ink);background:linear-gradient(180deg,#ffffff 0%,#f4faf7 100%);border:1px solid var(--line);box-shadow:0 4px 10px rgba(14,42,34,.06),inset 0 1px 0 #fff;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.fchip svg{color:#b58f00;flex:0 0 auto}
+.fchip i{font-style:normal;font-size:11px;font-weight:800;min-width:22px;height:22px;padding:0 7px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:var(--g0);color:var(--green)}
+.fchip:hover{border-color:var(--green)}
+.fchip:active{filter:brightness(.95)}
+.fchip.on{color:#fff;border-color:transparent;background:var(--emer);box-shadow:0 8px 18px rgba(19,121,91,.26),inset 0 1px 0 rgba(255,255,255,.25)}
+.fchip.on svg{color:#fff3bf}
+.fchip.on i{background:rgba(255,255,255,.2);color:#fff}
+a.spin{text-decoration:none}
+a.spin.pst{color:var(--green)}
+a.spin.pst:hover{border-color:var(--green)}
+
 /* Desktop / tablet */
 @media(min-width:640px){
   .grab{display:none}
@@ -567,6 +582,7 @@ box-shadow:0 10px 24px rgba(201,165,0,.32),inset 0 1px 0 rgba(255,255,255,.55);-
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14"/></svg>
       Muat turun poster (Telegram)
     </a>
+    <div id="sFolders" class="fold" role="group" aria-label="Folder skrip"></div>
     <input id="sSearch" class="fin ssearch" type="search" placeholder="Cari skrip (tajuk atau ayat)" autocomplete="off" aria-label="Cari skrip mengikut tajuk atau ayat">
     <div class="shead"><p id="sCount" class="scount" role="status"></p><button id="sPinOnly" class="spo" type="button" aria-pressed="false">Pin sahaja (0)</button></div>
     <div id="sList" class="slist"></div>
@@ -587,6 +603,10 @@ box-shadow:0 10px 24px rgba(201,165,0,.32),inset 0 1px 0 rgba(255,255,255,.55);-
     </div>
   </div>
   <div class="mbody">
+    <label class="frow"><span>Folder</span>
+      <input id="cFolder" class="fin" type="text" maxlength="40" list="cFolders" placeholder="Pilih atau taip folder baharu" autocomplete="off" aria-label="Folder skrip">
+      <datalist id="cFolders"></datalist>
+    </label>
     <label class="frow"><span>Tajuk</span>
       <input id="cName" class="fin" type="text" maxlength="80" placeholder="Contoh: Follow up pelanggan baharu" autocomplete="off" aria-label="Tajuk skrip">
     </label>
@@ -1684,27 +1704,60 @@ function loadMyScripts() {
 
 /* Gabung skrip sendiri (di atas) + skrip sedia ada, dan gantikan [panggil] */
 function scriptItems(call) {
-  const base = (window.SCRIPTS || []).map((s) => ({ title: String(s.title || ''), text: String(s.text || ''), mine: false }));
-  const mine = loadMyScripts().map((s, k) => ({ title: s.title, text: s.text, mine: true, mi: k }));
+  const base = (window.SCRIPTS || []).map((s) => ({ title: String(s.title || ''), text: String(s.text || ''), folder: String(s.folder || '').trim(), poster: String(s.poster || '').trim(), mine: false }));
+  const mine = loadMyScripts().map((s, k) => ({ title: s.title, text: s.text, folder: String(s.folder || '').trim(), poster: '', mine: true, mi: k }));
   return mine.concat(base).map((s, i) => ({
     title: s.title || 'Skrip ' + (i + 1),
     txt: s.text.replace(/\[panggil\]/gi, call),
+    folder: s.folder || 'Lain-lain',
+    poster: s.poster,
     mine: s.mine,
     mi: s.mi
   }));
+}
+
+/* ====== Folder skrip ====== */
+const FOLD_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
+const DL_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14"/></svg>';
+const POSTER_DEFAULT = 'https://t.me/c/2792771174/3';
+let sFolder = lsGet('folder') || 'all';
+const folderNames = () => sCtx ? Array.from(new Set(sCtx.items.map((s) => s.folder))) : [];
+
+function renderFolders() {
+  const names = folderNames();
+  if (sFolder !== 'all' && !names.includes(sFolder)) sFolder = 'all';
+  const frag = document.createDocumentFragment();
+  [['all', 'Semua', sCtx.items.length]]
+    .concat(names.map((n) => [n, n, sCtx.items.filter((s) => s.folder === n).length]))
+    .forEach((x) => {
+      const on = sFolder === x[0];
+      const b = el('button', 'fchip' + (on ? ' on' : ''));
+      b.type = 'button';
+      b.setAttribute('aria-pressed', String(on));
+      b.innerHTML = FOLD_SVG;
+      b.append(document.createTextNode(x[1]), el('i', '', String(x[2])));
+      b.addEventListener('click', () => { sFolder = x[0]; lsSet('folder', sFolder); renderScripts(); });
+      frag.append(b);
+    });
+  $('#sFolders').replaceChildren(frag);
+  /* Link poster Telegram mengikut folder dipilih */
+  const inF = sFolder === 'all' ? null : sCtx.items.find((s) => s.folder === sFolder && s.poster);
+  const any = sCtx.items.find((s) => s.poster);
+  $('#sTele').href = (inF || any || { poster: POSTER_DEFAULT }).poster;
 }
 
 let sCtx = null;
 
 function renderScripts() {
   if (!sCtx) return;
+  renderFolders();
   const q = $('#sSearch').value.toLowerCase().split(/\s+/).filter(Boolean);
   const frag = document.createDocumentFragment();
   let n = 0;
   const pins = loadPins();
   const list = sCtx.items.map((s, i) => ({ s: s, i: i, pin: pins.includes(s.title) }));
   const pinTotal = list.filter((x) => x.pin).length;
-  const shown = list.filter((x) => !sPinOnly || x.pin);
+  const shown = list.filter((x) => (!sPinOnly || x.pin) && (sFolder === 'all' || x.s.folder === sFolder));
   shown.sort((a, b) => (b.pin ? 1 : 0) - (a.pin ? 1 : 0) || a.i - b.i);   // skrip dipin di atas
   shown.forEach((x) => {
     const s = x.s, i = x.i;
@@ -1729,6 +1782,14 @@ function renderScripts() {
     pb.title = x.pin ? 'Buang pin' : 'Pin skrip ini';
     pb.addEventListener('click', () => togglePin(s.title));
     w.append(a, pb);
+    if (s.poster) {                                          // butang poster (Telegram)
+      const pa = el('a', 'spin pst');
+      pa.href = s.poster; pa.target = '_blank'; pa.rel = 'noopener';
+      pa.title = 'Muat turun poster (Telegram)';
+      pa.setAttribute('aria-label', 'Muat turun poster: ' + s.title);
+      pa.innerHTML = DL_SVG;
+      w.insertBefore(pa, pb);
+    }
     if (s.mine) {                                            // skrip sendiri: butang Ubah & Padam
       const bar = el('div', 'sbar');
       const eb = el('button', 'sbtn', 'Ubah');
@@ -1789,6 +1850,8 @@ function openAddScript(idx) {
   const ed = cEdit >= 0;
   $('#cName').value = ed ? mine[cEdit].title : '';
   $('#cText').value = ed ? mine[cEdit].text : '';
+  $('#cFolder').value = ed ? (mine[cEdit].folder || '') : (sFolder !== 'all' && sFolder !== 'Lain-lain' ? sFolder : '');
+  $('#cFolders').replaceChildren(...folderNames().map((f) => { const o = document.createElement('option'); o.value = f; return o; }));
   $('#cTitle').textContent = ed ? 'Ubah Skrip' : 'Tambah Skrip';
   $('#cSmall').textContent = ed ? 'Edit skrip' : 'Skrip baharu';
   $('#cSave').textContent = ed ? 'Simpan Perubahan' : 'Simpan Skrip';
@@ -1820,6 +1883,7 @@ function insertTag() {
 function saveScript() {
   const title = $('#cName').value.trim();
   const text = $('#cText').value.trim();
+  const folder = $('#cFolder').value.trim().replace(/\s+/g, ' ');
   if (!title) { cMsg('Sila isi tajuk skrip.'); return; }
   if (!text) { cMsg('Sila isi text skrip.'); return; }
   const mine = loadMyScripts();
@@ -1829,16 +1893,17 @@ function saveScript() {
   if (dup) { cMsg('Tajuk ini sudah wujud. Guna tajuk lain.'); return; }
   if (cEdit >= 0 && mine[cEdit]) {
     const old = mine[cEdit].title;
-    mine[cEdit] = { title: title, text: text };
+    mine[cEdit] = { title: title, text: text, folder: folder };
     if (old !== title) {                                      // pin ikut tajuk: pindahkan ke tajuk baharu
       const p = loadPins(), i = p.indexOf(old);
       if (i >= 0) { p[i] = title; lsSet('pins', JSON.stringify(p)); }
     }
   } else {
-    mine.unshift({ title: title, text: text });               // skrip terbaharu di atas
+    mine.unshift({ title: title, text: text, folder: folder });               // skrip terbaharu di atas
   }
   lsSet('myscripts', JSON.stringify(mine));
   if (sCtx) sCtx.items = scriptItems(sCtx.call);
+  sFolder = folder || 'Lain-lain'; lsSet('folder', sFolder);
   $('#sSearch').value = '';
   closeAddScript();
   renderScripts();
